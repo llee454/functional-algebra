@@ -8,11 +8,11 @@ The modules contained within the package span monoids, groups, rings, and fields
 Why Another Algebra Module?
 ---------------------------
 
-This module is unique in that it eschews the imperative tactic driven style of traditional Coq developments. As pointed out by others, programs written using tactics are brittle, hard to read, and generally inefficient. 
+This module is unique in that it eschews the imperative tactic-oriented style of traditional Coq developments. As pointed out by others, programs written using tactics are brittle, hard to read, and generally inefficient. 
 
 While tactic driven development is useful for sketching out proofs, these disadvantages should dissuade us from leaving proofs in this form.
 
-In this library, I show a worked example of using Gallina directly and demonstrate both the feasibility of this approach and its advantages in terms of clarity, maintainability, and compile-time efficiency.
+In this library, I provide a worked example of using Gallina directly and demonstrate both the feasibility of this approach and its advantages in terms of clarity, maintainability, and compile-time efficiency.
 
 In doing so, I follow the practice of the Agda community in exploiting the beauty of a dependently typed functional programming language to full effect.
 
