@@ -31,5 +31,19 @@ The hierarchy of algebraic structures is modeled through inclusion. For example,
 
 We map theorems from one level to the next. For example, identity elements are unique in both groups and monoids, and groups inherit their proof of this property from monoids. Instead of requiring users to call this theorem from the monoid associated with a group, we define a theorem at the group level that maps onto the underlying monoid proof.
 
+### Files and Modules 
 
-
+1. base.v
+  Defines notations shared by all of the other modules.
+2. function.v
+  Defines basic theorems for functions.
+3. monoid.v
+  Defines monoids and provides basic theorems.
+4. group.v
+  Defines groups and provides basic theorems.
+5. monoid_group.v
+  Proves that the set of invertable functions within a monoid form a subgroup.
+6. monoid_expr.v
+  Provides functions that simplify monoid expressions such as `{-} 1 + 0` => `{-} 1`.
+7. group_expr.v
+  Provides functions that simplify group expressions.
