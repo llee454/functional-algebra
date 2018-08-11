@@ -56,3 +56,8 @@ This package uses `coq_makefile` to generate its Makefile. To compile this packa
 If however, you have Coq installed in a non-standard directory, you will need to pass the root path for your Coq instance to make:
 
 > env COQLIBS="-I . -coqlib /usr/local/coq/coq-8.4p14" make -B
+
+Author
+------
+
+Larry D. Lee Jr. <llee454@gmail.com>
