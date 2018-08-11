@@ -1,4 +1,4 @@
--R . ICAG
+-R . functional-algebra
 ./base.v
 ./abelian_group.v
 ./commutative_ring.v

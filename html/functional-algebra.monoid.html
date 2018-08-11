@@ -1,0 +1,967 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>functional-algebra.monoid</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library functional-algebra.monoid</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  This module defines the Monoid record type which
+  represents algebraic structures called Monoids
+  and provides a collection of theorems and axioms
+  describing them.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Description</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">base</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">function</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">ProofIrrelevance</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Bool</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Arith</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Wf</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Wellfounded</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Wf_nat</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Module</span> <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Accepts a function, f, and asserts that f is associative. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_assoc</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">T</span>, <span class="id" type="var">f</span> <span class="id" type="var">x</span> (<span class="id" type="var">f</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>) = <span class="id" type="var">f</span> (<span class="id" type="var">f</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) <span class="id" type="var">z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two arguments, f and x, and asserts
+  that x is a left identity element w.r.t. f.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_id_l</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">T</span>, <span class="id" type="var">f</span> <span class="id" type="var">E</span> <span class="id" type="var">x</span> = <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two arguments, f and x, and asserts
+  that x is a right identity element w.r.t. f.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_id_r</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">T</span>, <span class="id" type="var">f</span> <span class="id" type="var">x</span> <span class="id" type="var">E</span> = <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two arguments, f and x, and asserts
+  that x is an identity element w.r.t. f.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_id</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="var">is_id_l</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span> ∧ <span class="id" type="var">is_id_r</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts three arguments, f, e, and H, where
+  H proves that e is the identity element
+  w.r.t. f, and returns a function that accepts
+  two arguments, x and y, and asserts that y is
+  x's left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_inv_l</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) (<span class="id" type="var">_</span> : <span class="id" type="var">is_id</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span>) (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="var">f</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> = <span class="id" type="var">E</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts three arguments, f, e, and H, where
+  H proves that e is the identity element
+  w.r.t. f, and returns a function that accepts
+  two arguments, x and y, and asserts that y is
+  x's right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_inv_r</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) (<span class="id" type="var">_</span> : <span class="id" type="var">is_id</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span>) (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="var">f</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> = <span class="id" type="var">E</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts three arguments, f, e, and H, where
+  H proves that e is the identity element
+  w.r.t. f, and returns a function that accepts
+  two arguments, x and y, and asserts that y is
+  x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_inv</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>) (<span class="id" type="var">E</span> : <span class="id" type="var">T</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">is_id</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span>) (<span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">T</span>) : <span class="id" type="keyword">Prop</span> := <span class="id" type="var">is_inv_l</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span> <span class="id" type="var">H</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ∧ <span class="id" type="var">is_inv_r</span> <span class="id" type="var">T</span> <span class="id" type="var">f</span> <span class="id" type="var">E</span> <span class="id" type="var">H</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents algebraic monoids. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Structure</span> <span class="id" type="var">Monoid</span> : <span class="id" type="keyword">Type</span> := <span class="id" type="var">monoid</span> {<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the set of monoid elements. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E</span>: <span class="id" type="keyword">Set</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E_0</span>: <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the monoid operation. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op</span>: <span class="id" type="var">E</span> → <span class="id" type="var">E</span> → <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that the monoid operator is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_is_assoc</span> : <span class="id" type="var">is_assoc</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that E_0 is the left identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_id_l</span> : <span class="id" type="var">is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span> <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that E_0 is the right identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_id_r</span> : <span class="id" type="var">is_id_r</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span> <span class="id" type="var">E_0</span><br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Enable implicit arguments for monoid properties. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">E_0</span> {<span class="id" type="var">m</span>}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op</span> {<span class="id" type="var">m</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_is_assoc</span> {<span class="id" type="var">m</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_id_l</span> {<span class="id" type="var">m</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_id_r</span> {<span class="id" type="var">m</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Define notations for monoid properties. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Notation</span> "0" := <span class="id" type="var">E_0</span> : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "x + y" := (<span class="id" type="var">op</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 50, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{+}" := <span class="id" type="var">op</span> : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Open</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents an arbitrary monoid.
+
+<div class="paragraph"> </div>
+
+  Note: we use Variable rather than Parameter
+  to ensure that the following theorems are
+  generalized w.r.t m.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">m</span> : <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the set of monoid elements. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">M</span> := <span class="id" type="var">E</span> <span class="id" type="var">m</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one monoid element, x, and asserts
+  that x is the left identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_l</span> := <span class="id" type="var">is_id_l</span> <span class="id" type="var">M</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one monoid element, x, and asserts
+  that x is the right identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_r</span> := <span class="id" type="var">is_id_r</span> <span class="id" type="var">M</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one monoid element, x, and asserts
+  that x is the identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id</span> := <span class="id" type="var">is_id</span> <span class="id" type="var">M</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is the identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_id</span> <span class="id" type="var">M</span> {+} 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">conj</span> <span class="id" type="var">op_id_l</span> <span class="id" type="var">op_id_r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the left identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, (<span class="id" type="var">op_is_id_l</span> <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">H</span> 0 || <span class="id" type="var">a</span> = 0 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the right identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, (<span class="id" type="var">op_is_id_r</span> <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">H</span> 0 || <span class="id" type="var">a</span> = 0 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_l</span> <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, (<span class="id" type="var">op_is_id</span> <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">and_ind</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">H</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">op_id_l_uniq</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_intro_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="tactic">f_equal</span> ({+} <span class="id" type="var">z</span>) <span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_intro_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒  <span class="id" type="var">eq_refl</span> (<span class="id" type="var">x</span> + <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">a</span> + <span class="id" type="var">z</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two monoid elements, x and y, and
+  asserts  that y is x's left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv_l</span> := <span class="id" type="var">is_inv_l</span> <span class="id" type="var">M</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two monoid elements, x and y, and
+  asserts  that y is x's right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv_r</span> := <span class="id" type="var">is_inv_r</span> <span class="id" type="var">M</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two monoid elements, x and y, and
+  asserts  that y is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv</span> := <span class="id" type="var">is_inv</span> <span class="id" type="var">M</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">has_inv_l</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">has_inv_r</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">has_inv</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the left and right inverses of
+  an element must be equal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_l_r_eq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">y</span> = <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">H1</span> <span class="id" type="var">z</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">y</span> + <span class="id" type="var">a</span> = (<span class="id" type="var">y</span> + <span class="id" type="var">x</span>) + <span class="id" type="var">z</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = (<span class="id" type="var">y</span> + <span class="id" type="var">x</span>) + <span class="id" type="var">z</span>     @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">y</span> = <span class="id" type="var">a</span> + <span class="id" type="var">z</span>           @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">y</span> = <span class="id" type="var">a</span>               @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_l</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the inverse relationship is
+  symmetric.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_sym</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ↔ <span class="id" type="var">op_is_inv</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">H</span> : <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">conj</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>) (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">H</span> : <span class="id" type="var">op_is_inv</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">conj</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>) (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  The next few lemmas define special cases
+  where cancellation holds and culminate in
+  the Unique Inverse theorem which asserts
+  that, in a Monoid, every value has at most
+  one inverse.
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+  Proves the left cancellation law for elements
+  possessing a left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv_l</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">u</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">op_intro_l</span> (<span class="id" type="var">z</span> + <span class="id" type="var">x</span>) (<span class="id" type="var">z</span> + <span class="id" type="var">y</span>) <span class="id" type="var">u</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">u</span> + (<span class="id" type="var">z</span> + <span class="id" type="var">y</span>) @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">u</span> <span class="id" type="var">z</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">u</span> + <span class="id" type="var">z</span>) + <span class="id" type="var">x</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">u</span> <span class="id" type="var">z</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> + <span class="id" type="var">x</span> = <span class="id" type="var">a</span> + <span class="id" type="var">y</span>   @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = 0 + <span class="id" type="var">y</span>       @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_l</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> = <span class="id" type="var">a</span>           @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_l</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves the right cancellation law for
+  elements possessing a right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv_r</span> <span class="id" type="var">z</span> → <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">u</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒  <span class="id" type="var">op_intro_r</span> (<span class="id" type="var">x</span> + <span class="id" type="var">z</span>) (<span class="id" type="var">y</span> + <span class="id" type="var">z</span>) <span class="id" type="var">u</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = (<span class="id" type="var">y</span> + <span class="id" type="var">z</span>) + <span class="id" type="var">u</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> <span class="id" type="var">u</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + (<span class="id" type="var">z</span> + <span class="id" type="var">u</span>) = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">u</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + <span class="id" type="var">a</span> = <span class="id" type="var">y</span> + <span class="id" type="var">a</span>   @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">y</span> + 0       @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> = <span class="id" type="var">a</span>           @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's left inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv_r</span> <span class="id" type="var">x</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">y</span> + <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">H1</span> || <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H0</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">op_cancel_r</span> <span class="id" type="var">z</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">H2</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H3</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's right inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv_l</span> <span class="id" type="var">x</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">x</span> + <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">H1</span> || <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H0</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">op_cancel_l</span> <span class="id" type="var">z</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">H2</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H3</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that an element's inverse is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">M</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">op_inv_l_uniq</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">ex_intro</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> ⇒ <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) <span class="id" type="var">y</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">y</span> <span class="id" type="var">z</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>) (<span class="id" type="var">proj1</span> <span class="id" type="var">H0</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element is its own
+  left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_0_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">op_is_inv_l</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">op_id_l</span> 0 : 0 + 0 = 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element is its own
+  right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_0_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">op_is_inv_r</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">op_id_r</span> 0 : 0 + 0 = 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element is its own
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">op_is_inv</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">conj</span> <span class="id" type="var">op_inv_0_l</span> <span class="id" type="var">op_inv_0_r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element has a
+  left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_has_inv_l_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">has_inv_l</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">ex_intro</span> (<span class="id" type="var">op_is_inv_l</span> 0) 0 <span class="id" type="var">op_inv_0_l</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element has a
+  right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_has_inv_r_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">has_inv_r</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">ex_intro</span> (<span class="id" type="var">op_is_inv_r</span> 0) 0 <span class="id" type="var">op_inv_0_r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the identity element has an
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_has_inv_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">has_inv</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">ex_intro</span> (<span class="id" type="var">op_is_inv</span> 0) 0 <span class="id" type="var">op_inv_0</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Every monoid has a subset of elements that
+  possess inverses. This can be seen by noting
+  that, by definition, every monoid has an
+  identity element (this is what distinguishes
+  a monoid from a semigroup) and the identity
+  element is its own inverse. The following
+  theorems explore the behavior of those
+  elements that possess inverses. They will
+  prove especially ueseful when we consider
+  groups where every element possess an
+  inverse.
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+  Accepts two arguments: x; and H, a proof that
+  x has an inverse; and returns x's inverse,
+  y, along with a proof that y is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_strong</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span> → { <span class="id" type="var">y</span> | <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">constructive_definite_description</span> (<span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> (<span class="id" type="var">H0</span> : <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> ⇒ <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ∧ <span class="id" type="keyword">∀</span> <span class="id" type="var">z</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">y</span> = <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span> <span class="id" type="var">H0</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">z</span> <span class="id" type="var">H1</span> ⇒ <span class="id" type="var">eq_sym</span> (<span class="id" type="var">op_inv_uniq</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two arguments: x; and H, a proof that
+  x has an inverse. and returns x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">M</span>, <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span> → <span class="id" type="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> ⇒ <span class="id" type="var">proj1_sig</span> (<span class="id" type="var">op_neg_strong</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{-}" := (<span class="id" type="var">op_neg</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that, forall x and H, where H is a
+  proof that x has an inverse, `op_neg x H`
+  is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_def</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>), <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> ⇒ <span class="id" type="var">proj2_sig</span> (<span class="id" type="var">op_neg_strong</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that, forall x and H, where H is
+  a proof that x has an inverse, x is the
+  inverse of `- x H`.
+
+<div class="paragraph"> </div>
+
+  Note: this lemma is an immediate consequence
+  of the symmetry of the inverse predicate.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_inv</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>), <span class="id" type="var">op_is_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ (<span class="id" type="var">proj1</span> (<span class="id" type="var">op_inv_sym</span> <span class="id" type="var">x</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>))) (<span class="id" type="var">op_neg_def</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that, forall x and H, where H is a
+  proof that x has an inverse, `- x H`
+  has an inverse.
+
+<div class="paragraph"> </div>
+
+  Note: this lemma is a weakening of
+  `op_neg_inv` and is used to apply the lemmas
+  and theorems in this section to expressions
+  involving `op_neg`.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_inv_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>), <span class="id" type="var">has_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_neg_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that negation is injective over the
+  set of invertible elements - I.E. forall
+  x and y if the negation of x equals the
+  negation of y then x and y must be equal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_inj</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>) (<span class="id" type="var">y</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">y</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{-} <span class="id" type="var">x</span> <span class="id" type="var">H</span> = {-} <span class="id" type="var">y</span> <span class="id" type="var">H0</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">x</span> = <span class="id" type="var">y</span> <br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">x</span> + ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) = <span class="id" type="var">y</span> + ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" type="var">proj2</span> (<span class="id" type="var">op_neg_def</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>) : <span class="id" type="var">x</span> + ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) = 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) = <span class="id" type="var">a</span>     @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">proj2</span> (<span class="id" type="var">op_neg_def</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) = <span class="id" type="var">y</span> + <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H1</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">op_cancel_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_inv_r</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj2</span> (<span class="id" type="var">proj1</span> (<span class="id" type="var">op_inv_sym</span> <span class="id" type="var">x</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>)) (<span class="id" type="var">op_neg_def</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H2</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H3</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that double negation is equivalent to
+  the identity function for all invertible
+  values.
+
+<div class="paragraph"> </div>
+
+  Note: the monoid negation operation
+  requires a proof that the value passed to it
+  is invertible. The form of this theorem
+  explicitly asserts that double negation is
+  equivalent to the identity operation for
+  any proof that the negative has an inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_neg_gen</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">has_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>)), {-} ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">H0</span> = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">op_is_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) ({-} ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">op_neg_def</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">H0</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">op_is_inv</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">op_neg_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">op_inv_uniq</span> ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">x</span> ({-} ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) <span class="id" type="var">H0</span>) <span class="id" type="var">H3</span> <span class="id" type="var">H1</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that double negation is equivalent to
+  the identity function for all invertible
+  values.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>), {-} ({-} <span class="id" type="var">x</span> <span class="id" type="var">H</span>) (<span class="id" type="var">op_neg_inv_ex</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>) = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">op_cancel_neg_gen</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> (<span class="id" type="var">op_neg_inv_ex</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that negation is onto over the subset
+  of invertable values.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_onto</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">y</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">y</span>), <span class="id" type="tactic">∃</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>), {-} <span class="id" type="var">x</span> <span class="id" type="var">H0</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="tactic">∃</span> <span class="id" type="var">H0</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>, {-} <span class="id" type="var">x</span> <span class="id" type="var">H0</span> = <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;({-} <span class="id" type="var">y</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">H0</span> ⇒ {-} ({-} <span class="id" type="var">y</span> <span class="id" type="var">H</span>) <span class="id" type="var">H0</span> = <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_neg_inv_ex</span> <span class="id" type="var">y</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_cancel_neg</span> <span class="id" type="var">y</span> <span class="id" type="var">H</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that invertability is closed over
+  the monoid operation.
+
+<div class="paragraph"> </div>
+
+  Note: given this theorem, we can conclude
+  that the set of invertible elements within
+  a monoid, which must be nonempty, forms
+  a group.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_closed</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">x</span>) (<span class="id" type="var">y</span> : <span class="id" type="var">M</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">has_inv</span> <span class="id" type="var">y</span>), <span class="id" type="var">has_inv</span> (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">u</span> (<span class="id" type="var">H1</span> : <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">v</span> (<span class="id" type="var">H2</span> : <span class="id" type="var">op_is_inv</span> <span class="id" type="var">y</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_inv</span> (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">v</span> + <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_assoc</span> (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) + (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) = <span class="id" type="var">a</span> + <span class="id" type="var">y</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">v</span> <span class="id" type="var">u</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) + (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) = (<span class="id" type="var">v</span> + <span class="id" type="var">a</span>) + <span class="id" type="var">y</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">proj1</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) + (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) = <span class="id" type="var">a</span> + <span class="id" type="var">y</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) + (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">proj1</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_assoc</span> (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) <span class="id" type="var">v</span> <span class="id" type="var">u</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) + (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) = <span class="id" type="var">a</span> + <span class="id" type="var">u</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) + (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) = (<span class="id" type="var">x</span> + <span class="id" type="var">a</span>) + <span class="id" type="var">u</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">proj2</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) + (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) = <span class="id" type="var">a</span> + <span class="id" type="var">u</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_id_r</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">x</span> + <span class="id" type="var">y</span>) + (<span class="id" type="var">v</span> + <span class="id" type="var">u</span>) = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">proj2</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that every boolean value is either true
+  or false.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">bool_dec0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">b</span> : <span class="id" type="var">bool</span>, {<span class="id" type="var">b</span> = <span class="id" type="var">true</span>}+{<span class="id" type="var">b</span> = <span class="id" type="var">false</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">bool_rect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">b</span> ⇒ {<span class="id" type="var">b</span> = <span class="id" type="var">true</span>}+{<span class="id" type="var">b</span> = <span class="id" type="var">false</span>})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">left</span> (<span class="id" type="var">true</span> = <span class="id" type="var">false</span>) (<span class="id" type="var">eq_refl</span> <span class="id" type="var">true</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">right</span> (<span class="id" type="var">false</span> = <span class="id" type="var">true</span>) (<span class="id" type="var">eq_refl</span> <span class="id" type="var">false</span>)).<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Coq does not export notations outside of
+  sections. Consequently the notationsdefined
+  above are not visible to other modules. To
+  fix this, we gather all the notations here
+  for export.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Notation</span> "0" := (<span class="id" type="var">Monoid.E_0</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "x + y" := (<span class="id" type="var">Monoid.op</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 50, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{+}" := (<span class="id" type="var">Monoid.op</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{-}" := (<span class="id" type="var">Monoid.op_neg</span> <span class="id" type="var">_</span>) : <span class="id" type="var">monoid_scope</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>functional-algebra.monoid_group</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library functional-algebra.monoid_group</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  Every monoid has a nonempty subgroup
+  consisting of the monoid's invertible elements.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">base</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">monoid</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">group</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Eqdep</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Module</span> <span class="id" type="var">Monoid_Group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the homomorphic mapping between
+  the set of invertible elements within a monoid
+  and the group formed over them by the monoid
+  operation.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Structure</span> <span class="id" type="var">Monoid_Group</span> : <span class="id" type="keyword">Type</span> := <span class="id" type="var">monoid_group</span> {<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the set of monoid elements. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E</span> : <span class="id" type="keyword">Set</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the identity monoid element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E_0</span> : <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the monoid operation. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op</span>: <span class="id" type="var">E</span> → <span class="id" type="var">E</span> → <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that the monoid operator is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_is_assoc</span> : <span class="id" type="var">Monoid.is_assoc</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts one monoid element, x, and asserts
+    that x is the left identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_is_id_l</span> := <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts one monoid element, x, and asserts
+    that x is the right identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_is_id_r</span> := <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts one monoid element, x, and asserts
+    that x is the identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_is_id</span> := <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that 0 is the left identity monoid element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_id_l</span> : <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span> <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that 0 is the right identity monoid element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">monoid_op_id_r</span> : <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> <span class="id" type="var">monoid_op</span> <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents the monoid whose invertable
+    elements we are going to map onto a group.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">m</span> := <span class="id" type="var">Monoid.monoid</span> <span class="id" type="var">E</span> <span class="id" type="var">E_0</span> <span class="id" type="var">monoid_op</span> <span class="id" type="var">monoid_op_is_assoc</span> <span class="id" type="var">monoid_op_id_l</span> <span class="id" type="var">monoid_op_id_r</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents those monoid elements that are
+    invertable.
+
+<div class="paragraph"> </div>
+
+    Note: each value can be seen intuitively as
+    a pair, (x, H), where x is a monoid element
+    and H is a proof that x is invertable.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">D</span> : <span class="id" type="keyword">Set</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= { <span class="id" type="var">x</span> : <span class="id" type="var">E</span> | <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">x</span> };<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a monoid element and a proof that
+    it is invertable and returns its projection
+    in D.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">D_cons</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">x</span> → <span class="id" type="var">D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">exist</span> (<span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Asserts that any two equal invertable monoid
+    elements, x and y, are equivalent (using
+    dependent equality).
+
+<div class="paragraph"> </div>
+
+    Note: to compare sig elements that differ
+    only in their proof terms, such as (x, H) and
+    (x, H0), we must introduce a new notion of
+    equality called "dependent equality". This
+    relationship is defined in the Eqdep module.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">D_eq_dep</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">x</span>) (<span class="id" type="var">y</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">y</span>), <span class="id" type="var">y</span> = <span class="id" type="var">x</span> → <span class="id" type="var">eq_dep</span> <span class="id" type="var">E</span> (<span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span>) <span class="id" type="var">y</span> <span class="id" type="var">H0</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Given that two invertable monoid elements x
+    and y are equal (using dependent equality),
+    this lemma proves that their projections
+    into D are equal.
+
+<div class="paragraph"> </div>
+
+    Note: this proof is equivalent to:
+
+<div class="paragraph"> </div>
+
+      eq_dep_eq_sig E (Monoid.has_inv m) y x H0 H
+        (D_eq_dep x H y H0 H1).
+
+<div class="paragraph"> </div>
+
+    The definition for eq_dep_eq_sig has been
+    expanded however for compatability with
+    Coq v8.4.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">D_eq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">x</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">x</span>) (<span class="id" type="var">y</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">y</span>), <span class="id" type="var">y</span> = <span class="id" type="var">x</span> → <span class="id" type="var">D_cons</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span> = <span class="id" type="var">D_cons</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">eq_dep_ind</span> <span class="id" type="var">E</span> (<span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span>) <span class="id" type="var">y</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">z</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H2</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_cons</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span> = <span class="id" type="var">D_cons</span> <span class="id" type="var">z</span> <span class="id" type="var">H2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span>)) <span class="id" type="var">x</span> <span class="id" type="var">H</span> (<span class="id" type="var">D_eq_dep</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span> <span class="id" type="var">H0</span> <span class="id" type="var">H1</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents the group identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">D_0</span> := <span class="id" type="var">D_cons</span> <span class="id" type="var">E_0</span> (<span class="id" type="var">Monoid.op_has_inv_0</span> <span class="id" type="var">m</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents the group operation.
+
+<div class="paragraph"> </div>
+
+    Note: intuitively this function accepts two
+    invertable monoid elements, (x, H) and (y,
+    H0), and returns (x + y, H1), where H, H0,
+    and H1 are generalized invertability proofs.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">D</span> → <span class="id" type="var">D</span> → <span class="id" type="var">D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">sig_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">D</span> → <span class="id" type="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">sig_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_cons</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>)));<br/>
+<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a group element, x, and asserts
+    that x is a left identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_id_l</span> := <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a group element, x, and asserts
+    that x is a right identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_id_r</span> := <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a group element, x, and asserts
+    that x is an/the identity element.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_id</span> := <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Proves that D_0 is a left identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_id_l</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">group_op_is_id_l</span> <span class="id" type="var">D_0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">sig_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">group_op</span> <span class="id" type="var">D_0</span> <span class="id" type="var">x</span> = <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_eq</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">E_0</span> <span class="id" type="var">u</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">E_0</span> (<span class="id" type="var">Monoid.op_has_inv_0</span> <span class="id" type="var">m</span>) <span class="id" type="var">u</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">monoid_op_id_l</span> <span class="id" type="var">u</span>));<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Proves that D_0 is a right identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_id_r</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">group_op_is_id_r</span> <span class="id" type="var">D_0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">sig_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">group_op</span> <span class="id" type="var">x</span> <span class="id" type="var">D_0</span> = <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_eq</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> <span class="id" type="var">E_0</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">E_0</span> (<span class="id" type="var">Monoid.op_has_inv_0</span> <span class="id" type="var">m</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">monoid_op_id_r</span> <span class="id" type="var">u</span>));<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Proves that D_0 is the identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">group_op_is_id</span> <span class="id" type="var">D_0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">conj</span> <span class="id" type="var">group_op_id_l</span> <span class="id" type="var">group_op_id_r</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Proves that the group operation is
+    associative.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_assoc</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">Monoid.is_assoc</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">sig_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="keyword">∀</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">D</span>, <span class="id" type="var">group_op</span> <span class="id" type="var">x</span> (<span class="id" type="var">group_op</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>) = <span class="id" type="var">group_op</span> (<span class="id" type="var">group_op</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">sig_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> ⇒ <span class="id" type="keyword">∀</span> <span class="id" type="var">z</span> : <span class="id" type="var">D</span>, <span class="id" type="var">group_op</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">group_op</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>) = <span class="id" type="var">group_op</span> (<span class="id" type="var">group_op</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) <span class="id" type="var">y</span>) <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">sig_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">z</span> ⇒ <span class="id" type="var">group_op</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">group_op</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>) <span class="id" type="var">z</span>) = <span class="id" type="var">group_op</span> (<span class="id" type="var">group_op</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>)) <span class="id" type="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">w</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H1</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">v</span> <span class="id" type="var">w</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">v</span> <span class="id" type="var">w</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span> <span class="id" type="var">w</span> <span class="id" type="var">H1</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">monoid_op</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span>) <span class="id" type="var">w</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> (<span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>) <span class="id" type="var">w</span> <span class="id" type="var">H1</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">D_cons</span> <span class="id" type="var">a</span> <span class="id" type="var">H2</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">Y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">D_cons</span> <span class="id" type="var">b</span> <span class="id" type="var">H3</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">D_eq</span> <span class="id" type="var">b</span> <span class="id" type="var">H3</span> <span class="id" type="var">a</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">monoid_op_is_assoc</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span> <span class="id" type="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)));<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two values, x and y, and asserts
+    that y is a left inverse of x.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv_l</span> := <span class="id" type="var">Monoid.is_inv_l</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span> <span class="id" type="var">D_0</span> <span class="id" type="var">group_op_id</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two values, x and y, and asserts
+    that y is a right inverse of x.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv_r</span> := <span class="id" type="var">Monoid.is_inv_r</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span> <span class="id" type="var">D_0</span> <span class="id" type="var">group_op_id</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two values, x and y, and asserts
+    that y is an inverse of x.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv</span> := <span class="id" type="var">Monoid.is_inv</span> <span class="id" type="var">D</span> <span class="id" type="var">group_op</span> <span class="id" type="var">D_0</span> <span class="id" type="var">group_op_id</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two invertable monoid elements, x
+    and y, where y is a left inverse of x and
+    proves that y's projection into D is the
+    left inverse of x's.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv_l</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Monoid.op_is_inv_l</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv_l</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_eq</span> <span class="id" type="var">E_0</span> (<span class="id" type="var">Monoid.op_has_inv_0</span> <span class="id" type="var">m</span>) (<span class="id" type="var">monoid_op</span> <span class="id" type="var">v</span> <span class="id" type="var">u</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two invertable monoid elements, x
+    and y, where y is a right inverse of x and
+    proves that y's projection into D is the
+    right inverse of x's.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv_r</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Monoid.op_is_inv_r</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv_r</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">D_eq</span> <span class="id" type="var">E_0</span> (<span class="id" type="var">Monoid.op_has_inv_0</span> <span class="id" type="var">m</span>) (<span class="id" type="var">monoid_op</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span>) (<span class="id" type="var">Monoid.op_inv_closed</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts two invertable monoid elements, x
+    and y, where y is the inverse of x and
+    proves that y's projection into D is the
+    inverse of x's.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">Monoid.op_is_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span> →<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">group_op_is_inv</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) (<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>) (<span class="id" type="var">v</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H0</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span>) (<span class="id" type="var">H1</span> : <span class="id" type="var">Monoid.op_is_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">conj</span> (<span class="id" type="var">group_op_inv_l</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H1</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">group_op_inv_r</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H0</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H1</span>));<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a group element and returns its
+    inverse, y, along with a proof that y is
+    x's inverse.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_neg_strong</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">D</span>, { <span class="id" type="var">y</span> : <span class="id" type="var">D</span> | <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">sig_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ { <span class="id" type="var">y</span> : <span class="id" type="var">D</span> | <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">u</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">Monoid.op_neg</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">Monoid.op_is_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">Monoid.op_neg_def</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">Monoid.has_inv</span> <span class="id" type="var">m</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">Monoid.op_neg_inv_ex</span> <span class="id" type="var">m</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> : <span class="id" type="var">D</span> ⇒ <span class="id" type="var">group_op_is_inv</span> (<span class="id" type="var">D_cons</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>) <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">D_cons</span> <span class="id" type="var">v</span> <span class="id" type="var">H1</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">group_op_inv</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="var">v</span> <span class="id" type="var">H1</span> <span class="id" type="var">H0</span>));<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Proves that every group element has an
+    inverse.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv_ex</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">D</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">D</span>, <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> (<span class="id" type="var">y</span>, <span class="id" type="var">H</span>) := <span class="id" type="var">group_op_neg_strong</span> <span class="id" type="var">x</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> ⇒ <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">y</span> <span class="id" type="var">H</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Proves that every group element has a left
+    inverse.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv_l_ex</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">D</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">D</span>, <span class="id" type="var">group_op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> (<span class="id" type="var">H</span> : <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">z</span> ⇒ <span class="id" type="var">group_op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span>) <span class="id" type="var">y</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">group_op_inv_ex</span> <span class="id" type="var">x</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Proves that every group element has a right
+    inverse.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">group_op_inv_r_ex</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">D</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">D</span>, <span class="id" type="var">group_op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">y</span> (<span class="id" type="var">H</span> : <span class="id" type="var">group_op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">z</span> ⇒ <span class="id" type="var">group_op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span>) <span class="id" type="var">y</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">group_op_inv_ex</span> <span class="id" type="var">x</span>);<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Proves that the set of invertable monoid
+    elements form a group over the monoid
+    operation.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">g</span> := <span class="id" type="var">Group.group</span> <span class="id" type="var">D</span> <span class="id" type="var">D_0</span> <span class="id" type="var">group_op</span> <span class="id" type="var">group_op_assoc</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">group_op_id_l</span> <span class="id" type="var">group_op_id_r</span> <span class="id" type="var">group_op_inv_l_ex</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">group_op_inv_r_ex</span><br/>
+}.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Monoid_Group</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

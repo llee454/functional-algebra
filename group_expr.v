@@ -1,4 +1,4 @@
-(*
+(**
   This module can be used to automatically solve
   equations concerning group expressions.
 
@@ -31,7 +31,7 @@ Variables a b c d : E.
 
 Let map := MonoidExpr.MTerm_map (op_monoid g).
 
-(*
+(**
   Proves that every group has a monoid set
   and that group elements can be coerced into
   monoid elements.
@@ -56,7 +56,7 @@ Let reflect_test_0
 
 End Unittests.
 
-(*
+(**
   Note: the unittests given above demonstrate that we use monoid terms to simplify group expressions, but we lose information about negation when we do so. Accordingly, we define an alternate term type that captures this information. 
 
   The critical functions are BTree_rassoc and reduce. BTree_rassoc needs the fact that terms encapsulate monoidic values to prove its correctness theorem. 

@@ -39,8 +39,8 @@ $(call includecmdwithout@,$(COQBIN)coqtop -config)
 #                        #
 ##########################
 
-COQLIBS?= -R . ICAG
-COQDOCLIBS?=-R . ICAG
+COQLIBS?= -R . functional-algebra
+COQDOCLIBS?=-R . functional-algebra
 
 ##########################
 #                        #
@@ -166,14 +166,14 @@ userinstall:
 
 install:
 	for i in $(VOFILES); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/ICAG/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/ICAG/$$i; \
+	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/functional-algebra/$$i`; \
+	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/functional-algebra/$$i; \
 	done
 
 install-doc:
-	install -d $(DSTROOT)$(COQDOCINSTALL)/ICAG/html
+	install -d $(DSTROOT)$(COQDOCINSTALL)/functional-algebra/html
 	for i in html/*; do \
-	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/ICAG/$$i;\
+	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/functional-algebra/$$i;\
 	done
 
 clean:

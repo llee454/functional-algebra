@@ -113,6 +113,10 @@ If however, you have Coq installed in a non-standard directory, you will need to
 
 > env COQLIBS="-I . -coqlib /usr/local/coq/coq-8.4p14" make -B
 
+`coq_makefile` appears to have a bug in it. It fails to pass the COQLIBS variable to `coqdep` when generating documentation. Accordingly, if you want to generate documentation while runing Coq from a nonstandard location, use the following command:
+
+> env COQDEP="coqdep -c -coqlib /usr/local/coq/coq-8.4p14" COQLIBS="-I . -coqlib /usr/local/coq/coq-8.4p14" make all.pdf
+
 Author
 ------
 

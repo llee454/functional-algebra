@@ -1,0 +1,918 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>functional-algebra.monoid_expr</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library functional-algebra.monoid_expr</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  This module defines concrete expressions
+  that can be used to represent monoid values
+  and operations, and includes a collection of
+  functions that can be used to manipulate these
+  expressions, and a set of theorems describing
+  these functions.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Description</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">base</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">function</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">ProofIrrelevance</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Bool</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">List</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">monoid</span>.<br/>
+<span class="id" type="keyword">Import</span> <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Module</span> <span class="id" type="var">MonoidExpr</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Open</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">monoid_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Definitions</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the values stored in binary trees. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">Term</span> : <span class="id" type="keyword">Set</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents binary trees.
+
+<div class="paragraph"> </div>
+
+  Binary trees can be used to represent
+  many different types of algebraic
+  expressions. Importantly, when flattened,
+  they are isomorphic with lists. Flattening,
+  projecting onto lists, sorting, and folding
+  may be used normalize ("simplify") algebraic
+  expressions.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Inductive</span> <span class="id" type="var">BTree</span> : <span class="id" type="keyword">Set</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">leaf</span> : <span class="id" type="var">Term</span> → <span class="id" type="var">BTree</span><br/>
+&nbsp;&nbsp;|  <span class="id" type="var">node</span> : <span class="id" type="var">BTree</span> → <span class="id" type="var">BTree</span> → <span class="id" type="var">BTree</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a binary tree and returns true iff
+  the tree is a node term.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_is_node</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">BTree</span> → <span class="id" type="var">bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">BTree_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">bool</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">false</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">true</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a binary tree and returns true iff
+  the tree is a leaf term.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_is_leaf</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">BTree</span> → <span class="id" type="var">bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">BTree_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">bool</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">true</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">false</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a binary tree and returns true
+  iff the tree is right associative.
+
+<div class="paragraph"> </div>
+
+  Note: right associative trees are isomorphic
+  to lists.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_is_rassoc</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">BTree</span> → <span class="id" type="var">bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">BTree_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">bool</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">true</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">BTree_is_leaf</span> <span class="id" type="var">t</span> &amp;&amp; <span class="id" type="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the right subtree in a right
+  associative binary tree is also right
+  associative.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_rassoc_thm</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> : <span class="id" type="var">BTree</span>, <span class="id" type="var">BTree_is_rassoc</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>) = <span class="id" type="var">true</span> → <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">proj2</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">andb_prop</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">BTree_is_leaf</span> <span class="id" type="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>).<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Definitions</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">leaf</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">node</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">t</span> <span class="id" type="var">u</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">BTree_is_leaf</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">t</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">BTree_is_node</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">t</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">BTree_is_rassoc</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">t</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">BTree_rassoc_thm</span> {<span class="id" type="var">Term</span>} <span class="id" type="var">t</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents a mapping from abstract terms
+  to monoid set elements.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Structure</span> <span class="id" type="var">Term_map</span> : <span class="id" type="keyword">Type</span> := <span class="id" type="var">term_map</span> {<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents the monoid set that terms will be 
+    projected onto. 
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">term_map_m</span>: <span class="id" type="var">Monoid</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Represents the set of terms that will be
+    used to represent monoid values.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">term_map_term</span> : <span class="id" type="keyword">Set</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a term and returns its projection
+    in E.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">term_map_eval</span> : <span class="id" type="var">term_map_term</span> → <span class="id" type="var">E</span> <span class="id" type="var">term_map_m</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a term and returns true iff the term
+    represents the monoid identity element (0).
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">term_map_is_zero</span> : <span class="id" type="var">term_map_term</span> → <span class="id" type="var">bool</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Accepts a term and proves that zero terms
+    evaluate to 0.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">term_map_is_zero_thm</span> : <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span>, <span class="id" type="var">term_map_is_zero</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span> → <span class="id" type="var">term_map_eval</span> <span class="id" type="var">t</span> = 0<br/>
+}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">term_map_eval</span> {<span class="id" type="var">t</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">term_map_is_zero</span> {<span class="id" type="var">t</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">term_map_is_zero_thm</span> {<span class="id" type="var">t</span>} <span class="id" type="var">t0</span> <span class="id" type="var">H</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Functions</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents an arbitrary homomorphism mapping
+  binary trees onto some set.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">map</span> : <span class="id" type="var">Term_map</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the set of monoid values. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Let</span> <span class="id" type="var">E</span> := <span class="id" type="var">E</span> (<span class="id" type="var">term_map_m</span> <span class="id" type="var">map</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the set of terms. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Let</span> <span class="id" type="var">Term</span> := <span class="id" type="var">term_map_term</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a term and returns true iff it is not
+  a zero constant term.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">Term_is_nonzero</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Term</span> → <span class="id" type="var">bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">negb</span> (<span class="id" type="var">term_map_is_zero</span> <span class="id" type="var">t</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Maps binary trees onto monoid expressions. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_eval</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span> → <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">BTree_rec</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">term_map_eval</span> <span class="id" type="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> <span class="id" type="var">f</span> <span class="id" type="var">_</span> <span class="id" type="var">g</span> ⇒ <span class="id" type="var">f</span> + <span class="id" type="var">g</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two monoid expressions and returns
+  true iff they are denotationally equivalent -
+  I.E. represent the same monoid value.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_eq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span> → <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span> → <span class="id" type="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> ⇒ <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">BTree_eval</span> <span class="id" type="var">u</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two binary trees, t and u, where u is
+  right associative, prepends t onto u in a way
+  that produces a flat list.
+
+<div class="paragraph"> </div>
+
+  <tt>
+        *          *
+       / \        / \
+      *   v =&gt; (t)   *
+     / \             / \ 
+    t   u          (u)  v
+  </tt>
+<div class="paragraph"> </div>
+
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_shift</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> (<span class="id" type="var">t</span> <span class="id" type="var">u</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span>), <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span> → { <span class="id" type="var">v</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span> | <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">v</span> = <span class="id" type="var">true</span> ∧ <span class="id" type="var">BTree_eq</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>) <span class="id" type="var">v</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">let</span> <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">v</span> = <span class="id" type="var">true</span> ∧ <span class="id" type="var">BTree_eq</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>) <span class="id" type="var">v</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">T</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span> → { <span class="id" type="var">v</span> | <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> <span class="id" type="var">v</span> } <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">BTree_rec</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="keyword">∀</span> <span class="id" type="var">u</span>, <span class="id" type="var">T</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">u</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">v</span> := <span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>) <span class="id" type="var">u</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>) <span class="id" type="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">andb_true_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> <span class="id" type="var">true</span> : <span class="id" type="var">BTree_is_leaf</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>) = <span class="id" type="var">true</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">v</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">f</span> <span class="id" type="var">u</span> <span class="id" type="var">g</span> <span class="id" type="var">v</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> (<span class="id" type="var">w</span>, <span class="id" type="var">H0</span>) := <span class="id" type="var">g</span> <span class="id" type="var">v</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">x</span>, <span class="id" type="var">H1</span>) := <span class="id" type="var">f</span> <span class="id" type="var">w</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H0</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>) <span class="id" type="var">v</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj1</span> <span class="id" type="var">H1</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj2</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> + <span class="id" type="var">a</span> = <span class="id" type="var">BTree_eval</span> <span class="id" type="var">x</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">proj2</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">BTree_eval</span> <span class="id" type="var">x</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">op_is_assoc</span> (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span>) (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">u</span>) (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">v</span>)))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a binary tree and returns an equivalent
+  tree that is right associative.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">BTree_rassoc</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span>, { <span class="id" type="var">u</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span> | <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span> ∧ <span class="id" type="var">BTree_eq</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">let</span> <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span> ∧ <span class="id" type="var">BTree_eq</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">T</span> <span class="id" type="var">t</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= { <span class="id" type="var">u</span> | <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span> } <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">BTree_rec</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">T</span> <span class="id" type="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">t</span> := <span class="id" type="var">leaf</span> <span class="id" type="var">x</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> <span class="id" type="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">t</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> <span class="id" type="var">true</span> : <span class="id" type="var">BTree_is_leaf</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">_</span> <span class="id" type="var">u</span> <span class="id" type="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> (<span class="id" type="var">v</span>, <span class="id" type="var">H</span>) := <span class="id" type="var">g</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">w</span>, <span class="id" type="var">H0</span>) := <span class="id" type="var">BTree_shift</span> <span class="id" type="var">t</span> <span class="id" type="var">v</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">w</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj1</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj2</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> + <span class="id" type="var">a</span> = <span class="id" type="var">BTree_eval</span> <span class="id" type="var">w</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> (<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>)))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  In the following section, we use the
+  isomorphism between right associative binary
+  trees and lists to represent monoid expressions
+  as lists and to use list filtering to eleminate
+  identity elements. This is part of a larger
+  effort to "simplify" momoid expressions.
+
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+  Accepts a list of monoid elements and computes
+  their sum.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">list_eval</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">xs</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span>, <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">list_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span> <span class="id" type="var">f</span> ⇒ (<span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span>) + <span class="id" type="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two term lists and asserts that they
+  are equivalent.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">list_eq</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span> → <span class="id" type="var">list</span> <span class="id" type="var">Term</span> → <span class="id" type="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">xs</span> <span class="id" type="var">ys</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span> = <span class="id" type="var">list_eval</span> <span class="id" type="var">ys</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a right associative binary tree and
+  returns an equivalent list.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">RABTree_list</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span>, <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span> → { <span class="id" type="var">xs</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span> | <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">let</span> <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">xs</span> := <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">T</span> <span class="id" type="var">t</span> := <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span> → { <span class="id" type="var">xs</span> | <span class="id" type="var">P</span> <span class="id" type="var">t</span> <span class="id" type="var">xs</span> } <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">BTree_rect</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">T</span> <span class="id" type="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">xs</span> := <span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">nil</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">xs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_sym</span> (<span class="id" type="var">op_id_r</span> (<span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">BTree_rect</span> <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">T</span> <span class="id" type="var">t</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">u</span>, <span class="id" type="var">T</span> <span class="id" type="var">u</span> → <span class="id" type="var">T</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">_</span> <span class="id" type="var">u</span> (<span class="id" type="var">g</span> : <span class="id" type="var">T</span> <span class="id" type="var">u</span>) <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">BTree_is_rassoc</span> <span class="id" type="var">u</span> = <span class="id" type="var">true</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">BTree_rassoc_thm</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>) <span class="id" type="var">u</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">ys</span>, <span class="id" type="var">H1</span>) := <span class="id" type="var">g</span> <span class="id" type="var">H0</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">xs</span> := <span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">ys</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">x</span>) <span class="id" type="var">u</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">xs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> ((<span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span>) + (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">u</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| (<span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span>) + (<span class="id" type="var">BTree_eval</span> <span class="id" type="var">u</span>) = (<span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span>) + <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H1</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> <span class="id" type="var">_</span> <span class="id" type="var">u</span> <span class="id" type="var">_</span> <span class="id" type="var">_</span> <span class="id" type="var">v</span> <span class="id" type="var">_</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">False_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" type="var">xs</span> | <span class="id" type="var">P</span> (<span class="id" type="var">node</span> (<span class="id" type="var">node</span> <span class="id" type="var">t</span> <span class="id" type="var">u</span>) <span class="id" type="var">v</span>) <span class="id" type="var">xs</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">diff_false_true</span> <span class="id" type="var">H</span>))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a list of monoid elements and filters
+  out the 0 (identity) elements.
+
+<div class="paragraph"> </div>
+
+  Note: to define this function we must have
+  a way to recognize identity elements. The
+  original definition for monoids did not declare
+  0 to be a distinguished element. In part this
+  followed from the fact that the set of monoid
+  elements was not declared inductively.
+
+<div class="paragraph"> </div>
+
+  While we cannot assume that models of monoids
+  will define their element sets inductively
+  (for example, note that reals are not defined
+  inductively), we can reasonably expect these
+  models to define 0 as a distinguished element.
+
+<div class="paragraph"> </div>
+
+  As this is somewhat conjectural however,
+  we do not add this as a requirement to the
+  monoid specification, but instead accept the
+  decision procedure here.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">list_filter_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">xs</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span>, { <span class="id" type="var">ys</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span> | <span class="id" type="var">list_eq</span> <span class="id" type="var">xs</span> <span class="id" type="var">ys</span> ∧ <span class="id" type="var">Is_true</span> (<span class="id" type="var">forallb</span> <span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">ys</span>) }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">let</span> <span class="id" type="var">P</span> <span class="id" type="var">xs</span> <span class="id" type="var">ys</span> := <span class="id" type="var">list_eq</span> <span class="id" type="var">xs</span> <span class="id" type="var">ys</span> ∧ <span class="id" type="var">Is_true</span> (<span class="id" type="var">forallb</span> <span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">ys</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">T</span> <span class="id" type="var">xs</span> := { <span class="id" type="var">ys</span> | <span class="id" type="var">P</span> <span class="id" type="var">xs</span> <span class="id" type="var">ys</span> } <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">list_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">T</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> <span class="id" type="var">nil</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">nil</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> <span class="id" type="var">E_0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">I</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ (<span class="id" type="var">sumbool_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="keyword">∀</span> <span class="id" type="var">xs</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span>, <span class="id" type="var">T</span> <span class="id" type="var">xs</span> → <span class="id" type="var">T</span> (<span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">xs</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">H</span> : <span class="id" type="var">term_map_is_zero</span> <span class="id" type="var">x</span> = <span class="id" type="var">true</span>) <span class="id" type="var">xs</span> <span class="id" type="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">term_map_is_zero_thm</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">ys</span>, <span class="id" type="var">H1</span>) := <span class="id" type="var">f</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">xs</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ys</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_id_l</span> (<span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| 0 + (<span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span>) = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- (<span class="id" type="var">proj1</span> <span class="id" type="var">H1</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> + (<span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span>) = <span class="id" type="var">list_eval</span> <span class="id" type="var">ys</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj2</span> <span class="id" type="var">H1</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">H</span> : <span class="id" type="var">term_map_is_zero</span> <span class="id" type="var">x</span> = <span class="id" type="var">false</span>) <span class="id" type="var">xs</span> <span class="id" type="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> (<span class="id" type="var">ys</span>, <span class="id" type="var">H0</span>) := <span class="id" type="var">f</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">zs</span> := <span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">ys</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">P</span> (<span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">xs</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">zs</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> (<span class="id" type="var">list_eval</span> (<span class="id" type="var">cons</span> <span class="id" type="var">x</span> <span class="id" type="var">xs</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span> + (<span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span>) = <span class="id" type="var">term_map_eval</span> <span class="id" type="var">x</span> + <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- (<span class="id" type="var">proj1</span> <span class="id" type="var">H0</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Is_true_eq_left</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">forallb</span> <span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">zs</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">andb_true_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">conj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">eq_refl</span> (<span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">x</span> = <span class="id" type="var">negb</span> <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Is_true_eq_true</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">forallb</span> <span class="id" type="var">Term_is_nonzero</span> <span class="id" type="var">ys</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">proj2</span> <span class="id" type="var">H0</span>)))))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">bool_dec0</span> (<span class="id" type="var">term_map_is_zero</span> <span class="id" type="var">x</span>)))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a binary tree and returns an equivalent
+  terms list in which all identity elements have
+  been eliminated.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">reduce</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span> : <span class="id" type="var">BTree</span> <span class="id" type="var">Term</span>, { <span class="id" type="var">xs</span> : <span class="id" type="var">list</span> <span class="id" type="var">Term</span> | <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">list_eval</span> <span class="id" type="var">xs</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">t</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="keyword">let</span> (<span class="id" type="var">u</span>, <span class="id" type="var">H</span>) := <span class="id" type="var">BTree_rassoc</span> <span class="id" type="var">t</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">xs</span>, <span class="id" type="var">H0</span>) := <span class="id" type="var">RABTree_list</span> <span class="id" type="var">u</span> (<span class="id" type="var">proj1</span> <span class="id" type="var">H</span>) <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> (<span class="id" type="var">ys</span>, <span class="id" type="var">H1</span>) := <span class="id" type="var">list_filter_0</span> <span class="id" type="var">xs</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">ys</span> ⇒ <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">list_eval</span> <span class="id" type="var">ys</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">ys</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" type="var">proj2</span> <span class="id" type="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">BTree_eval</span> <span class="id" type="var">t</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- (<span class="id" type="var">proj1</span> <span class="id" type="var">H1</span>)).<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Functions</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents an arbitrary monoid. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">m</span> : <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the set of monoid elements. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Let</span> <span class="id" type="var">E</span> := <span class="id" type="var">E</span> <span class="id" type="var">m</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents monoid values.
+
+<div class="paragraph"> </div>
+
+  Note: In the development that follows, we
+  will use binary trees and lists to represent
+  monoid expressions. We will effectively flatten
+  a tree and filter a list to "simplify"
+  a given expression.
+
+<div class="paragraph"> </div>
+
+  The code that flattens
+  the tree representation does not need to care
+  whether or not the leaves in the tree represent
+  0 (the monoid identity element), inverses,
+  etc. Accordingly, distinguishing these elements
+  in the definition of BTree would unnecessarily
+  complicate the tree algorithms by adding more
+  recursion cases.
+
+<div class="paragraph"> </div>
+
+  Instead of doing this, we
+  use two types to represent monoid expressions
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> trees to represent "terms" (expressions
+
+</li>
+</ul>
+  that are summed together) and Term. Term
+  tracks whether or not a monoid value equals 0
+  (and later we will use a similar structure to
+  indicate whether or not a given group element
+  is an inverse). This makes this information
+  available when needed (specifically when we
+  eliminate 0s using list filtering) without
+  complicating the tree algorithms.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Inductive</span> <span class="id" type="var">Term</span> : <span class="id" type="keyword">Set</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">term_0</span> : <span class="id" type="var">Term</span><br/>
+&nbsp;&nbsp;|  <span class="id" type="var">term_const</span> : <span class="id" type="var">E</span> → <span class="id" type="var">Term</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a term and returns the monoid value
+  that it represents.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">Term_eval</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Term</span> → <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Term_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ <span class="id" type="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts a term and returns true iff the term
+  is zero.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">Term_is_zero</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Term</span> → <span class="id" type="var">bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Term_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">bool</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">true</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">false</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that Term_is_zero is correct. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">Term_is_zero_thm</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">t</span>, <span class="id" type="var">Term_is_zero</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span> → <span class="id" type="var">Term_eval</span> <span class="id" type="var">t</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Term_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">t</span> ⇒ <span class="id" type="var">Term_is_zero</span> <span class="id" type="var">t</span> = <span class="id" type="var">true</span> → <span class="id" type="var">Term_eval</span> <span class="id" type="var">t</span> = 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">_</span> ⇒ <span class="id" type="var">eq_refl</span> 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">False_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">Term_eval</span> (<span class="id" type="var">term_const</span> <span class="id" type="var">x</span>) = 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">diff_false_true</span> <span class="id" type="var">H</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Defines a map from Term to monoid elements. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">MTerm_map</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Term_map</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">term_map</span> <span class="id" type="var">m</span> <span class="id" type="var">Term</span> <span class="id" type="var">Term_eval</span> <span class="id" type="var">Term_is_zero</span> <span class="id" type="var">Term_is_zero_thm</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Unittests</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">map</span> := <span class="id" type="var">MTerm_map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Variables</span> <span class="id" type="var">a</span> <span class="id" type="var">b</span> <span class="id" type="var">c</span> <span class="id" type="var">d</span> : <span class="id" type="var">Term</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">BFTree_rassoc_test_0</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">proj1_sig</span> (<span class="id" type="var">BTree_rassoc</span> <span class="id" type="var">map</span> (<span class="id" type="var">node</span> (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>)) (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>))) =:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>)).<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">BTree_rassoc_test_1</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">proj1_sig</span> (<span class="id" type="var">BTree_rassoc</span> <span class="id" type="var">map</span> (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">d</span>))))) =:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">d</span>))).<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">BTree_rassoc_test_2</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">proj1_sig</span> (<span class="id" type="var">BTree_rassoc</span> <span class="id" type="var">map</span> (<span class="id" type="var">node</span> (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>)) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">d</span>)))) =:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">a</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">b</span>) (<span class="id" type="var">node</span> (<span class="id" type="var">leaf</span> <span class="id" type="var">c</span>) (<span class="id" type="var">leaf</span> <span class="id" type="var">d</span>))).<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Unittests</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">term_0</span> {<span class="id" type="var">m</span>}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">term_const</span> {<span class="id" type="var">m</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">MonoidExpr</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "X # Y" := (<span class="id" type="var">MonoidExpr.node</span> <span class="id" type="var">X</span> <span class="id" type="var">Y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 60).<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "X {{+}} Y" := (<span class="id" type="var">MonoidExpr.node</span> <span class="id" type="var">X</span> <span class="id" type="var">Y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 60).<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{{ 0 }}" := (<span class="id" type="var">MonoidExpr.leaf</span> (<span class="id" type="var">MonoidExpr.term_0</span>)).<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{{ X }}" := (<span class="id" type="var">MonoidExpr.leaf</span> (<span class="id" type="var">MonoidExpr.term_const</span> <span class="id" type="var">X</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Defines a notation that can be used to prove
+  that two monoid expressions are equal using
+  prrof by reflection.
+
+<div class="paragraph"> </div>
+
+  We represent both expressions as binary trees
+  and reduce both trees to the same canonical
+  form demonstrating that their associated monoid
+  expressions are equivalent.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Notation</span> "'reflect' A 'as' B ==&gt; C 'as' D 'using' E"<br/>
+&nbsp;&nbsp;:= (<span class="id" type="keyword">let</span> <span class="id" type="var">x</span> := <span class="id" type="var">A</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">y</span> := <span class="id" type="var">C</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">t</span> := <span class="id" type="var">B</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">u</span> := <span class="id" type="var">D</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">r</span> := <span class="id" type="var">MonoidExpr.reduce</span> <span class="id" type="var">E</span> <span class="id" type="var">t</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">s</span> := <span class="id" type="var">MonoidExpr.reduce</span> <span class="id" type="var">E</span> <span class="id" type="var">u</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">v</span> := <span class="id" type="var">proj1_sig</span> <span class="id" type="var">r</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">w</span> := <span class="id" type="var">proj1_sig</span> <span class="id" type="var">s</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">v</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">w</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">eq_refl</span> (<span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">v</span>) : <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">v</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">w</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">t</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">proj2_sig</span> <span class="id" type="var">r</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">u</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">w</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">proj2_sig</span> <span class="id" type="var">s</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">t</span> = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">eq_refl</span> (<span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">t</span>) : <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">t</span> = <span class="id" type="var">x</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">let</span> <span class="id" type="var">H3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">u</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" type="var">eq_refl</span> (<span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">u</span>) : <span class="id" type="var">MonoidExpr.BTree_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">u</span> = <span class="id" type="var">y</span> <span class="id" type="keyword">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">w</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">MonoidExpr.list_eval</span> <span class="id" type="var">E</span> <span class="id" type="var">w</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> = <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">H3</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 40, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Unittests</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">m</span> : <span class="id" type="var">Monoid</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Variables</span> <span class="id" type="var">a</span> <span class="id" type="var">b</span> <span class="id" type="var">c</span> <span class="id" type="var">d</span> : <span class="id" type="var">E</span> <span class="id" type="var">m</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">map</span> := <span class="id" type="var">MonoidExpr.MTerm_map</span> <span class="id" type="var">m</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_0</span><br/>
+&nbsp;&nbsp;:  (<span class="id" type="var">a</span> + 0) = (0 + <span class="id" type="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ({{<span class="id" type="var">a</span>}} # {{0}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(0 + <span class="id" type="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ({{0}} # {{<span class="id" type="var">a</span>}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_1</span><br/>
+&nbsp;&nbsp;:  (<span class="id" type="var">a</span> + 0) + (0 + <span class="id" type="var">b</span>) = <span class="id" type="var">a</span> + <span class="id" type="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" type="var">a</span> + 0) + (0 + <span class="id" type="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> (({{<span class="id" type="var">a</span>}} # {{0}}) # ({{0}} # {{<span class="id" type="var">b</span>}}))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + <span class="id" type="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ({{<span class="id" type="var">a</span>}} # {{<span class="id" type="var">b</span>}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_2</span><br/>
+&nbsp;&nbsp;:  (0 + <span class="id" type="var">a</span>) + <span class="id" type="var">b</span> = (<span class="id" type="var">a</span> + <span class="id" type="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((0 + <span class="id" type="var">a</span>) + <span class="id" type="var">b</span>) <span class="id" type="keyword">as</span> (({{0}} # {{<span class="id" type="var">a</span>}}) # {{<span class="id" type="var">b</span>}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) <span class="id" type="keyword">as</span> ({{<span class="id" type="var">a</span>}} # {{<span class="id" type="var">b</span>}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_3</span><br/>
+&nbsp;&nbsp;:  (<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + (<span class="id" type="var">c</span> + <span class="id" type="var">d</span>) = <span class="id" type="var">a</span> + ((<span class="id" type="var">b</span> + <span class="id" type="var">c</span>) + <span class="id" type="var">d</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + (<span class="id" type="var">c</span> + <span class="id" type="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> (({{<span class="id" type="var">a</span>}} # {{<span class="id" type="var">b</span>}}) # ({{<span class="id" type="var">c</span>}} # {{<span class="id" type="var">d</span>}}))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">a</span> + ((<span class="id" type="var">b</span> + <span class="id" type="var">c</span>) + <span class="id" type="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ({{<span class="id" type="var">a</span>}} # (({{<span class="id" type="var">b</span>}} # {{<span class="id" type="var">c</span>}}) # {{<span class="id" type="var">d</span>}}))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_4</span><br/>
+&nbsp;&nbsp;:  (<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + (0 + <span class="id" type="var">c</span>) = (<span class="id" type="var">a</span> + 0) + (<span class="id" type="var">b</span> + <span class="id" type="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + (0 + <span class="id" type="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> (({{<span class="id" type="var">a</span>}} # {{<span class="id" type="var">b</span>}}) # ({{0}} # {{<span class="id" type="var">c</span>}}))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">a</span> + 0) + (<span class="id" type="var">b</span> + <span class="id" type="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> (({{<span class="id" type="var">a</span>}} # {{0}}) # ({{<span class="id" type="var">b</span>}} # {{<span class="id" type="var">c</span>}}))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Let</span> <span class="id" type="var">reflect_test_5</span><br/>
+&nbsp;&nbsp;:  (((<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + <span class="id" type="var">c</span>) + 0) = (((0 + <span class="id" type="var">a</span>) + <span class="id" type="var">b</span>) + <span class="id" type="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">reflect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(((<span class="id" type="var">a</span> + <span class="id" type="var">b</span>) + <span class="id" type="var">c</span>) + 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ((({{<span class="id" type="var">a</span>}} # {{<span class="id" type="var">b</span>}}) # {{<span class="id" type="var">c</span>}}) # {{0}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;==&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(((0 + <span class="id" type="var">a</span>) + <span class="id" type="var">b</span>) + <span class="id" type="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">as</span> ((({{0}} # {{<span class="id" type="var">a</span>}}) # {{<span class="id" type="var">b</span>}}) # {{<span class="id" type="var">c</span>}})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="keyword">using</span> <span class="id" type="var">map</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Unittests</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

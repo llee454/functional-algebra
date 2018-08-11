@@ -1,4 +1,4 @@
-(*
+(**
   This module defines the Monoid record type which
   represents algebraic structures called Monoids
   and provides a collection of theorems and axioms
@@ -18,28 +18,28 @@ Require Import Wf_nat.
 
 Module Monoid.
 
-(* Accepts a function, f, and asserts that f is associative. *)
+(** Accepts a function, f, and asserts that f is associative. *)
 Definition is_assoc (T : Type) (f : T -> T -> T) : Prop := forall x y z : T, f x (f y z) = f (f x y) z.
 
-(*
+(**
   Accepts two arguments, f and x, and asserts
   that x is a left identity element w.r.t. f.
 *)
 Definition is_id_l (T : Type) (f : T -> T -> T) (E : T) : Prop := forall x : T, f E x = x.
 
-(*
+(**
   Accepts two arguments, f and x, and asserts
   that x is a right identity element w.r.t. f.
 *)
 Definition is_id_r (T : Type) (f : T -> T -> T) (E : T) : Prop := forall x : T, f x E = x.
 
-(*
+(**
   Accepts two arguments, f and x, and asserts
   that x is an identity element w.r.t. f.
 *)
 Definition is_id (T : Type) (f : T -> T -> T) (E : T) : Prop := is_id_l T f E /\ is_id_r T f E.
 
-(*
+(**
   Accepts three arguments, f, e, and H, where
   H proves that e is the identity element
   w.r.t. f, and returns a function that accepts
@@ -48,7 +48,7 @@ Definition is_id (T : Type) (f : T -> T -> T) (E : T) : Prop := is_id_l T f E /\
 *)
 Definition is_inv_l (T : Type) (f : T -> T -> T) (E : T) (_ : is_id T f E) (x y : T) : Prop := f y x = E.
 
-(*
+(**
   Accepts three arguments, f, e, and H, where
   H proves that e is the identity element
   w.r.t. f, and returns a function that accepts
@@ -57,7 +57,7 @@ Definition is_inv_l (T : Type) (f : T -> T -> T) (E : T) (_ : is_id T f E) (x y 
 *)
 Definition is_inv_r (T : Type) (f : T -> T -> T) (E : T) (_ : is_id T f E) (x y : T) : Prop := f x y = E.
 
-(*
+(**
   Accepts three arguments, f, e, and H, where
   H proves that e is the identity element
   w.r.t. f, and returns a function that accepts
@@ -66,29 +66,29 @@ Definition is_inv_r (T : Type) (f : T -> T -> T) (E : T) (_ : is_id T f E) (x y 
 *)
 Definition is_inv (T : Type) (f : T -> T -> T) (E : T) (H : is_id T f E) (x y : T) : Prop := is_inv_l T f E H x y /\ is_inv_r T f E H x y.
 
-(* Represents algebraic monoids. *)
+(** Represents algebraic monoids. *)
 Structure Monoid : Type := monoid {
 
-  (* Represents the set of monoid elements. *)
+  (** Represents the set of monoid elements. *)
   E: Set;
 
-  (* Represents the identity element. *)
+  (** Represents the identity element. *)
   E_0: E;
 
-  (* Represents the monoid operation. *)
+  (** Represents the monoid operation. *)
   op: E -> E -> E;
 
-  (* Asserts that the monoid operator is associative. *)
+  (** Asserts that the monoid operator is associative. *)
   op_is_assoc : is_assoc E op;
 
-  (* Asserts that E_0 is the left identity element. *)
+  (** Asserts that E_0 is the left identity element. *)
   op_id_l : is_id_l E op E_0;
 
-  (* Asserts that E_0 is the right identity element. *)
+  (** Asserts that E_0 is the right identity element. *)
   op_id_r : is_id_r E op E_0
 }.
 
-(* Enable implicit arguments for monoid properties. *)
+(** Enable implicit arguments for monoid properties. *)
 
 Arguments E_0 {m}.
 
@@ -100,7 +100,7 @@ Arguments op_id_l {m} x.
 
 Arguments op_id_r {m} x.
 
-(* Define notations for monoid properties. *)
+(** Define notations for monoid properties. *)
 
 Notation "0" := E_0 : monoid_scope.
 
@@ -112,7 +112,7 @@ Open Scope monoid_scope.
 
 Section Theorems.
 
-(*
+(**
   Represents an arbitrary monoid.
 
   Note: we use Variable rather than Parameter
@@ -121,103 +121,103 @@ Section Theorems.
 *)
 Variable m : Monoid.
 
-(* Represents the set of monoid elements. *)
+(** Represents the set of monoid elements. *)
 Definition M := E m.
 
-(*
+(**
   Accepts one monoid element, x, and asserts
   that x is the left identity element.
 *)
 Definition op_is_id_l := is_id_l M {+}.
 
-(*
+(**
   Accepts one monoid element, x, and asserts
   that x is the right identity element.
 *)
 Definition op_is_id_r := is_id_r M {+}.
 
-(*
+(**
   Accepts one monoid element, x, and asserts
   that x is the identity element.
 *)
 Definition op_is_id := is_id M {+}.
 
-(* Proves that 0 is the identity element. *)
+(** Proves that 0 is the identity element. *)
 Definition op_id
   :  is_id M {+} 0
   := conj op_id_l op_id_r.
 
-(* Proves that the left identity element is unique. *)
+(** Proves that the left identity element is unique. *)
 Definition op_id_l_uniq
   :  forall x : M, (op_is_id_l x) -> x = 0
   := fun x H
        => H 0 || a = 0 @a by <- op_id_r x.
 
-(* Proves that the right identity element is unique. *)
+(** Proves that the right identity element is unique. *)
 Definition op_id_r_uniq
   :  forall x : M, (op_is_id_r x) -> x = 0
   := fun x H
        => H 0 || a = 0 @a by <- op_id_l x.
 
-(* Proves that the identity element is unique. *)
+(** Proves that the identity element is unique. *)
 Definition op_id_uniq
   :  forall x : M, (op_is_id x) -> x = 0
   := fun x
        => and_ind (fun H _ => op_id_l_uniq x H).
 
-(* Proves the left introduction rule. *)
+(** Proves the left introduction rule. *)
 Definition op_intro_l
   :  forall x y z : M, x = y -> z + x = z + y
   := fun x y z H
        => f_equal ({+} z) H.
 
-(* Proves the right introduction rule. *)
+(** Proves the right introduction rule. *)
 Definition op_intro_r
   :  forall x y z : M, x = y -> x + z = y + z
   := fun x y z H
        =>  eq_refl (x + z)
        || x + z = a + z @a by <- H.
 
-(*
+(**
   Accepts two monoid elements, x and y, and
   asserts  that y is x's left inverse.
 *)
 Definition op_is_inv_l := is_inv_l M {+} 0 op_id.
 
-(*
+(**
   Accepts two monoid elements, x and y, and
   asserts  that y is x's right inverse.
 *)
 Definition op_is_inv_r := is_inv_r M {+} 0 op_id.
 
-(*
+(**
   Accepts two monoid elements, x and y, and
   asserts  that y is x's inverse.
 *)
 Definition op_is_inv := is_inv M {+} 0 op_id.
 
-(*
+(**
   Accepts one argument, x, and asserts that
   x has a left inverse.
 *)
 Definition has_inv_l
   := fun x => exists y : M, op_is_inv_l x y.
 
-(*
+(**
   Accepts one argument, x, and asserts that
   x has a right inverse.
 *)
 Definition has_inv_r
   := fun x => exists y : M, op_is_inv_r x y.
 
-(*
+(**
   Accepts one argument, x, and asserts that
   x has an inverse.
 *)
 Definition has_inv
   := fun x => exists y : M, op_is_inv x y.
 
-(*
+(**
   Proves that the left and right inverses of
   an element must be equal.
 *)
@@ -230,7 +230,7 @@ Definition op_inv_l_r_eq
           || y = a + z           @a by <- H1
           || y = a               @a by <- op_id_l z.
 
-(*
+(**
   Proves that the inverse relationship is
   symmetric.
 *)
@@ -243,7 +243,7 @@ Definition op_inv_sym
             (fun H : op_is_inv y x
               => conj (proj2 H) (proj1 H)).
 
-(*
+(**
   The next few lemmas define special cases
   where cancellation holds and culminate in
   the Unique Inverse theorem which asserts
@@ -251,7 +251,7 @@ Definition op_inv_sym
   one inverse.
 *)
 
-(*
+(**
   Proves the left cancellation law for elements
   possessing a left inverse.
 *)
@@ -268,7 +268,7 @@ Definition op_cancel_l
               || x = a           @a by <- op_id_l y)
             H.
 
-(*
+(**
   Proves the right cancellation law for
   elements possessing a right inverse.
 *)
@@ -285,7 +285,7 @@ Definition op_cancel_r
               || x = a           @a by <- op_id_r y)
             H.
 
-(*
+(**
   Proves that an element's left inverse
   is unique.
 *)
@@ -300,7 +300,7 @@ Definition op_inv_l_uniq
             := op_cancel_r z y x H H2 in
           H3.
 
-(*
+(**
   Proves that an element's right inverse
   is unique.
 *)
@@ -315,7 +315,7 @@ Definition op_inv_r_uniq
             := op_cancel_l z y x H H2 in
           H3.
 
-(* Proves that an element's inverse is unique. *)
+(** Proves that an element's inverse is unique. *)
 Definition op_inv_uniq
   :  forall x y z : M, op_is_inv x y -> op_is_inv x z -> z = y
   := fun x y z H H0
@@ -323,7 +323,7 @@ Definition op_inv_uniq
             (ex_intro (fun y => op_is_inv_r x y) y (proj2 H))
             y z (proj1 H) (proj1 H0).
 
-(*
+(**
   Proves that the identity element is its own
   left inverse.
 *)
@@ -331,7 +331,7 @@ Definition op_inv_0_l
   :  op_is_inv_l 0 0
   := op_id_l 0 : 0 + 0 = 0.
 
-(*
+(**
   Proves that the identity element is its own
   right inverse.
 *)
@@ -339,7 +339,7 @@ Definition op_inv_0_r
   :  op_is_inv_r 0 0
   := op_id_r 0 : 0 + 0 = 0.
 
-(*
+(**
   Proves that the identity element is its own
   inverse.
 *)
@@ -347,7 +347,7 @@ Definition op_inv_0
   :  op_is_inv 0 0
   := conj op_inv_0_l op_inv_0_r.
 
-(*
+(**
   Proves that the identity element has a
   left inverse.
 *)
@@ -355,7 +355,7 @@ Definition op_has_inv_l_0
   :  has_inv_l 0
   := ex_intro (op_is_inv_l 0) 0 op_inv_0_l.
 
-(*
+(**
   Proves that the identity element has a
   right inverse.
 *)
@@ -363,7 +363,7 @@ Definition op_has_inv_r_0
   :  has_inv_r 0
   := ex_intro (op_is_inv_r 0) 0 op_inv_0_r.
 
-(*
+(**
   Proves that the identity element has an
   inverse.
 *)
@@ -371,7 +371,7 @@ Definition op_has_inv_0
   :  has_inv 0
   := ex_intro (op_is_inv 0) 0 op_inv_0.
 
-(*
+(**
   Every monoid has a subset of elements that
   possess inverses. This can be seen by noting
   that, by definition, every monoid has an
@@ -385,7 +385,7 @@ Definition op_has_inv_0
   inverse.
 *)
 
-(*
+(**
   Accepts two arguments: x; and H, a proof that
   x has an inverse; and returns x's inverse,
   y, along with a proof that y is x's inverse.
@@ -402,7 +402,7 @@ Definition op_neg_strong
                      (conj H0 (fun z H1 => eq_sym (op_inv_uniq x y z H0 H1))))
               H).
 
-(*
+(**
   Accepts two arguments: x; and H, a proof that
   x has an inverse. and returns x's inverse.
 *)
@@ -412,7 +412,7 @@ Definition op_neg
 
 Notation "{-}" := (op_neg) : monoid_scope.
 
-(*
+(**
   Proves that, forall x and H, where H is a
   proof that x has an inverse, `op_neg x H`
   is x's inverse.
@@ -421,7 +421,7 @@ Definition op_neg_def
   :  forall (x : M) (H : has_inv x), op_is_inv x ({-} x H)
   := fun x H => proj2_sig (op_neg_strong x H).
 
-(*
+(**
   Proves that, forall x and H, where H is
   a proof that x has an inverse, x is the
   inverse of `- x H`.
@@ -434,7 +434,7 @@ Definition op_neg_inv
   := fun x H
        => (proj1 (op_inv_sym x ({-} x H))) (op_neg_def x H).
 
-(*
+(**
   Proves that, forall x and H, where H is a
   proof that x has an inverse, `- x H`
   has an inverse.
@@ -452,7 +452,7 @@ Definition op_neg_inv_ex
             x
             (op_neg_inv x H).
 
-(*
+(**
   Proves that negation is injective over the
   set of invertible elements - I.E. forall
   x and y if the negation of x equals the
@@ -478,7 +478,7 @@ Definition op_neg_inj
                H2 in
           H3.
 
-(*
+(**
   Proves that double negation is equivalent to
   the identity function for all invertible
   values.
@@ -501,7 +501,7 @@ Definition op_cancel_neg_gen
             := op_neg_inv x H in
           op_inv_uniq ({-} x H) x ({-} ({-} x H) H0) H3 H1.
 
-(*
+(**
   Proves that double negation is equivalent to
   the identity function for all invertible
   values.
@@ -511,7 +511,7 @@ Definition op_cancel_neg
   := fun x H
        => op_cancel_neg_gen x H (op_neg_inv_ex x H).
 
-(*
+(**
   Proves that negation is onto over the subset
   of invertable values.
 *)
@@ -526,7 +526,7 @@ Definition op_neg_onto
               (op_neg_inv_ex y H)
               (op_cancel_neg y H)).
 
-(*
+(**
   Proves that invertability is closed over
   the monoid operation.
 
@@ -561,7 +561,7 @@ Definition op_inv_closed
                    H0)
             H.
 
-(*
+(**
   Proves that every boolean value is either true
   or false.
 *)
@@ -576,7 +576,7 @@ End Theorems.
 
 End Monoid.
 
-(*
+(**
   Coq does not export notations outside of
   sections. Consequently the notationsdefined
   above are not visible to other modules. To

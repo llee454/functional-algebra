@@ -1,0 +1,657 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>functional-algebra.abelian_group</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library functional-algebra.abelian_group</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  This module defines the Abelian Group record type which can be
+  used to represent abelian groups and provides a collection of
+  axioms and theorems describing them.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Description</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">base</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">function</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">monoid</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">group</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Module</span> <span class="id" type="var">Abelian_Group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument: f, a binary function;
+  and asserts that f is commutative.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">is_comm</span> (<span class="id" type="var">T</span> : <span class="id" type="keyword">Type</span>) (<span class="id" type="var">f</span> : <span class="id" type="var">T</span> → <span class="id" type="var">T</span> → <span class="id" type="var">T</span>)<br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">T</span>, <span class="id" type="var">f</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> = <span class="id" type="var">f</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents algebraic abelian groups. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Structure</span> <span class="id" type="var">Abelian_Group</span> : <span class="id" type="keyword">Type</span> := <span class="id" type="var">abelian_group</span> {<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the set of group elements. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E</span> : <span class="id" type="keyword">Set</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E_0</span> : <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the group operation. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op</span> : <span class="id" type="var">E</span> → <span class="id" type="var">E</span> → <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that the group operator is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_is_assoc</span> : <span class="id" type="var">Monoid.is_assoc</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that the group operator is commutative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_is_comm</span> : <span class="id" type="var">is_comm</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that E_0 is the left identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_id_l</span> : <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">op</span> <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Asserts that every element has a left inverse.
+
+<div class="paragraph"> </div>
+
+    Strictly speaking, this axiom should be:
+
+<div class="paragraph"> </div>
+
+      forall x : E, exists y : E,
+        Monoid.is_inv_l E op E_0 op_id x y
+
+<div class="paragraph"> </div>
+
+    which asserts and verifies that op y x equals
+    the identity element. Technically, we haven't
+    shown that E_0 is the identity element yet, so
+    we're being a bit presumptuous defining inverses
+    in this way. While we could prove op_id in this
+    structure definition, we prefer not to to improve
+    readability and instead use the form given below,
+    which Monoid.is_inv_l reduces to anyway.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">op_inv_l_ex</span> : <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> = <span class="id" type="var">E_0</span><br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Enable implicit arguments for group properties. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">E_0</span> {<span class="id" type="var">a</span>}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op</span> {<span class="id" type="var">a</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_is_assoc</span> {<span class="id" type="var">a</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_is_comm</span> {<span class="id" type="var">a</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_id_l</span> {<span class="id" type="var">a</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">op_inv_l_ex</span> {<span class="id" type="var">a</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Define notations for group properties. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Notation</span> "0" := <span class="id" type="var">E_0</span> : <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "x + y" := (<span class="id" type="var">op</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 50, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>) : <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{+}" := <span class="id" type="var">op</span> : <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Open</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents an arbitrary abelian group.
+
+<div class="paragraph"> </div>
+
+  Note: we use Variable rather than Parameter
+  to ensure that the following theorems are
+  generalized w.r.t ag.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">g</span> : <span class="id" type="var">Abelian_Group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the set of group elements.
+
+<div class="paragraph"> </div>
+
+  Note: We use Let to define E as a 
+  local abbreviation.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Let</span> <span class="id" type="var">E</span> := <span class="id" type="var">E</span> <span class="id" type="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one group element, x, and asserts
+  that x is the left identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_l</span> := <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one group element, x, and asserts
+  that x is the right identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_r</span> := <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one group element, x, and asserts
+  that x is the identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id</span> := <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that every left identity must also
+  be a right identity.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_lr</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_id_l</span> <span class="id" type="var">x</span> → <span class="id" type="var">op_is_id_r</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">H</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = <span class="id" type="var">y</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_comm</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that every left identity is an
+  identity.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_id_lid</span><br/>
+&nbsp;&nbsp;: <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_id_l</span> <span class="id" type="var">x</span> → <span class="id" type="var">op_is_id</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">conj</span> <span class="id" type="var">H</span> (<span class="id" type="var">op_is_id_lr</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is the right identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">op_is_id_r</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">op_is_id_lr</span> 0 <span class="id" type="var">op_id_l</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is the identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">op_is_id</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">conj</span> <span class="id" type="var">op_id_l</span> <span class="id" type="var">op_id_r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two group elements, x and y, and
+  asserts that y is x's left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv_l</span> := <span class="id" type="var">Monoid.is_inv_l</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two group elements, x and y, and
+  asserts that y is x's right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv_r</span> := <span class="id" type="var">Monoid.is_inv_r</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two group elements, x and y, and
+  asserts that y is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_is_inv</span> := <span class="id" type="var">Monoid.is_inv</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">op_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that every element has a right inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_r_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> (<span class="id" type="var">y</span> : <span class="id" type="var">E</span>) (<span class="id" type="var">H</span> : <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">ex_intro</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">H</span> || <span class="id" type="var">a</span> = 0 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">op_is_comm</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">op_inv_l_ex</span> <span class="id" type="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the group structure formed by
+  op over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_group</span> := <span class="id" type="var">Group.group</span> <span class="id" type="var">E</span> 0 {+} <span class="id" type="var">op_is_assoc</span> <span class="id" type="var">op_id_l</span> <span class="id" type="var">op_id_r</span> <span class="id" type="var">op_inv_l_ex</span> <span class="id" type="var">op_inv_r_ex</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents the monoid formed by op over E. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_monoid</span> := <span class="id" type="var">Group.op_monoid</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the left identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_id_l_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the right identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_id_r_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_id_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_id_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that for every group element, x,
+  its left and right inverses are equal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_l_r_eq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">y</span> = <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_l_r_eq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the inverse relation is
+  symmetrical.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_sym</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ↔ <span class="id" type="var">op_is_inv</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_sym</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that every group element has an
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_ex</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_intro_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_intro_l</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_intro_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_intro_r</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left cancellation rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_l</span><br/>
+&nbsp;&nbsp;:   <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_cancel_l</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right cancellation rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_r</span><br/>
+&nbsp;&nbsp;:   <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_cancel_r</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's left inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_l_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's right inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_r_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that an element's inverse is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_uniq</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves explicitly that every element has a
+  unique inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_inv_uniq_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span>! <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_inv_uniq_ex</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents strongly-specified negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_strong</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, { <span class="id" type="var">y</span> | <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_strong</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">E</span> → <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Close</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">nat_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{-}" := (<span class="id" type="var">op_neg</span>) : <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "- x" := (<span class="id" type="var">op_neg</span> <span class="id" type="var">x</span>) : <span class="id" type="var">abelian_group_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Asserts that the negation returns the inverse
+  of its argument.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_def</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_is_inv</span> <span class="id" type="var">x</span> (- <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_def</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is one-to-one 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_inj</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_injective</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">op_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_inj</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the cancellation property for negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_cancel_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">op_neg</span> (- <span class="id" type="var">x</span>) = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_cancel_neg</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is onto 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_onto</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_onto</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">op_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_onto</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is surjective 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_bijective</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_bijective</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">op_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_bijective</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that neg x = y -&gt; neg y = x 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">op_neg_rev</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, - <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → - <span class="id" type="var">y</span> = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Group.op_neg_rev</span> <span class="id" type="var">op_group</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Abelian_Group</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

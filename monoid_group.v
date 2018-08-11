@@ -1,4 +1,4 @@
-(*
+(**
   Every monoid has a nonempty subgroup
   consisting of the monoid's invertible elements.
 *)
@@ -10,7 +10,7 @@ Require Import Eqdep.
 
 Module Monoid_Group.
 
-(*
+(**
   Represents the homomorphic mapping between
   the set of invertible elements within a monoid
   and the group formed over them by the monoid
@@ -18,49 +18,49 @@ Module Monoid_Group.
 *)
 Structure Monoid_Group : Type := monoid_group {
 
-  (* Represents the set of monoid elements. *)
+  (** Represents the set of monoid elements. *)
   E : Set;
 
-  (* Represents the identity monoid element. *)
+  (** Represents the identity monoid element. *)
   E_0 : E;
 
-  (* Represents the monoid operation. *)
+  (** Represents the monoid operation. *)
   monoid_op: E -> E -> E;
 
-  (* Asserts that the monoid operator is associative. *)
+  (** Asserts that the monoid operator is associative. *)
   monoid_op_is_assoc : Monoid.is_assoc E monoid_op;
 
-  (*
+  (**
     Accepts one monoid element, x, and asserts
     that x is the left identity element.
   *)
   monoid_op_is_id_l := Monoid.is_id_l E monoid_op;
 
-  (*
+  (**
     Accepts one monoid element, x, and asserts
     that x is the right identity element.
   *)
   monoid_op_is_id_r := Monoid.is_id_r E monoid_op;
 
-  (*
+  (**
     Accepts one monoid element, x, and asserts
     that x is the identity element.
   *)
   monoid_op_is_id := Monoid.is_id E monoid_op;
 
-  (* Asserts that 0 is the left identity monoid element. *)
+  (** Asserts that 0 is the left identity monoid element. *)
   monoid_op_id_l : Monoid.is_id_l E monoid_op E_0;
 
-  (* Asserts that 0 is the right identity monoid element. *)
+  (** Asserts that 0 is the right identity monoid element. *)
   monoid_op_id_r : Monoid.is_id_r E monoid_op E_0;
 
-  (*
+  (**
     Represents the monoid whose invertable
     elements we are going to map onto a group.
   *)
   m := Monoid.monoid E E_0 monoid_op monoid_op_is_assoc monoid_op_id_l monoid_op_id_r;
 
-  (*
+  (**
     Represents those monoid elements that are
     invertable.
 
@@ -71,7 +71,7 @@ Structure Monoid_Group : Type := monoid_group {
   D : Set
     := { x : E | Monoid.has_inv m x };
 
-  (*
+  (**
     Accepts a monoid element and a proof that
     it is invertable and returns its projection
     in D.
@@ -80,7 +80,7 @@ Structure Monoid_Group : Type := monoid_group {
     :  forall x : E, Monoid.has_inv m x -> D
     := exist (Monoid.has_inv m);
 
-  (*
+  (**
     Asserts that any two equal invertable monoid
     elements, x and y, are equivalent (using
     dependent equality).
@@ -94,7 +94,7 @@ Structure Monoid_Group : Type := monoid_group {
   D_eq_dep
     : forall (x : E) (H : Monoid.has_inv m x) (y : E) (H0 : Monoid.has_inv m y), y = x -> eq_dep E (Monoid.has_inv m) y H0 x H;
 
-  (*
+  (**
     Given that two invertable monoid elements x
     and y are equal (using dependent equality),
     this lemma proves that their projections
@@ -117,12 +117,12 @@ Structure Monoid_Group : Type := monoid_group {
                 => D_cons y H0 = D_cons z H2)
               (eq_refl (D_cons y H0)) x H (D_eq_dep x H y H0 H1);
 
-  (*
+  (**
     Represents the group identity element.
   *)
   D_0 := D_cons E_0 (Monoid.op_has_inv_0 m);
 
-  (*
+  (**
     Represents the group operation.
 
     Note: intuitively this function accepts two
@@ -143,25 +143,25 @@ Structure Monoid_Group : Type := monoid_group {
                        (Monoid.op_inv_closed m u H v H0)));
 
 
-  (*
+  (**
     Accepts a group element, x, and asserts
     that x is a left identity element.
   *)
   group_op_is_id_l := Monoid.is_id_l D group_op;
 
-  (*
+  (**
     Accepts a group element, x, and asserts
     that x is a right identity element.
   *)
   group_op_is_id_r := Monoid.is_id_r D group_op;
 
-  (*
+  (**
     Accepts a group element, x, and asserts
     that x is an/the identity element.
   *)
   group_op_is_id := Monoid.is_id D group_op;
 
-  (* Proves that D_0 is a left identity element. *)
+  (** Proves that D_0 is a left identity element. *)
   group_op_id_l
     :  group_op_is_id_l D_0
     := sig_ind
@@ -170,7 +170,7 @@ Structure Monoid_Group : Type := monoid_group {
             => D_eq u H (monoid_op E_0 u) (Monoid.op_inv_closed m E_0 (Monoid.op_has_inv_0 m) u H)
                  (monoid_op_id_l u));
 
-  (* Proves that D_0 is a right identity element. *)
+  (** Proves that D_0 is a right identity element. *)
   group_op_id_r
     :  group_op_is_id_r D_0
     := sig_ind
@@ -179,12 +179,12 @@ Structure Monoid_Group : Type := monoid_group {
             => D_eq u H (monoid_op u E_0) (Monoid.op_inv_closed m u H E_0 (Monoid.op_has_inv_0 m))
                  (monoid_op_id_r u));
 
-  (* Proves that D_0 is the identity element. *)
+  (** Proves that D_0 is the identity element. *)
   group_op_id
     :  group_op_is_id D_0
     := conj group_op_id_l group_op_id_r;
 
-  (*
+  (**
     Proves that the group operation is
     associative.
   *)
@@ -221,25 +221,25 @@ Structure Monoid_Group : Type := monoid_group {
                               (monoid_op_is_assoc u v w)
                 )));
 
-  (*
+  (**
     Accepts two values, x and y, and asserts
     that y is a left inverse of x.
   *)
   group_op_is_inv_l := Monoid.is_inv_l D group_op D_0 group_op_id;
 
-  (*
+  (**
     Accepts two values, x and y, and asserts
     that y is a right inverse of x.
   *)
   group_op_is_inv_r := Monoid.is_inv_r D group_op D_0 group_op_id;
 
-  (*
+  (**
     Accepts two values, x and y, and asserts
     that y is an inverse of x.
   *)
   group_op_is_inv := Monoid.is_inv D group_op D_0 group_op_id;
 
-  (*
+  (**
     Accepts two invertable monoid elements, x
     and y, where y is a left inverse of x and
     proves that y's projection into D is the
@@ -252,7 +252,7 @@ Structure Monoid_Group : Type := monoid_group {
     := fun (u : E) (H : Monoid.has_inv m u) (v : E) (H0 : Monoid.has_inv m v)
          => D_eq E_0 (Monoid.op_has_inv_0 m) (monoid_op v u) (Monoid.op_inv_closed m v H0 u H);
         
-  (*
+  (**
     Accepts two invertable monoid elements, x
     and y, where y is a right inverse of x and
     proves that y's projection into D is the
@@ -265,7 +265,7 @@ Structure Monoid_Group : Type := monoid_group {
     := fun (u : E) (H : Monoid.has_inv m u) (v : E) (H0 : Monoid.has_inv m v)
          => D_eq E_0 (Monoid.op_has_inv_0 m) (monoid_op u v) (Monoid.op_inv_closed m u H v H0);
 
-  (*
+  (**
     Accepts two invertable monoid elements, x
     and y, where y is the inverse of x and
     proves that y's projection into D is the
@@ -279,7 +279,7 @@ Structure Monoid_Group : Type := monoid_group {
          => conj (group_op_inv_l u H v H0 (proj1 H1))
                  (group_op_inv_r u H v H0 (proj2 H1));
 
-  (*
+  (**
     Accepts a group element and returns its
     inverse, y, along with a proof that y is
     x's inverse.
@@ -303,7 +303,7 @@ Structure Monoid_Group : Type := monoid_group {
                 (D_cons v H1)
                 (group_op_inv u H v H1 H0));
 
-  (*
+  (**
     Proves that every group element has an
     inverse.
   *)
@@ -315,7 +315,7 @@ Structure Monoid_Group : Type := monoid_group {
               (fun y => group_op_is_inv x y)
               y H;
 
-  (*
+  (**
     Proves that every group element has a left
     inverse.
   *)
@@ -327,7 +327,7 @@ Structure Monoid_Group : Type := monoid_group {
                 => ex_intro (fun z => group_op_is_inv_l x z) y (proj1 H))
               (group_op_inv_ex x);
 
-  (*
+  (**
     Proves that every group element has a right
     inverse.
   *)
@@ -339,7 +339,7 @@ Structure Monoid_Group : Type := monoid_group {
                 => ex_intro (fun z => group_op_is_inv_r x z) y (proj2 H))
               (group_op_inv_ex x);
 
-  (*
+  (**
     Proves that the set of invertable monoid
     elements form a group over the monoid
     operation.

@@ -1,0 +1,1548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>functional-algebra.commutative_ring</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library functional-algebra.commutative_ring</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+  This module defines the commutative_ring record type which
+  represents algebraic commutative rings and provides a collection
+  of axioms and theorems describing them.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">Description</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">FunctionalExtensionality</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">base</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">function</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">monoid</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">group</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="var">abelian_group</span>.<br/>
+<span class="id" type="keyword">Require</span> <span class="id" type="keyword">Import</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Module</span> <span class="id" type="var">Commutative_Ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents algebraic commutative rings. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Structure</span> <span class="id" type="var">Commutative_Ring</span> : <span class="id" type="keyword">Type</span> := <span class="id" type="var">commutative_ring</span> {<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents the set of ring elements. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E</span> : <span class="id" type="keyword">Set</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents 0 - the additive identity. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E_0</span> : <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents 1 - the multiplicative identity. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">E_1</span> : <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents addition. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">sum</span> : <span class="id" type="var">E</span> → <span class="id" type="var">E</span> → <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Represents multiplication. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">prod</span> : <span class="id" type="var">E</span> → <span class="id" type="var">E</span> → <span class="id" type="var">E</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that 0 /= 1. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">distinct_0_1</span>: <span class="id" type="var">E_0</span> ≠ <span class="id" type="var">E_1</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that addition is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">sum_is_assoc</span> : <span class="id" type="var">Monoid.is_assoc</span> <span class="id" type="var">E</span> <span class="id" type="var">sum</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that addition is commutative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">sum_is_comm</span> : <span class="id" type="var">Abelian_Group.is_comm</span> <span class="id" type="var">E</span> <span class="id" type="var">sum</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that 0 is the left identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">sum_id_l</span> : <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">sum</span> <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Asserts that every element has an additive
+    inverse.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">sum_inv_l_ex</span> : <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span> = <span class="id" type="var">E_0</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that multiplication is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">prod_is_assoc</span> : <span class="id" type="var">Monoid.is_assoc</span> <span class="id" type="var">E</span> <span class="id" type="var">prod</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that multiplication is commutative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">prod_is_comm</span> : <span class="id" type="var">Abelian_Group.is_comm</span> <span class="id" type="var">E</span> <span class="id" type="var">prod</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Asserts that 1 is the left identity element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;<span class="id" type="var">prod_id_l</span> : <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> <span class="id" type="var">prod</span> <span class="id" type="var">E_1</span>;<br/>
+<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+    Asserts that multiplication is left distributive
+    over addition.
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" type="var">prod_sum_distrib_l</span> : <span class="id" type="var">Ring.is_distrib_l</span> <span class="id" type="var">E</span> <span class="id" type="var">prod</span> <span class="id" type="var">sum</span><br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Enable implicit arguments for commutative
+  ring properties.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">E_0</span> {<span class="id" type="var">c</span>}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">E_1</span> {<span class="id" type="var">c</span>}.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">sum</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">prod</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">distinct_0_1</span> {<span class="id" type="var">c</span>} <span class="id" type="var">_</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">sum_is_assoc</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">sum_is_comm</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">sum_id_l</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">sum_inv_l_ex</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">prod_is_assoc</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">prod_id_l</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">prod_sum_distrib_l</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span>.<br/>
+
+<br/>
+<span class="id" type="var">Arguments</span> <span class="id" type="var">prod_is_comm</span> {<span class="id" type="var">c</span>} <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Define notations for ring properties. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" type="keyword">Notation</span> "0" := <span class="id" type="var">E_0</span> : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "1" := <span class="id" type="var">E_1</span> : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "x + y" := (<span class="id" type="var">sum</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 50, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>) : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{+}" := <span class="id" type="var">sum</span> : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "x # y" := (<span class="id" type="var">prod</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>) (<span class="id" type="tactic">at</span> <span class="id" type="keyword">level</span> 50, <span class="id" type="tactic">left</span> <span class="id" type="keyword">associativity</span>) : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{#}" := <span class="id" type="var">prod</span> : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Open</span> <span class="id" type="keyword">Scope</span> <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Section</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents an arbitrary commutative ring.
+
+<div class="paragraph"> </div>
+
+  Note: we use Variable rather than Parameter
+  to ensure that the following theorems are
+  generalized w.r.t r.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Variable</span> <span class="id" type="var">r</span> : <span class="id" type="var">Commutative_Ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the set of group elements.
+
+<div class="paragraph"> </div>
+
+  Note: We use Let to define E as a 
+  local abbreviation.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Let</span> <span class="id" type="var">E</span> := <span class="id" type="var">E</span> <span class="id" type="var">r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the left identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_id_l</span> := <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the right identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_id_r</span> := <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_id</span> := <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the left identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_id_l</span> := <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {#}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the right identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_id_r</span> := <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {#}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one ring element, x, and asserts
+  that x is the identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_id</span> := <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {#}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 is the right identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_id_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_id_r</span> 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">eq_ind_r</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">a</span> ⇒ <span class="id" type="var">a</span> = <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">prod_id_l</span> <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="var">prod_is_comm</span> <span class="id" type="var">x</span> 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that multiplication is right distributive
+  over addition.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_sum_distrib_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Ring.is_distrib_r</span> <span class="id" type="var">E</span> {#} {+}<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒  <span class="id" type="var">prod_sum_distrib_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> # (<span class="id" type="var">y</span> + <span class="id" type="var">z</span>) = <span class="id" type="var">a</span> + (<span class="id" type="var">x</span> # <span class="id" type="var">z</span>) @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">prod_is_comm</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> # (<span class="id" type="var">y</span> + <span class="id" type="var">z</span>) = (<span class="id" type="var">y</span> # <span class="id" type="var">x</span>) + <span class="id" type="var">a</span> @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">prod_is_comm</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = (<span class="id" type="var">y</span> # <span class="id" type="var">x</span>) + (<span class="id" type="var">z</span> # <span class="id" type="var">x</span>)     @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">prod_is_comm</span> <span class="id" type="var">x</span> (<span class="id" type="var">y</span> + <span class="id" type="var">z</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the non-commutative ring formed
+  by addition and multiplication over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="tactic">ring</span> := <span class="id" type="var">Ring.ring</span> <span class="id" type="var">E</span> 0 1 {+} {#} <span class="id" type="var">distinct_0_1</span> <span class="id" type="var">sum_is_assoc</span> <span class="id" type="var">sum_is_comm</span> <span class="id" type="var">sum_id_l</span> <span class="id" type="var">sum_inv_l_ex</span> <span class="id" type="var">prod_is_assoc</span> <span class="id" type="var">prod_id_l</span> <span class="id" type="var">prod_id_r</span> <span class="id" type="var">prod_sum_distrib_l</span> <span class="id" type="var">prod_sum_distrib_r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the abelian group formed by
+  addition over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_abelian_group</span> := <span class="id" type="var">Ring.sum_abelian_group</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the group formed by addition
+  over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_group</span> := <span class="id" type="var">Ring.sum_group</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the monoid formed by addition
+  over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_monoid</span> := <span class="id" type="var">Ring.sum_monoid</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Represents the monoid formed by
+  multiplication over E.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_monoid</span> := <span class="id" type="var">Ring.prod_monoid</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 &lt;&gt; 0. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">distinct_1_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">E_1</span> (<span class="id" type="var">c</span> := <span class="id" type="var">r</span>) ≠ <span class="id" type="var">E_0</span> (<span class="id" type="var">c</span> := <span class="id" type="var">r</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">H</span> : <span class="id" type="var">E_1</span> = <span class="id" type="var">E_0</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">distinct_0_1</span> (<span class="id" type="var">eq_sym</span> <span class="id" type="var">H</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  A predicate that accepts one element, x,
+  and asserts that x is nonzero.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">nonzero</span><br/>
+&nbsp;&nbsp;: <span class="id" type="var">E</span> → <span class="id" type="keyword">Prop</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.nonzero</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is the right identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_id_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_id_r</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_id_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is the identity element. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_id</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_id</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_id</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_inv_l</span> := <span class="id" type="var">Monoid.is_inv_l</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">sum_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_inv_r</span> := <span class="id" type="var">Monoid.is_inv_r</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">sum_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_is_inv</span> := <span class="id" type="var">Monoid.is_inv</span> <span class="id" type="var">E</span> {+} 0 <span class="id" type="var">sum_id</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Asserts that every element has a right inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_r_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_r_ex</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the left identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_id_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_id_l_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the right identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_id_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_id_r_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_id_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {+} <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_id_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that for every group element, x,
+  its left and right inverses are equal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_l_r_eq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="keyword">∀</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">y</span> = <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_l_r_eq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the inverse relation is
+  symmetrical.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_sym</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> ↔ <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">y</span> <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_sym</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that an element's inverse is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> :  <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that every element has an inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_ex</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves explicitly that every element has a
+  unique inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_uniq_ex</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="tactic">∃</span>! <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_uniq_ex</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_intro_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_intro_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_intro_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_intro_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left cancellation rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_cancel_l</span><br/>
+&nbsp;&nbsp;:   <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">z</span> + <span class="id" type="var">x</span> = <span class="id" type="var">z</span> + <span class="id" type="var">y</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_cancel_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right cancellation rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_cancel_r</span><br/>
+&nbsp;&nbsp;:   <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> + <span class="id" type="var">z</span> = <span class="id" type="var">y</span> + <span class="id" type="var">z</span> → <span class="id" type="var">x</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_cancel_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's left inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">sum_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_l_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's right inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_inv_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">z</span> → <span class="id" type="var">z</span> = <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_inv_r_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that 0 is its own left additive
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_0_inv_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv_l</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_0_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that 0 is its own right additive
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_0_inv_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv_r</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_0_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 is it's own additive inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_0_inv</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv</span> 0 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_0_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents strongly-specified negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_strong</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, { <span class="id" type="var">y</span> | <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg_strong</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg</span> <br/>
+&nbsp;&nbsp;:  <span class="id" type="var">E</span> → <span class="id" type="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "{-}" := (<span class="id" type="var">sum_neg</span>) : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">Notation</span> "- x" := (<span class="id" type="var">sum_neg</span> <span class="id" type="var">x</span>) : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Asserts that the negation returns the inverse
+  of its argument.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_def</span> <br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> (- <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg_def</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is one-to-one 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_inj</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_injective</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">sum_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg_inj</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the cancellation property for negation. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_cancel_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_neg</span> (- <span class="id" type="var">x</span>) = <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_cancel_neg</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is onto 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_onto</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_onto</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">sum_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg_onto</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that negation is surjective 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_bijective</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">is_bijective</span> <span class="id" type="var">E</span> <span class="id" type="var">E</span> <span class="id" type="var">sum_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.sum_neg_bijective</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0's negation is 0. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_0_neg</span><br/>
+&nbsp;&nbsp;:  - 0 = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">proj2</span> (<span class="id" type="var">sum_neg_def</span> 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = 0 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">sum_id_l</span> (- 0).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that if an element's, x, negation
+  equals 0, x must equal 0.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, - <span class="id" type="var">x</span> = 0 → <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">proj2</span> (<span class="id" type="var">sum_neg_def</span> <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">x</span> + <span class="id" type="var">a</span> = 0 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|| <span class="id" type="var">a</span> = 0     @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> &lt;- <span class="id" type="var">sum_id_r</span> <span class="id" type="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Prove that 0 is the only element whose additive
+  inverse (negation) equals 0.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">sum_neg_0_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">unique</span> (<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> ⇒ - <span class="id" type="var">x</span> = 0) 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">conj</span> <span class="id" type="var">sum_0_neg</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span> ⇒ <span class="id" type="var">eq_sym</span> (<span class="id" type="var">sum_neg_0</span> <span class="id" type="var">x</span> <span class="id" type="var">H</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one element, x, and asserts
+  that x is the identity element.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_id</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_id</span> 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_id</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the left identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_id_l_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, (<span class="id" type="var">Monoid.is_id_l</span> <span class="id" type="var">E</span> {#} <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_id_l_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the right identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_id_r_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, (<span class="id" type="var">Monoid.is_id_r</span> <span class="id" type="var">E</span> {#} <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_id_r_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the identity element is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_id_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, (<span class="id" type="var">Monoid.is_id</span> <span class="id" type="var">E</span> {#} <span class="id" type="var">x</span>) → <span class="id" type="var">x</span> = 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_id_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the left introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_intro_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">z</span> # <span class="id" type="var">x</span> = <span class="id" type="var">z</span> # <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_intro_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves the right introduction rule. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_intro_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">z</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> = <span class="id" type="var">y</span> → <span class="id" type="var">x</span> # <span class="id" type="var">z</span> = <span class="id" type="var">y</span> # <span class="id" type="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_intro_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_inv_l</span> := <span class="id" type="var">Ring.prod_is_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_inv_r</span> := <span class="id" type="var">Ring.prod_is_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts two elements, x and y, and
+  asserts that y is x's inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_inv</span> := <span class="id" type="var">Ring.prod_is_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv_l</span> := <span class="id" type="var">Ring.prod_has_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv_r</span> := <span class="id" type="var">Ring.prod_has_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv</span> := <span class="id" type="var">Ring.prod_has_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that every left inverse must also
+  be a right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_is_inv_lr</span> <br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">prod_is_inv_l</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">prod_is_inv_r</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="keyword">fun</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> <span class="id" type="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇒ <span class="id" type="var">H</span> || <span class="id" type="var">a</span> = 1 @<span class="id" type="var">a</span> <span class="id" type="tactic">by</span> <span class="id" type="var">prod_is_comm</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the left and right inverses of
+  an element must be equal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_l_r_eq</span> := <span class="id" type="var">Ring.prod_inv_l_r_eq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that the inverse relationship is
+  symmetric.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_sym</span> := <span class="id" type="var">Ring.prod_inv_sym</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves the left cancellation law for elements
+  possessing a left inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_cancel_l</span> := <span class="id" type="var">Ring.prod_cancel_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves the right cancellation law for
+  elements possessing a right inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_cancel_r</span> := <span class="id" type="var">Ring.prod_cancel_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's left inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_l_uniq</span> := <span class="id" type="var">Ring.prod_inv_l_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that an element's right inverse
+  is unique.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_r_uniq</span> := <span class="id" type="var">Ring.prod_inv_r_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that an element's inverse is unique. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_uniq</span> := <span class="id" type="var">Ring.prod_inv_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 is its own left multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">recipr_1_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_inv_l</span> 1 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.recipr_1_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 is its own right multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">recipr_1_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_inv_r</span> 1 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.recipr_1_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 is its own recriprical. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">recipr_1</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_inv</span> 1 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.recipr_1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 has a left multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv_l_1</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_has_inv_l</span> 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_has_inv_l_1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 has a right multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv_r_1</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_has_inv_r</span> 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_has_inv_r_1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 1 has a reciprical 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_has_inv_1</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_has_inv</span> 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_has_inv_1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Asserts that multiplication is
+  distributive over addition.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_sum_distrib</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">Ring.is_distrib</span> <span class="id" type="var">E</span> {#} {+}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_sum_distrib</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that 0 times every number equals 0.
+
+<div class="paragraph"> </div>
+
+  0 x = 0 x
+  (0 + 0) x = 0 x
+  0 x + 0 x = 0 x
+        0 x = 0
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_0_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, 0 # <span class="id" type="var">x</span> = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_0_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 times every number equals 0. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_0_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> # 0 = 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_0_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 does not have a left multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_0_inv_l</span><br/>
+&nbsp;&nbsp;:  ¬ <span class="id" type="var">prod_has_inv_l</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_0_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that 0 does not have a right multiplicative inverse. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_0_inv_r</span><br/>
+&nbsp;&nbsp;:  ¬ <span class="id" type="var">prod_has_inv_r</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_0_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that 0 does not have a multiplicative
+  inverse - I.E. 0 does not have a
+  reciprocal.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_0_inv</span><br/>
+&nbsp;&nbsp;:  ¬ <span class="id" type="var">prod_has_inv</span> 0<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_0_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that multiplicative inverses, when
+  they exist are always nonzero.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_inv_0</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> : <span class="id" type="var">E</span>, <span class="id" type="var">prod_is_inv</span> <span class="id" type="var">x</span> <span class="id" type="var">y</span> → <span class="id" type="var">nonzero</span> <span class="id" type="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_inv_0</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents -1 and proves that it exists. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_strong</span><br/>
+&nbsp;&nbsp;:  { <span class="id" type="var">x</span> : <span class="id" type="var">E</span> | <span class="id" type="var">sum_is_inv</span> 1 <span class="id" type="var">x</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_strong</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Represents -1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1</span> : <span class="id" type="var">E</span> := <span class="id" type="var">Ring.E_n1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Defines a symbolic representation for -1
+
+<div class="paragraph"> </div>
+
+  Note: here we represent the inverse of 1
+  rather than the negation of 1. Letter we prove
+  that the negation equals the inverse.
+
+<div class="paragraph"> </div>
+
+  Note: brackets are needed to ensure Coq parses
+  the symbol as a single token instead of a
+  prefixed function call.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Notation</span> "{-1}" := <span class="id" type="var">E_n1</span> : <span class="id" type="var">commutative_ring_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Asserts that -1 is the additive inverse of 1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_def</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv</span> 1 {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_def</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Asserts that -1 is the left inverse of 1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_inv_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv_l</span> 1 {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Asserts that -1 is the right inverse of 1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_inv_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_is_inv_r</span> 1 {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Asserts that every additive inverse
+  of 1 must be equal to -1.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_uniq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> 1 <span class="id" type="var">x</span> → <span class="id" type="var">x</span> = {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_uniq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that -1 * x equals the multiplicative
+  inverse of x.
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li>1 x + x = 0
+
+</li>
+<li>1 x + 1 x = 0
+
+</li>
+</ul>
+  (-1 + 1) x = 0
+  0 x = 0
+  0 = 0
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_x_inv_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_l</span> <span class="id" type="var">x</span> ({-1} # <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_x_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that x * -1 equals the multiplicative
+  inverse of x.
+
+<div class="paragraph"> </div>
+
+  x -1 + x = 0
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_x_n1_inv_l</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_l</span> <span class="id" type="var">x</span> (<span class="id" type="var">x</span> # {-1})<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_x_n1_inv_l</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that x + -1 x = 0. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_x_inv_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> ({-1} # <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_x_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that x + x -1 = 0. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_x_n1_inv_r</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv_r</span> <span class="id" type="var">x</span> (<span class="id" type="var">x</span> # {-1})<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_x_n1_inv_r</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that -1 x is the additive inverse of x. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_x_inv</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> ({-1} # <span class="id" type="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_x_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that x -1 is the additive inverse of x. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_x_n1_inv</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">sum_is_inv</span> <span class="id" type="var">x</span> (<span class="id" type="var">x</span> # {-1})<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_x_n1_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that multiplying by -1 is equivalent
+  to negation.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_neg</span><br/>
+&nbsp;&nbsp;:  {#} {-1} = <span class="id" type="var">sum_neg</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_neg</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one element, x, and proves that
+  x -1 equals the additive negation of x.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_x_n1_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, <span class="id" type="var">x</span> # {-1} = - <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_x_n1_neg</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Accepts one element, x, and proves that
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li>1 x equals the additive negation of x.
+
+</li>
+</ul>
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_x_neg</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, {-1} # <span class="id" type="var">x</span> = - <span class="id" type="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_x_neg</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that -1 x = x -1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_eq</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="keyword">∀</span> <span class="id" type="var">x</span> : <span class="id" type="var">E</span>, {-1} # <span class="id" type="var">x</span> = <span class="id" type="var">x</span> # {-1} <br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_eq</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the additive negation of 1 equals -1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">neg_1</span><br/>
+&nbsp;&nbsp;:  {-} 1 = {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.neg_1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Proves that the additive negation of -1 equals 1. 
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">neg_n1</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">sum_neg</span> {-1} = 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.neg_n1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that -1 * -1 = 1.
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li>1 * -1 = -1 * -1
+
+</li>
+<li>1 * -1 = prod -1 -1
+
+</li>
+<li>1 * -1 = sum_neg -1
+
+</li>
+<li>1 * -1 = 1 
+
+</li>
+</ul>
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">prod_n1_n1</span><br/>
+&nbsp;&nbsp;:  {-1} # {-1} = 1<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.prod_n1_n1</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+  Proves that -1 is its own multiplicative
+  inverse.
+
+</div>
+<div class="code">
+<span class="id" type="keyword">Definition</span> <span class="id" type="var">E_n1_inv</span><br/>
+&nbsp;&nbsp;:  <span class="id" type="var">prod_is_inv</span> {-1} {-1}<br/>
+&nbsp;&nbsp;:= <span class="id" type="var">Ring.E_n1_inv</span> <span class="id" type="tactic">ring</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Theorems</span>.<br/>
+
+<br/>
+<span class="id" type="keyword">End</span> <span class="id" type="var">Commutative_Ring</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

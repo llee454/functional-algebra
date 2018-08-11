@@ -1,4 +1,4 @@
-(*
+(**
   This module defines concrete expressions
   that can be used to represent monoid values
   and operations, and includes a collection of
@@ -22,10 +22,10 @@ Open Scope monoid_scope.
 
 Section Definitions.
 
-(* Represents the values stored in binary trees. *)
+(** Represents the values stored in binary trees. *)
 Variable Term : Set.
 
-(*
+(**
   Represents binary trees.
 
   Binary trees can be used to represent
@@ -40,7 +40,7 @@ Inductive BTree : Set
   := leaf : Term -> BTree
   |  node : BTree -> BTree -> BTree.
 
-(*
+(**
   Accepts a binary tree and returns true iff
   the tree is a node term.
 *)
@@ -51,7 +51,7 @@ Definition BTree_is_node
        (fun _ => false)
        (fun _ _ _ _ => true).
 
-(*
+(**
   Accepts a binary tree and returns true iff
   the tree is a leaf term.
 *)
@@ -62,7 +62,7 @@ Definition BTree_is_leaf
        (fun _ => true)
        (fun _ _ _ _ => false).
 
-(*
+(**
   Accepts a binary tree and returns true
   iff the tree is right associative.
 
@@ -77,7 +77,7 @@ Definition BTree_is_rassoc
        (fun t _ _ f
          => BTree_is_leaf t && f).
 
-(*
+(**
   Proves that the right subtree in a right
   associative binary tree is also right
   associative.
@@ -105,36 +105,36 @@ Arguments BTree_is_rassoc {Term} t.
 
 Arguments BTree_rassoc_thm {Term} t u H.
 
-(*
+(**
   Represents a mapping from abstract terms
   to monoid set elements.
 *)
 Structure Term_map : Type := term_map {
-  (*
+  (**
     Represents the monoid set that terms will be 
     projected onto. 
   *)
   term_map_m: Monoid;
 
-  (*
+  (**
     Represents the set of terms that will be
     used to represent monoid values.
   *)
   term_map_term : Set;
 
-  (*
+  (**
     Accepts a term and returns its projection
     in E.
   *)
   term_map_eval : term_map_term -> E term_map_m;
 
-  (*
+  (**
     Accepts a term and returns true iff the term
     represents the monoid identity element (0).
   *)
   term_map_is_zero : term_map_term -> bool;
 
-  (*
+  (**
     Accepts a term and proves that zero terms
     evaluate to 0.
   *)
@@ -149,19 +149,19 @@ Arguments term_map_is_zero_thm {t} t0 H.
 
 Section Functions.
 
-(*
+(**
   Represents an arbitrary homomorphism mapping
   binary trees onto some set.
 *)
 Variable map : Term_map.
 
-(* Represents the set of monoid values. *)
+(** Represents the set of monoid values. *)
 Let E := E (term_map_m map).
 
-(* Represents the set of terms. *)
+(** Represents the set of terms. *)
 Let Term := term_map_term map.
 
-(*
+(**
   Accepts a term and returns true iff it is not
   a zero constant term.
 *)
@@ -169,7 +169,7 @@ Definition Term_is_nonzero
   :  Term -> bool
   := fun t => negb (term_map_is_zero t).
 
-(* Maps binary trees onto monoid expressions. *)
+(** Maps binary trees onto monoid expressions. *)
 Definition BTree_eval
   :  BTree Term -> E
   := BTree_rec Term
@@ -177,7 +177,7 @@ Definition BTree_eval
        (fun t => term_map_eval t)
        (fun _ f _ g => f + g).
 
-(*
+(**
   Accepts two monoid expressions and returns
   true iff they are denotationally equivalent -
   I.E. represent the same monoid value.
@@ -186,16 +186,18 @@ Definition BTree_eq
   :  BTree Term -> BTree Term -> Prop
   := fun t u => BTree_eval t = BTree_eval u.
 
-(*
+(**
   Accepts two binary trees, t and u, where u is
   right associative, prepends t onto u in a way
   that produces a flat list.
 
-      *          *
-     / \        / \
-    *   v => (t)   *
-   / \             / \ 
-  t   u          (u)  v
+  <<
+        *          *
+       / \        / \
+      *   v => (t)   *
+     / \             / \ 
+    t   u          (u)  v
+  >>
 *)
 Definition BTree_shift
   :  forall (t u : BTree Term), BTree_is_rassoc u = true -> { v : BTree Term | BTree_is_rassoc v = true /\ BTree_eq (node t u) v }
@@ -228,7 +230,7 @@ Definition BTree_shift
                   || BTree_eval t + a = BTree_eval x @a by proj2 H0
                   || a = BTree_eval x @a by <- op_is_assoc (BTree_eval t) (BTree_eval u) (BTree_eval v)))).
 
-(*
+(**
   Accepts a binary tree and returns an equivalent
   tree that is right associative.
 *)
@@ -259,7 +261,7 @@ Definition BTree_rassoc
                 (proj2 H0
                   || BTree_eval t + a = BTree_eval w @a by (proj2 H)))).
 
-(*
+(**
   In the following section, we use the
   isomorphism between right associative binary
   trees and lists to represent monoid expressions
@@ -268,7 +270,7 @@ Definition BTree_rassoc
   effort to "simplify" momoid expressions.
 *)
 
-(*
+(**
   Accepts a list of monoid elements and computes
   their sum.
 *)
@@ -279,7 +281,7 @@ Definition list_eval
        0
        (fun x _ f => (term_map_eval x) + f).
 
-(*
+(**
   Accepts two term lists and asserts that they
   are equivalent.
 *)
@@ -287,7 +289,7 @@ Definition list_eq : list Term -> list Term -> Prop
   := fun xs ys : list Term
        => list_eval xs = list_eval ys.
 
-(*
+(**
   Accepts a right associative binary tree and
   returns an equivalent list.
 *)
@@ -321,7 +323,7 @@ Definition RABTree_list
                 { xs | P (node (node t u) v) xs }
                 (diff_false_true H))).
 
-(*
+(**
   Accepts a list of monoid elements and filters
   out the 0 (identity) elements.
 
@@ -391,7 +393,7 @@ Definition list_filter_0
                                (proj2 H0)))))))
               (bool_dec0 (term_map_is_zero x)))).
 
-(*
+(**
   Accepts a binary tree and returns an equivalent
   terms list in which all identity elements have
   been eliminated.
@@ -413,13 +415,13 @@ End Functions.
 
 Section Theorems.
 
-(* Represents an arbitrary monoid. *)
+(** Represents an arbitrary monoid. *)
 Variable m : Monoid.
 
-(* Represents the set of monoid elements. *)
+(** Represents the set of monoid elements. *)
 Let E := E m.
 
-(*
+(**
   Represents monoid values.
 
   Note: In the development that follows, we
@@ -453,7 +455,7 @@ Inductive Term : Set
   := term_0 : Term
   |  term_const : E -> Term.
 
-(*
+(**
   Accepts a term and returns the monoid value
   that it represents.
 *)
@@ -464,7 +466,7 @@ Definition Term_eval
        0
        (fun x => x).
 
-(*
+(**
   Accepts a term and returns true iff the term
   is zero.
 *)
@@ -475,7 +477,7 @@ Definition Term_is_zero
        true
        (fun _ => false).
 
-(* Proves that Term_is_zero is correct. *)
+(** Proves that Term_is_zero is correct. *)
 Definition Term_is_zero_thm
   :  forall t, Term_is_zero t = true -> Term_eval t = 0
   := Term_ind
@@ -486,7 +488,7 @@ Definition Term_is_zero_thm
               (Term_eval (term_const x) = 0)
               (diff_false_true H)).
 
-(* Defines a map from Term to monoid elements. *)
+(** Defines a map from Term to monoid elements. *)
 Definition MTerm_map
   :  Term_map
   := term_map m Term Term_eval Term_is_zero Term_is_zero_thm.
@@ -527,7 +529,7 @@ Notation "{{ 0 }}" := (MonoidExpr.leaf (MonoidExpr.term_0)).
 
 Notation "{{ X }}" := (MonoidExpr.leaf (MonoidExpr.term_const X)).
 
-(*
+(**
   Defines a notation that can be used to prove
   that two monoid expressions are equal using
   prrof by reflection.
