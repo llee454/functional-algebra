@@ -577,6 +577,34 @@ Variables a b c d : E m.
 Let map := MonoidExpr.MTerm_map m.
 
 Let reflect_test_0
+  :  (a + 0) = (0 + a)
+  := reflect
+       (a + 0)
+         as ({{a}} # {{0}})
+     ==>
+       (0 + a)
+         as ({{0}} # {{a}})
+     using map.
+
+Let reflect_test_1
+  :  (a + 0) + (0 + b) = a + b
+  := reflect
+       ((a + 0) + (0 + b))
+         as (({{a}} # {{0}}) # ({{0}} # {{b}}))
+     ==>
+       (a + b)
+         as ({{a}} # {{b}})
+     using map.
+
+Let reflect_test_2
+  :  (0 + a) + b = (a + b)
+  := reflect
+       ((0 + a) + b) as (({{0}} # {{a}}) # {{b}})
+     ==>
+       (a + b) as ({{a}} # {{b}})
+     using map.
+
+Let reflect_test_3
   :  (a + b) + (c + d) = a + ((b + c) + d)
   := reflect
        (a + b) + (c + d)
@@ -586,7 +614,7 @@ Let reflect_test_0
          as ({{a}} # (({{b}} # {{c}}) # {{d}}))
        using map.
 
-Let reflect_test_1
+Let reflect_test_4
   :  (a + b) + (0 + c) = (a + 0) + (b + c)
   := reflect 
        (a + b) + (0 + c)
@@ -596,7 +624,7 @@ Let reflect_test_1
          as (({{a}} # {{0}}) # ({{b}} # {{c}}))
        using map.
 
-Let reflect_test_2
+Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
   := reflect
        (((a + b) + c) + 0)
@@ -607,4 +635,3 @@ Let reflect_test_2
        using map.
 
 End Unittests.
-
