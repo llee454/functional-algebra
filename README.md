@@ -8,6 +8,8 @@ The modules contained within the package span monoids, groups, rings, and fields
 Why Another Algebra Module?
 ---------------------------
 
+### Functional Style
+
 This module is unique in that it eschews the imperative tactic-oriented style of traditional Coq developments. As pointed out by others, programs written using tactics are brittle, hard to read, and generally inefficient. 
 
 While tactic driven development is useful for sketching out proofs, these disadvantages should dissuade us from leaving proofs in this form.
@@ -17,6 +19,50 @@ In this library, I provide a worked example of using Gallina directly and demons
 In doing so, I follow the practice of the Agda community in exploiting the beauty of a dependently typed functional programming language to full effect.
 
 Hopefully, this example will inspire others within the Coq community to do the same.
+
+### Expression Simplifier
+
+In addition, this module includes two expression simiplifiers. The first, defined in monoid_expr.v uses reflection to prove equalities between monoid expressions. I provide an intuitive notation for expressing equations. The following examples demonstrate this feature for some simple equations:
+
+```
+Let reflect_test_0
+  :  (a + 0) = (0 + a)
+  := reflect
+       (a + 0)
+         as ({{a}} # {{0}})
+     ==> 
+       (0 + a)
+         as ({{0}} # {{a}})
+     using map.
+
+Let reflect_test_1
+  :  (a + 0) + (0 + b) = a + b 
+  := reflect
+       ((a + 0) + (0 + b)) 
+         as (({{a}} # {{0}}) # ({{0}} # {{b}}))
+     ==> 
+       (a + b)
+         as ({{a}} # {{b}})
+     using map.
+
+Let reflect_test_2
+  :  (0 + a) + b = (a + b)
+  := reflect
+       ((0 + a) + b) as (({{0}} # {{a}}) # {{b}})
+     ==> 
+       (a + b) as ({{a}} # {{b}})
+     using map.
+
+Let reflect_test_3
+  :  (a + b) + (c + d) = a + ((b + c) + d)
+  := reflect
+       (a + b) + (c + d)
+         as (({{a}} # {{b}}) # ({{c}} # {{d}}))
+       ==>
+       a + ((b + c) + d)
+         as ({{a}} # (({{b}} # {{c}}) # {{d}}))
+       using map.
+```
 
 Organization
 ------------
