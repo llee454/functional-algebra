@@ -26,7 +26,7 @@ In addition, this module includes two expression simplifiers. The first, defined
 
 Monoid_expr.v uses the first of these simplifiers to prove monoid equations and provides an intuitive notation for writing equations. The following examples demonstrate this feature for some simple equations:
 
-```
+```coq
 Let reflect_test_0
   :  (a + 0) = (0 + a)
   := reflect
