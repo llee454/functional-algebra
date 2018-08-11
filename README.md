@@ -47,3 +47,12 @@ We map theorems from one level to the next. For example, identity elements are u
   Provides functions that simplify monoid expressions such as `{-} 1 + 0` => `{-} 1`.
 7. group_expr.v
   Provides functions that simplify group expressions.
+
+Compilation
+-----------
+
+This package uses `coq_makefile` to generate its Makefile. To compile this package using a standard Coq environment, simply run `make` from the package directory.
+
+If however, you have Coq installed in a non-standard directory, you will need to pass the root path for your Coq instance to make:
+
+> env COQLIBS="-I . -coqlib /usr/local/coq/coq-8.4p14" make -B
