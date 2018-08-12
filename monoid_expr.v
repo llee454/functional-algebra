@@ -546,7 +546,7 @@ Notation "{{ X }}" := (MonoidExpr.leaf (MonoidExpr.term_const X)).
 (**
   Defines a notation that can be used to prove
   that two monoid expressions are equal using
-  prrof by reflection.
+  proof by reflection.
 
   We represent both expressions as binary trees
   and reduce both trees to the same canonical
