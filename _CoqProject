@@ -1,4 +1,4 @@
--R . functional-algebra
+-R . functional_algebra
 ./base.v
 ./abelian_group.v
 ./commutative_ring.v
