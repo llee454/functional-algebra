@@ -1,14 +1,28 @@
 (**
-  This module can be used to automatically solve
-  equations concerning group expressions.
+  This module can be used to automatically solve equations concerning
+  group expressions.
 
-  To do this, we use a technique called
-  reflection. Briefly, we represent group
-  expressions as abstract trees, then we call
-  a function that "simplifies" these trees to
-  some canonical form. We prove that, if two
-  group expressions have the same canonical
+  To do this, we use a technique called reflection. Briefly, we
+  represent group expressions as abstract trees, then we call a
+  function that "simplifies" these trees to some canonical form. We
+  prove that, if two group expressions have the same canonical
   representation, the expressions are equal.
+
+  Copyright (C) 2018 Larry D. Lee Jr. <llee454@gmail.com>
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this program. If not, see
+  <https://www.gnu.org/licenses/>.
 *)
 
 Require Import base.
