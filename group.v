@@ -314,6 +314,64 @@ Definition op_neg_rev
             (f_equal {-} H
              || a = {-} y @a by <- op_cancel_neg x).
 
+(**
+  Proves that the left inverse of x + y is -y + -x.
+*)
+Definition op_neg_distrib_inv_l
+  :  forall x y : E, op_is_inv_l (x + y) ({-} y + {-} x)
+  := fun x y
+       => ((proj2 (op_neg_def ({-} y)))
+            || {-} y + a = 0                 @a by <- op_cancel_neg y
+            || {-} y + a = 0                 @a by op_id_l y
+            || {-} y + (a + y) = 0           @a by proj2 (op_neg_def ({-} x))
+            || {-} y + (({-} x + a) + y) = 0 @a by <- op_cancel_neg x
+            || {-} y + a = 0                 @a by op_is_assoc ({-} x) x y
+            || a = 0                         @a by <- op_is_assoc ({-} y) ({-} x) (x + y)).
+
+(**
+  Proves that the right inverse of x + y is -y + -x.
+*)
+Definition op_neg_distrib_inv_r
+  :  forall x y : E, op_is_inv_r (x + y) ({-} y + {-} x)
+  := fun x y
+       => ((proj2 (op_neg_def x))
+            || x + a = 0           @a by op_id_l ({-} x)
+            || x + (a + {-} x) = 0 @a by proj2 (op_neg_def y)
+            || x + a = 0           @a by op_is_assoc y ({-} y) ({-} x)
+            || a = 0               @a by <- op_is_assoc x y ({-} y + {-} x)).
+
+(**
+  Proves that the inverse of x + y is -y + -x.
+*)
+Definition op_neg_distrib_inv
+  :  forall x y : E, op_is_inv (x + y) ({-} y + {-} x)
+  := fun x y
+       => conj
+            (op_neg_distrib_inv_l x y)
+            (op_neg_distrib_inv_r x y).
+
+(**
+  Proves that negation is distributive: i.e.
+  -(x + y) = -y + -x.
+*)
+Definition op_neg_distrib
+  :  forall x y : E, {-} (x + y) = {-} y + {-} x
+  := fun x y
+       => ex_ind
+            (fun z (H : unique (op_is_inv (x + y)) z)
+              => let H0
+                   :  z = {-} (x + y)
+                   := (proj2 H) 
+                       ({-} (x + y))
+                       (op_neg_def (x + y)) in
+                 let H1
+                   :  z = ({-} y + {-} x)
+                   := (proj2 H)
+                        ({-} y + {-} x)
+                        (op_neg_distrib_inv x y) in
+                 (H1 || a = {-} y + {-} x @a by <- H0))
+            (op_inv_uniq_ex (x + y)).
+
 End Theorems.
 
 End Group.

@@ -33,8 +33,142 @@ Import Group.
 
 Module GroupExpr.
 
+Section Definitions.
+
+(**
+  Represents group values.
+
+  Note: for groups we distinguish between
+  negated and unnegated terms. We will use this
+  distinction to cancel adjacent terms.
+*)
+Variable Term : Set.
+
+(**
+  Represents group expressions.
+
+  We use trees to represent group
+  expressions. Significantly, we add nodes that
+  represent negation. Our intention is to
+  represent experessions such as `-(x + y)`. We
+  will define a transform that "pushes" negations
+  down toward the leaves within the tree using
+  Group.op_neg_distrib.
+
+  Once pushed down to the leaf level, we can
+  use the binary trees that represent monoids
+  to simplify the expression. When done, the
+  monoid expressions will return a list which
+  we can iterate over to cancel terms.
+*)
+Inductive Tree : Set
+  := node_op  : Tree -> Tree -> Tree
+  |  node_neg : Tree -> Tree
+  |  leaf     : Term -> Tree.
+
+(**
+*)
+Inductive STree : Set
+ := node     : STree -> STree -> STree
+ |  leaf_neg : Term -> STree
+ |  leaf     : Term -> STree.
+
+End Definitions.
+
+Arguments leaf {Term} x.
+
+Arguments node_op {Term} t u.
+
+Arguments node_neg {Term} t.
+
+(**
+  Represents a mapping from abstract terms to
+  group set elements.
+*)
+Structure Term_map : Type := term_map {
+  (**
+    Represents the group set that terms will be
+    projected onto.
+  *)
+  term_map_m: Group;
+
+  (*
+    Represents the set of terms that will be
+    used to represent group values.
+  *)
+  term_map_term : Set;
+
+  (**
+    Accepts a term and returns its projection
+    in E.
+  *)
+  term_map_eval : term_map_term -> E term_map_m;
+
+  (**
+    Accepts a term and returns true iff the term
+    represents the group identity element (0).
+  *)
+  term_map_is_zero : term_map_term -> bool;
+
+  (**
+    Accepts a term and proves that zero terms
+    evaluate to 0.
+  *)
+  term_map_is_zero_thm : forall t, term_map_is_zero t = true -> term_map_eval t = 0
+}.
+
+Arguments term_map_eval {t} x.
+
+Arguments term_map_is_zero {t} x.
+
+Arguments term_map_is_zero_thm {t} t0 H.
+
+Section Functions.
+
+(**
+  Represents an arbitrary homomorphism mapping
+  binary trees onto some set.
+*)
+Variable map : Term_map.
+
+(** Represents the set of monoid values. *)
+Let E := E (term_map_m map).
+
+(** Represents the set of terms. *)
+Let Term := term_map_term map.
+
+(** Maps group trees onto group expressions. *)
+Definition Tree_eval
+  :  Tree Term -> E
+  := Tree_rec Term
+       (fun _ => E)
+       (fun _ f _ g => f + g)
+       (fun _ f => {-} f)
+       (fun t => term_map_eval t).
+
+(**
+  Accepts two monoid expressions and returns
+  true iff they are denotationally equivalent -
+  I.E. represent the same monoid value.
+*)
+Definition Tree_eq
+  :  Tree Term -> Tree Term -> Prop
+  := fun t u => Tree_eval t = Tree_eval u.
+
+(**
+  
+*)
+Definition Tree_simp_neg
+  :  forall t : Tree Term, {u : Tree Term | Tree_is_simp_neg u = true /\ Tree_eq t u}
+
+End Functions.
+
+Section Theorems.
+
+(** Represents an arbitrary group. *)
 Variable g : Group.
 
+(** Represents the set of group elements. *)
 Let E := E g.
 
 Let F := Monoid.E (op_monoid g).
@@ -69,6 +203,8 @@ Let reflect_test_0
        using map.
 
 End Unittests.
+
+End Theorems.
 
 (**
   Note: the unittests given above demonstrate that we use monoid terms to simplify group expressions, but we lose information about negation when we do so. Accordingly, we define an alternate term type that captures this information. 
