@@ -640,7 +640,6 @@ Let reflect_test_4
 
 Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
-  := reflect2 (((a + b) + c) + 0) ==> (((0 + a) + b) + c)
-       using map.
+  := reflect2 (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
 
 End Unittests.
