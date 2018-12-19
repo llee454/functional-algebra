@@ -584,6 +584,32 @@ Notation "'reflect' A 'as' B ==> C 'as' D 'using' E"
       || x = a @a by H3)
      (at level 40, left associativity).
 
+(*
+  Accepts a monoid term and returns an equivalent
+  monoid expression.
+
+  Note: This Ltac expression is an example of lightweight ltac. The
+  idea behind this style is to use Gallina functions to generate
+  proofs through reflection and then to use Ltac only as syntactic
+  sugar to generate abstract terms.
+*)
+Ltac encode m x 
+  := lazymatch x with
+       | (0)
+         => exact (MonoidExpr.leaf (MonoidExpr.term_0 (m:=m)))
+       | ({+} ?X ?Y)
+         => exact
+              (MonoidExpr.node
+                (ltac:(encode m X))
+                (ltac:(encode m Y)))
+       | (?X)
+         => exact (MonoidExpr.leaf (MonoidExpr.term_const X))
+     end.
+
+Notation "'reflect2' A ==> B 'using' C"
+  := (reflect A as (ltac:(encode (MonoidExpr.term_map_m C) A)) ==> B as (ltac:(encode (MonoidExpr.term_map_m C) B)) using C)
+     (at level 40, left associativity).
+
 Section Unittests.
 
 Variable m : Monoid.
@@ -594,60 +620,27 @@ Let map := MonoidExpr.MTerm_map m.
 
 Let reflect_test_0
   :  (a + 0) = (0 + a)
-  := reflect
-       (a + 0)
-         as ({{a}} # {{0}})
-     ==>
-       (0 + a)
-         as ({{0}} # {{a}})
-     using map.
+  := reflect2 (a + 0) ==> (0 + a) using map.
 
 Let reflect_test_1
   :  (a + 0) + (0 + b) = a + b
-  := reflect
-       ((a + 0) + (0 + b))
-         as (({{a}} # {{0}}) # ({{0}} # {{b}}))
-     ==>
-       (a + b)
-         as ({{a}} # {{b}})
-     using map.
+  := reflect2 ((a + 0) + (0 + b)) ==> (a + b) using map.
 
 Let reflect_test_2
   :  (0 + a) + b = (a + b)
-  := reflect
-       ((0 + a) + b) as (({{0}} # {{a}}) # {{b}})
-     ==>
-       (a + b) as ({{a}} # {{b}})
-     using map.
+  := reflect2 ((0 + a) + b) ==> (a + b) using map.
 
 Let reflect_test_3
   :  (a + b) + (c + d) = a + ((b + c) + d)
-  := reflect
-       (a + b) + (c + d)
-         as (({{a}} # {{b}}) # ({{c}} # {{d}}))
-       ==>
-       a + ((b + c) + d)
-         as ({{a}} # (({{b}} # {{c}}) # {{d}}))
-       using map.
+  := reflect2 (a + b) + (c + d) ==> a + ((b + c) + d) using map.
 
 Let reflect_test_4
   :  (a + b) + (0 + c) = (a + 0) + (b + c)
-  := reflect 
-       (a + b) + (0 + c)
-         as (({{a}} # {{b}}) # ({{0}} # {{c}}))
-       ==>
-       (a + 0) + (b + c)
-         as (({{a}} # {{0}}) # ({{b}} # {{c}}))
-       using map.
+  := reflect2 (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
 
 Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
-  := reflect
-       (((a + b) + c) + 0)
-         as ((({{a}} # {{b}}) # {{c}}) # {{0}})
-       ==>
-       (((0 + a) + b) + c)
-         as ((({{0}} # {{a}}) # {{b}}) # {{c}})
+  := reflect2 (((a + b) + c) + 0) ==> (((0 + a) + b) + c)
        using map.
 
 End Unittests.
