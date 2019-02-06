@@ -444,9 +444,11 @@ Notation "{-}" := (op_neg) : monoid_scope.
   proof that x has an inverse, `op_neg x H`
   is x's inverse.
 *)
-Definition op_neg_def
-  :  forall (x : M) (H : has_inv x), op_is_inv x ({-} x H)
-  := fun x H => proj2_sig (op_neg_strong x H).
+Theorem op_neg_def
+  :  forall (x : M) (H : has_inv x), op_is_inv x ({-} x H).
+Proof
+  fun x H
+    => proj2_sig (op_neg_strong x H).
 
 (**
   Proves that, forall x and H, where H is
