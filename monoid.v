@@ -137,7 +137,7 @@ Section Theorems.
 Variable m : Monoid.
 
 (** Represents the set of monoid elements. *)
-Definition M := E m.
+Let M := E m.
 
 (**
   Accepts one monoid element, x, and asserts
@@ -158,39 +158,44 @@ Definition op_is_id_r := is_id_r M {+}.
 Definition op_is_id := is_id M {+}.
 
 (** Proves that 0 is the identity element. *)
-Definition op_id
-  :  is_id M {+} 0
-  := conj op_id_l op_id_r.
+Theorem op_id
+  :  is_id M {+} 0.
+Proof conj op_id_l op_id_r.
 
 (** Proves that the left identity element is unique. *)
-Definition op_id_l_uniq
-  :  forall x : M, (op_is_id_l x) -> x = 0
-  := fun x H
-       => H 0 || a = 0 @a by <- op_id_r x.
+Theorem op_id_l_uniq
+  :  forall x : M, (op_is_id_l x) -> x = 0.
+Proof
+  fun x H
+    => H 0 || a = 0 @a by <- op_id_r x.
 
 (** Proves that the right identity element is unique. *)
-Definition op_id_r_uniq
-  :  forall x : M, (op_is_id_r x) -> x = 0
-  := fun x H
-       => H 0 || a = 0 @a by <- op_id_l x.
+Theorem op_id_r_uniq
+  :  forall x : M, (op_is_id_r x) -> x = 0.
+Proof
+  fun x H
+    => H 0 || a = 0 @a by <- op_id_l x.
 
 (** Proves that the identity element is unique. *)
-Definition op_id_uniq
-  :  forall x : M, (op_is_id x) -> x = 0
-  := fun x
-       => and_ind (fun H _ => op_id_l_uniq x H).
+Theorem op_id_uniq
+  :  forall x : M, (op_is_id x) -> x = 0.
+Proof
+  fun x
+    => and_ind (fun H _ => op_id_l_uniq x H).
 
 (** Proves the left introduction rule. *)
-Definition op_intro_l
-  :  forall x y z : M, x = y -> z + x = z + y
-  := fun x y z H
-       => f_equal ({+} z) H.
+Theorem op_intro_l
+  :  forall x y z : M, x = y -> z + x = z + y.
+Proof
+  fun x y z H
+    => f_equal ({+} z) H.
 
 (** Proves the right introduction rule. *)
-Definition op_intro_r
-  :  forall x y z : M, x = y -> x + z = y + z
-  := fun x y z H
-       =>  eq_refl (x + z)
+Theorem op_intro_r
+  :  forall x y z : M, x = y -> x + z = y + z.
+Proof
+  fun x y z H
+    =>  eq_refl (x + z)
        || x + z = a + z @a by <- H.
 
 (**
@@ -236,10 +241,11 @@ Definition has_inv
   Proves that the left and right inverses of
   an element must be equal.
 *)
-Definition op_inv_l_r_eq
-  :  forall x y : M, op_is_inv_l x y -> forall z : M, op_is_inv_r x z -> y = z
-  := fun x y H1 z H2
-       => op_is_assoc y x z
+Theorem op_inv_l_r_eq
+  :  forall x y : M, op_is_inv_l x y -> forall z : M, op_is_inv_r x z -> y = z.
+Proof
+  fun x y H1 z H2
+    => op_is_assoc y x z
           || y + a = (y + x) + z @a by <- H2
           || a = (y + x) + z     @a by <- op_id_r y
           || y = a + z           @a by <- H1
@@ -249,10 +255,11 @@ Definition op_inv_l_r_eq
   Proves that the inverse relationship is
   symmetric.
 *)
-Definition op_inv_sym
-  :  forall x y : M, op_is_inv x y <-> op_is_inv y x
-  := fun x y
-       => conj
+Theorem op_inv_sym
+  :  forall x y : M, op_is_inv x y <-> op_is_inv y x.
+Proof
+  fun x y
+    => conj
             (fun H : op_is_inv x y
               => conj (proj2 H) (proj1 H))
             (fun H : op_is_inv y x
@@ -270,10 +277,11 @@ Definition op_inv_sym
   Proves the left cancellation law for elements
   possessing a left inverse.
 *)
-Definition op_cancel_l
-  :  forall x y z : M, has_inv_l z -> z + x = z + y -> x = y
-  := fun x y z H H0
-       => ex_ind 
+Theorem op_cancel_l
+  :  forall x y z : M, has_inv_l z -> z + x = z + y -> x = y.
+Proof
+  fun x y z H H0
+    => ex_ind 
             (fun u H1
               => op_intro_l (z + x) (z + y) u H0
               || a = u + (z + y) @a by <- op_is_assoc u z x
@@ -287,10 +295,11 @@ Definition op_cancel_l
   Proves the right cancellation law for
   elements possessing a right inverse.
 *)
-Definition op_cancel_r
-  :  forall x y z : M, has_inv_r z -> x + z = y + z -> x = y
-  := fun x y z H H0
-       => ex_ind
+Theorem op_cancel_r
+  :  forall x y z : M, has_inv_r z -> x + z = y + z -> x = y.
+Proof
+  fun x y z H H0
+    => ex_ind
             (fun u H1
               =>  op_intro_r (x + z) (y + z) u H0
               || a = (y + z) + u @a by op_is_assoc x z u
@@ -304,10 +313,11 @@ Definition op_cancel_r
   Proves that an element's left inverse
   is unique.
 *)
-Definition op_inv_l_uniq
-  :  forall x : M, has_inv_r x -> forall y z : M, op_is_inv_l x y -> op_is_inv_l x z -> z = y
-  := fun x H y z H0 H1
-       => let H2
+Theorem op_inv_l_uniq
+  :  forall x : M, has_inv_r x -> forall y z : M, op_is_inv_l x y -> op_is_inv_l x z -> z = y.
+Proof
+  fun x H y z H0 H1
+    => let H2
             :  z + x = y + x
             := H1 || z + x = a @a by H0 in
           let H3
@@ -319,10 +329,11 @@ Definition op_inv_l_uniq
   Proves that an element's right inverse
   is unique.
 *)
-Definition op_inv_r_uniq
-  :  forall x : M, has_inv_l x -> forall y z : M, op_is_inv_r x y -> op_is_inv_r x z -> z = y
-  := fun x H y z H0 H1
-       => let H2
+Theorem op_inv_r_uniq
+  :  forall x : M, has_inv_l x -> forall y z : M, op_is_inv_r x y -> op_is_inv_r x z -> z = y.
+Proof
+  fun x H y z H0 H1
+    => let H2
             :  x + z = x + y
             := H1 || x + z = a @a by H0 in
           let H3
@@ -331,10 +342,11 @@ Definition op_inv_r_uniq
           H3.
 
 (** Proves that an element's inverse is unique. *)
-Definition op_inv_uniq
-  :  forall x y z : M, op_is_inv x y -> op_is_inv x z -> z = y
-  := fun x y z H H0
-       => op_inv_l_uniq x
+Theorem op_inv_uniq
+  :  forall x y z : M, op_is_inv x y -> op_is_inv x z -> z = y.
+Proof
+  fun x y z H H0
+    => op_inv_l_uniq x
             (ex_intro (fun y => op_is_inv_r x y) y (proj2 H))
             y z (proj1 H) (proj1 H0).
 
@@ -342,49 +354,49 @@ Definition op_inv_uniq
   Proves that the identity element is its own
   left inverse.
 *)
-Definition op_inv_0_l
-  :  op_is_inv_l 0 0
-  := op_id_l 0 : 0 + 0 = 0.
+Theorem op_inv_0_l
+  :  op_is_inv_l 0 0.
+Proof op_id_l 0 : 0 + 0 = 0.
 
 (**
   Proves that the identity element is its own
   right inverse.
 *)
-Definition op_inv_0_r
-  :  op_is_inv_r 0 0
-  := op_id_r 0 : 0 + 0 = 0.
+Theorem op_inv_0_r
+  :  op_is_inv_r 0 0.
+Proof op_id_r 0 : 0 + 0 = 0.
 
 (**
   Proves that the identity element is its own
   inverse.
 *)
-Definition op_inv_0
-  :  op_is_inv 0 0
-  := conj op_inv_0_l op_inv_0_r.
+Theorem op_inv_0
+  :  op_is_inv 0 0.
+Proof conj op_inv_0_l op_inv_0_r.
 
 (**
   Proves that the identity element has a
   left inverse.
 *)
-Definition op_has_inv_l_0
-  :  has_inv_l 0
-  := ex_intro (op_is_inv_l 0) 0 op_inv_0_l.
+Theorem op_has_inv_l_0
+  :  has_inv_l 0.
+Proof ex_intro (op_is_inv_l 0) 0 op_inv_0_l.
 
 (**
   Proves that the identity element has a
   right inverse.
 *)
-Definition op_has_inv_r_0
-  :  has_inv_r 0
-  := ex_intro (op_is_inv_r 0) 0 op_inv_0_r.
+Theorem op_has_inv_r_0
+  :  has_inv_r 0.
+Proof ex_intro (op_is_inv_r 0) 0 op_inv_0_r.
 
 (**
   Proves that the identity element has an
   inverse.
 *)
-Definition op_has_inv_0
-  :  has_inv 0
-  := ex_intro (op_is_inv 0) 0 op_inv_0.
+Theorem op_has_inv_0
+  :  has_inv 0.
+Proof ex_intro (op_is_inv 0) 0 op_inv_0.
 
 (**
   Every monoid has a subset of elements that
@@ -444,10 +456,11 @@ Definition op_neg_def
   Note: this lemma is an immediate consequence
   of the symmetry of the inverse predicate.
 *)
-Definition op_neg_inv
-  :  forall (x : M) (H : has_inv x), op_is_inv ({-} x H) x
-  := fun x H
-       => (proj1 (op_inv_sym x ({-} x H))) (op_neg_def x H).
+Theorem op_neg_inv
+  :  forall (x : M) (H : has_inv x), op_is_inv ({-} x H) x.
+Proof
+  fun x H
+    => (proj1 (op_inv_sym x ({-} x H))) (op_neg_def x H).
 
 (**
   Proves that, forall x and H, where H is a
@@ -459,13 +472,14 @@ Definition op_neg_inv
   and theorems in this section to expressions
   involving `op_neg`.
 *)
-Definition op_neg_inv_ex
-  :  forall (x : M) (H : has_inv x), has_inv ({-} x H)
-  := fun x H
-       => ex_intro
-            (op_is_inv ({-} x H))
-            x
-            (op_neg_inv x H).
+Theorem op_neg_inv_ex
+  :  forall (x : M) (H : has_inv x), has_inv ({-} x H).
+Proof
+  fun x H
+    => ex_intro
+         (op_is_inv ({-} x H))
+         x
+         (op_neg_inv x H).
 
 (**
   Proves that negation is injective over the
@@ -473,25 +487,26 @@ Definition op_neg_inv_ex
   x and y if the negation of x equals the
   negation of y then x and y must be equal.
 *)
-Definition op_neg_inj
+Theorem op_neg_inj
   :  forall (x : M) (H : has_inv x) (y : M) (H0 : has_inv y),
      {-} x H = {-} y H0 ->
-     x = y 
-  := fun x H y H0 H1
-       => let H2
-            :  x + ({-} x H) = y + ({-} x H) 
-            := (proj2 (op_neg_def x H) : x + ({-} x H) = 0)
-               || x + ({-} x H) = a     @a by proj2 (op_neg_def y H0)
-               || x + ({-} x H) = y + a @a by H1 in
-          let H3
-            :  x = y
-            := op_cancel_r x y ({-} x H)
-               (ex_intro
-                 (op_is_inv_r ({-} x H))
-                 x
-                 (proj2 (proj1 (op_inv_sym x ({-} x H)) (op_neg_def x H))))
-               H2 in
-          H3.
+     x = y.
+Proof
+  fun x H y H0 H1
+    => let H2
+         :  x + ({-} x H) = y + ({-} x H) 
+         := (proj2 (op_neg_def x H) : x + ({-} x H) = 0)
+            || x + ({-} x H) = a     @a by proj2 (op_neg_def y H0)
+            || x + ({-} x H) = y + a @a by H1 in
+       let H3
+         :  x = y
+         := op_cancel_r x y ({-} x H)
+            (ex_intro
+              (op_is_inv_r ({-} x H))
+              x
+              (proj2 (proj1 (op_inv_sym x ({-} x H)) (op_neg_def x H))))
+            H2 in
+       H3.
 
 (**
   Proves that double negation is equivalent to
@@ -505,35 +520,38 @@ Definition op_neg_inj
   equivalent to the identity operation for
   any proof that the negative has an inverse.
 *)
-Definition op_cancel_neg_gen
-  :  forall (x : M) (H : has_inv x) (H0 : has_inv ({-} x H)), {-} ({-} x H) H0 = x
-  := fun x H H0
-       => let H1
-            :  op_is_inv ({-} x H) ({-} ({-} x H) H0)
-            := op_neg_def ({-} x H) H0 in
-          let H3
-            :  op_is_inv ({-} x H) x
-            := op_neg_inv x H in
-          op_inv_uniq ({-} x H) x ({-} ({-} x H) H0) H3 H1.
+Theorem op_cancel_neg_gen
+  :  forall (x : M) (H : has_inv x) (H0 : has_inv ({-} x H)), {-} ({-} x H) H0 = x.
+Proof
+  fun x H H0
+    => let H1
+         :  op_is_inv ({-} x H) ({-} ({-} x H) H0)
+         := op_neg_def ({-} x H) H0 in
+       let H3
+         :  op_is_inv ({-} x H) x
+         := op_neg_inv x H in
+       op_inv_uniq ({-} x H) x ({-} ({-} x H) H0) H3 H1.
 
 (**
   Proves that double negation is equivalent to
   the identity function for all invertible
   values.
 *)
-Definition op_cancel_neg
-  :  forall (x : M) (H : has_inv x), {-} ({-} x H) (op_neg_inv_ex x H) = x
-  := fun x H
-       => op_cancel_neg_gen x H (op_neg_inv_ex x H).
+Theorem op_cancel_neg
+  :  forall (x : M) (H : has_inv x), {-} ({-} x H) (op_neg_inv_ex x H) = x.
+Proof
+  fun x H
+    => op_cancel_neg_gen x H (op_neg_inv_ex x H).
 
 (**
   Proves that negation is onto over the subset
   of invertable values.
 *)
-Definition op_neg_onto
-  :  forall (y : M) (H : has_inv y), exists (x : M) (H0 : has_inv x), {-} x H0 = y
-  := fun y H
-       => ex_intro
+Theorem op_neg_onto
+  :  forall (y : M) (H : has_inv y), exists (x : M) (H0 : has_inv x), {-} x H0 = y.
+Proof
+  fun y H
+    => ex_intro
             (fun x => exists H0 : has_inv x, {-} x H0 = y)
             ({-} y H)
             (ex_intro
@@ -550,42 +568,32 @@ Definition op_neg_onto
   a monoid, which must be nonempty, forms
   a group.
 *)
-Definition op_inv_closed
-  :  forall (x : M) (H : has_inv x) (y : M) (H0 : has_inv y), has_inv (x + y)
-  := fun x H y H0
-       => ex_ind
-            (fun u (H1 : op_is_inv x u)
-              => ex_ind
-                   (fun v (H2 : op_is_inv y v)
-                     => ex_intro
-                          (op_is_inv (x + y))
-                          (v + u)
-                          (conj
-                            (op_is_assoc (v + u) x y
-                              || (v + u) + (x + y) = a + y @a by op_is_assoc v u x
-                              || (v + u) + (x + y) = (v + a) + y @a by <- proj1 H1
-                              || (v + u) + (x + y) = a + y @a by <- op_id_r v
-                              || (v + u) + (x + y) = a @a by <- proj1 H2
-                            ) 
-                            (op_is_assoc (x + y) v u
-                              || (x + y) + (v + u) = a + u @a by op_is_assoc x y v
-                              || (x + y) + (v + u) = (x + a) + u @a by <- proj2 H2
-                              || (x + y) + (v + u) = a + u @a by <- op_id_r x
-                              || (x + y) + (v + u) = a @a by <- proj2 H1
-                            )))
-                   H0)
-            H.
-
-(**
-  Proves that every boolean value is either true
-  or false.
-*)
-Definition bool_dec0
-  :  forall b : bool, {b = true}+{b = false}
-  := bool_rect
-       (fun b => {b = true}+{b = false})
-       (left (true = false) (eq_refl true))
-       (right (false = true) (eq_refl false)).
+Theorem op_inv_closed
+  :  forall (x : M) (H : has_inv x) (y : M) (H0 : has_inv y), has_inv (x + y).
+Proof
+  fun x H y H0
+    => ex_ind
+         (fun u (H1 : op_is_inv x u)
+           => ex_ind
+                (fun v (H2 : op_is_inv y v)
+                  => ex_intro
+                       (op_is_inv (x + y))
+                       (v + u)
+                       (conj
+                         (op_is_assoc (v + u) x y
+                           || (v + u) + (x + y) = a + y @a by op_is_assoc v u x
+                           || (v + u) + (x + y) = (v + a) + y @a by <- proj1 H1
+                           || (v + u) + (x + y) = a + y @a by <- op_id_r v
+                           || (v + u) + (x + y) = a @a by <- proj1 H2
+                         ) 
+                         (op_is_assoc (x + y) v u
+                           || (x + y) + (v + u) = a + u @a by op_is_assoc x y v
+                           || (x + y) + (v + u) = (x + a) + u @a by <- proj2 H2
+                           || (x + y) + (v + u) = a + u @a by <- op_id_r x
+                           || (x + y) + (v + u) = a @a by <- proj2 H1
+                         )))
+                H0)
+         H.
 
 End Theorems.
 
