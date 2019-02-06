@@ -45,10 +45,9 @@ Notation "A =:= B"
   Proves that every boolean value is either true
   or false.
 *)
-Theorem bool_dec0
-  :  forall b : bool, {b = true}+{b = false}.
-Proof
-  bool_rect
-    (fun b => {b = true}+{b = false})
-       (left (true = false) (eq_refl true))
-       (right (false = true) (eq_refl false)).
+Definition bool_dec0
+  :  forall b : bool, {b = true}+{b = false}
+  := bool_rect
+      (fun b => {b = true}+{b = false})
+         (left (true = false) (eq_refl true))
+         (right (false = true) (eq_refl false)).

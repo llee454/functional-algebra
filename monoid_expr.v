@@ -27,6 +27,7 @@ Require Import function.
 Require Import ProofIrrelevance.
 Require Import Bool.
 Require Import List.
+Import ListNotations.
 Require Import monoid.
 Import Monoid.
 
@@ -34,7 +35,10 @@ Module MonoidExpr.
 
 Open Scope monoid_scope.
 
-Section Definitions.
+(**
+  I. This section defines binary trees.
+*)
+Section binary_trees.
 
 (** Represents the values stored in binary trees. *)
 Variable Term : Set.
@@ -96,16 +100,17 @@ Definition BTree_is_rassoc
   associative binary tree is also right
   associative.
 *)
-Definition BTree_rassoc_thm
-  :  forall t u : BTree, BTree_is_rassoc (node t u) = true -> BTree_is_rassoc u = true
-  := fun t u H
-       => proj2 (
+Theorem BTree_rassoc_thm
+  :  forall t u : BTree, BTree_is_rassoc (node t u) = true -> BTree_is_rassoc u = true.
+Proof
+  fun t u H
+    => proj2 (
             andb_prop 
               (BTree_is_leaf t)
               (BTree_is_rassoc u)
               H).
 
-End Definitions.
+End binary_trees.
 
 Arguments leaf {Term} x.
 
@@ -118,6 +123,11 @@ Arguments BTree_is_node {Term} t.
 Arguments BTree_is_rassoc {Term} t.
 
 Arguments BTree_rassoc_thm {Term} t u H.
+
+(**
+  II. Defines term maps which allow us to
+    interpret abstract terms as monoid values.
+*)
 
 (**
   Represents a mapping from abstract terms
@@ -161,7 +171,12 @@ Arguments term_map_is_zero {t} x.
 
 Arguments term_map_is_zero_thm {t} t0 H.
 
-Section Functions.
+(**
+  III. Defines functions for evaluating and
+    transforming binary trees using term maps.
+*) 
+
+Section term_tree_functs.
 
 (**
   Represents an arbitrary homomorphism mapping
@@ -276,6 +291,11 @@ Definition BTree_rassoc
                   || BTree_eval t + a = BTree_eval w @a by (proj2 H)))).
 
 (**
+  IV. Defines functions for evaluating and
+    transforming lists of terms that can be mapped
+    onto monoid values using a term map.
+
+
   In the following section, we use the
   isomorphism between right associative binary
   trees and lists to represent monoid expressions
@@ -314,7 +334,7 @@ Definition RABTree_list
      BTree_rect Term
        (fun t => T t)
        (fun x _
-         => let xs := cons x nil in
+         => let xs := [x] in
             exist
               (P (leaf x))
               xs
@@ -326,7 +346,7 @@ Definition RABTree_list
                 :  BTree_is_rassoc u = true
                 := BTree_rassoc_thm (leaf x) u H in
               let (ys, H1) := g H0 in
-              let xs := cons x ys in
+              let xs := x :: ys in
               exist
                 (P (node (leaf x) u))
                 xs
@@ -360,14 +380,14 @@ Definition RABTree_list
   decision procedure here.
 *)
 Definition list_filter_0
-  :  forall xs : list Term, { ys : list Term | list_eq xs ys /\ Is_true (forallb Term_is_nonzero ys) }
+  :  forall xs : list Term, {ys : list Term | list_eq xs ys /\ Is_true (forallb Term_is_nonzero ys)}
   := let P xs ys := list_eq xs ys /\ Is_true (forallb Term_is_nonzero ys) in
      let T xs := { ys | P xs ys } in
      list_rec
        T
        (exist
-         (P nil)
-         nil
+         (P [])
+         []
          (conj
            (eq_refl E_0)
            I))
@@ -380,7 +400,7 @@ Definition list_filter_0
                      := term_map_is_zero_thm x H in
                    let (ys, H1) := f in
                    exist
-                     (P (cons x xs))
+                     (P (x :: xs))
                      ys
                      (conj
                        (op_id_l (list_eval xs)
@@ -389,12 +409,12 @@ Definition list_filter_0
                        (proj2 H1)))
               (fun (H : term_map_is_zero x = false) xs f
                 => let (ys, H0) := f in
-                   let zs := cons x ys in
+                   let zs := x :: ys in
                    exist
-                     (P (cons x xs))
+                     (P (x :: xs))
                      zs
                      (conj
-                       (eq_refl (list_eval (cons x xs))
+                       (eq_refl (list_eval (x :: xs))
                          || term_map_eval x + (list_eval xs) = term_map_eval x + a @a by <- (proj1 H0))
                        (Is_true_eq_left
                          (forallb Term_is_nonzero zs)
@@ -425,9 +445,14 @@ Definition reduce
               || BTree_eval t = a @a by <- H0
               || BTree_eval t = a @a by <- (proj1 H1)).
 
-End Functions.
+End term_tree_functs.
 
-Section Theorems.
+(**
+  V. Defines a abstract terms to represent monoid
+    expressions, and a term map for mapping these
+    terms onto monoid values.
+*)
+Section monoid_term_map.
 
 (** Represents an arbitrary monoid. *)
 Variable m : Monoid.
@@ -444,26 +469,25 @@ Let E := E m.
   a tree and filter a list to "simplify"
   a given expression.
 
-  The code that flattens
-  the tree representation does not need to care
-  whether or not the leaves in the tree represent
-  0 (the monoid identity element), inverses,
-  etc. Accordingly, distinguishing these elements
-  in the definition of BTree would unnecessarily
-  complicate the tree algorithms by adding more
-  recursion cases.
+  The code that flattens the tree representation
+  does not need to care whether or not the
+  leaves in the tree represent 0 (the monoid
+  identity element), inverses, etc. Accordingly,
+  distinguishing these elements in the definition
+  of BTree would unnecessarily complicate the
+  tree algorithms by adding more recursion cases.
 
-  Instead of doing this, we
-  use two types to represent monoid expressions
-  - trees to represent "terms" (expressions
-  that are summed together) and Term. Term
-  tracks whether or not a monoid value equals 0
-  (and later we will use a similar structure to
-  indicate whether or not a given group element
-  is an inverse). This makes this information
-  available when needed (specifically when we
-  eliminate 0s using list filtering) without
-  complicating the tree algorithms.
+  Instead of doing this, we use two types
+  to represent monoid expressions - trees to
+  represent "terms" (expressions that are summed
+  together) and Term. Term tracks whether or
+  not a monoid value equals 0 (and later we will
+  use a similar structure to indicate whether or
+  not a given group element is an inverse). This
+  makes this information available when needed
+  (specifically when we eliminate 0s using
+  list filtering) without complicating the
+  tree algorithms.
 *)
 Inductive Term : Set
   := term_0 : Term
@@ -492,10 +516,11 @@ Definition Term_is_zero
        (fun _ => false).
 
 (** Proves that Term_is_zero is correct. *)
-Definition Term_is_zero_thm
-  :  forall t, Term_is_zero t = true -> Term_eval t = 0
-  := Term_ind
-       (fun t => Term_is_zero t = true -> Term_eval t = 0)
+Theorem Term_is_zero_thm
+  :  forall t, Term_is_zero t = true -> Term_eval t = 0.
+Proof
+  Term_ind
+    (fun t => Term_is_zero t = true -> Term_eval t = 0)
        (fun _ => eq_refl 0)
        (fun x H
          => False_ind
@@ -507,91 +532,21 @@ Definition MTerm_map
   :  Term_map
   := term_map m Term Term_eval Term_is_zero Term_is_zero_thm.
 
-Section Unittests.
-
-Let map := MTerm_map.
-
-Variables a b c d : Term.
-
-Let BFTree_rassoc_test_0
-  := proj1_sig (BTree_rassoc map (node (node (leaf a) (leaf b)) (leaf c))) =:=
-     node (leaf a) (node (leaf b) (leaf c)).
-       
-Let BTree_rassoc_test_1
-  := proj1_sig (BTree_rassoc map (node (leaf a) (node (leaf b) (node (leaf c) (leaf d))))) =:=
-     node (leaf a) (node (leaf b) (node (leaf c) (leaf d))).
-
-Let BTree_rassoc_test_2
-  := proj1_sig (BTree_rassoc map (node (node (leaf a) (leaf b)) (node (leaf c) (leaf d)))) =:=
-     node (leaf a) (node (leaf b) (node (leaf c) (leaf d))).
-
-End Unittests.
-
-End Theorems.
+End monoid_term_map.
 
 Arguments term_0 {m}.
 
 Arguments term_const {m} x.
 
-End MonoidExpr.
-
-Notation "X # Y" := (MonoidExpr.node X Y) (at level 60).
-
-Notation "X {{+}} Y" := (MonoidExpr.node X Y) (at level 60).
-
-Notation "{{ 0 }}" := (MonoidExpr.leaf (MonoidExpr.term_0)).
-
-Notation "{{ X }}" := (MonoidExpr.leaf (MonoidExpr.term_const X)).
-
-(**
-  Defines a notation that can be used to prove
-  that two monoid expressions are equal using
-  proof by reflection.
-
-  We represent both expressions as binary trees
-  and reduce both trees to the same canonical
-  form demonstrating that their associated monoid
-  expressions are equivalent.
-*)
-Notation "'reflect' A 'as' B ==> C 'as' D 'using' E"
-  := (let x := A in
-      let y := C in
-      let t := B in
-      let u := D in
-      let r := MonoidExpr.reduce E t in
-      let s := MonoidExpr.reduce E u in
-      let v := proj1_sig r in
-      let w := proj1_sig s in
-      let H
-        :  MonoidExpr.list_eval E v = MonoidExpr.list_eval E w
-        := eq_refl (MonoidExpr.list_eval E v) : MonoidExpr.list_eval E v = MonoidExpr.list_eval E w in
-      let H0
-        :  MonoidExpr.BTree_eval E t = MonoidExpr.list_eval E v
-        := proj2_sig r in
-      let H1
-        :  MonoidExpr.BTree_eval E u = MonoidExpr.list_eval E w
-        := proj2_sig s in
-      let H2
-        :  MonoidExpr.BTree_eval E t = x
-        := eq_refl (MonoidExpr.BTree_eval E t) : MonoidExpr.BTree_eval E t = x in
-      let H3
-        :  MonoidExpr.BTree_eval E u = y
-        := eq_refl (MonoidExpr.BTree_eval E u) : MonoidExpr.BTree_eval E u = y in
-      H
-      || a = MonoidExpr.list_eval E w @a by H0
-      || a = MonoidExpr.list_eval E w @a by H2
-      || x = a @a by H1
-      || x = a @a by H3)
-     (at level 40, left associativity).
-
 (*
   Accepts a monoid term and returns an equivalent
   monoid expression.
 
-  Note: This Ltac expression is an example of lightweight ltac. The
-  idea behind this style is to use Gallina functions to generate
-  proofs through reflection and then to use Ltac only as syntactic
-  sugar to generate abstract terms.
+  Note: This Ltac expression is an example of
+  lightweight ltac. The idea behind this style
+  is to use Gallina functions to generate proofs
+  through reflection and then to use Ltac only
+  as syntactic sugar to generate abstract terms.
 *)
 Ltac encode m x 
   := lazymatch x with
@@ -606,8 +561,57 @@ Ltac encode m x
          => exact (MonoidExpr.leaf (MonoidExpr.term_const X))
      end.
 
-Notation "'reflect2' A ==> B 'using' C"
-  := (reflect A as (ltac:(encode (MonoidExpr.term_map_m C) A)) ==> B as (ltac:(encode (MonoidExpr.term_map_m C) B)) using C)
+End MonoidExpr.
+
+(**
+  Defines a notation that can be used to prove
+  that two monoid expressions are equal using
+  proof by reflection.
+
+  We represent both expressions as binary trees
+  and reduce both trees to the same canonical
+  form demonstrating that their associated monoid
+  expressions are equivalent.
+*)
+Notation "'reflect' x 'as' t ==> y 'as' u 'using' m"
+  := (let r := MonoidExpr.reduce m t in
+      let s := MonoidExpr.reduce m u in
+      let v := proj1_sig r in
+      let w := proj1_sig s in
+      let H
+        :  MonoidExpr.list_eval m v = MonoidExpr.list_eval m w
+        := eq_refl (MonoidExpr.list_eval m v) : MonoidExpr.list_eval m v = MonoidExpr.list_eval m w in
+      let H0
+        :  MonoidExpr.BTree_eval m t = MonoidExpr.list_eval m v
+        := proj2_sig r in
+      let H1
+        :  MonoidExpr.BTree_eval m u = MonoidExpr.list_eval m w
+        := proj2_sig s in
+      let H2
+        :  MonoidExpr.BTree_eval m t = x
+        := eq_refl (MonoidExpr.BTree_eval m t) : MonoidExpr.BTree_eval m t = x in
+      let H3
+        :  MonoidExpr.BTree_eval m u = y
+        := eq_refl (MonoidExpr.BTree_eval m u) : MonoidExpr.BTree_eval m u = y in
+      H
+      || a = MonoidExpr.list_eval m w @a by H0
+      || a = MonoidExpr.list_eval m w @a by H2
+      || x = a @a by H1
+      || x = a @a by H3
+      : x = y)
+      (at level 40, left associativity).
+
+(**
+  Defines a notation that can be used to prove
+  that two monoid expressions, A and B, are
+  equal given the term map C.
+*)
+Notation "'rewrite' A ==> B 'using' C"
+  := (reflect A
+       as (ltac:(MonoidExpr.encode (MonoidExpr.term_map_m C) A))
+      ==> B
+       as (ltac:(MonoidExpr.encode (MonoidExpr.term_map_m C) B)) using C
+      : A = B)
      (at level 40, left associativity).
 
 Section Unittests.
@@ -620,26 +624,26 @@ Let map := MonoidExpr.MTerm_map m.
 
 Let reflect_test_0
   :  (a + 0) = (0 + a)
-  := reflect2 (a + 0) ==> (0 + a) using map.
+  := rewrite (a + 0) ==> (0 + a) using map.
 
 Let reflect_test_1
   :  (a + 0) + (0 + b) = a + b
-  := reflect2 ((a + 0) + (0 + b)) ==> (a + b) using map.
+  := rewrite ((a + 0) + (0 + b)) ==> (a + b) using map.
 
 Let reflect_test_2
   :  (0 + a) + b = (a + b)
-  := reflect2 ((0 + a) + b) ==> (a + b) using map.
+  := rewrite ((0 + a) + b) ==> (a + b) using map.
 
 Let reflect_test_3
   :  (a + b) + (c + d) = a + ((b + c) + d)
-  := reflect2 (a + b) + (c + d) ==> a + ((b + c) + d) using map.
+  := rewrite (a + b) + (c + d) ==> a + ((b + c) + d) using map.
 
 Let reflect_test_4
   :  (a + b) + (0 + c) = (a + 0) + (b + c)
-  := reflect2 (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
+  := rewrite (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
 
 Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
-  := reflect2 (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
+  := rewrite (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
 
 End Unittests.

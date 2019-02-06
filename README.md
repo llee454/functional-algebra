@@ -29,27 +29,27 @@ Monoid_expr.v uses the first of these simplifiers to prove monoid equations and 
 ```coq
 Let reflect_test_0
   :  (a + 0) = (0 + a)
-  := reflect2 (a + 0) ==> (0 + a) using map.
+  := rewrite (a + 0) ==> (0 + a) using map.
 
 Let reflect_test_1
   :  (a + 0) + (0 + b) = a + b
-  := reflect2 ((a + 0) + (0 + b)) ==> (a + b) using map.
+  := rewrite ((a + 0) + (0 + b)) ==> (a + b) using map.
 
 Let reflect_test_2
   :  (0 + a) + b = (a + b)
-  := reflect2 ((0 + a) + b) ==> (a + b) using map.
+  := rewrite ((0 + a) + b) ==> (a + b) using map.
 
 Let reflect_test_3
   :  (a + b) + (c + d) = a + ((b + c) + d)
-  := reflect2 (a + b) + (c + d) ==> a + ((b + c) + d) using map.
+  := rewrite (a + b) + (c + d) ==> a + ((b + c) + d) using map.
 
 Let reflect_test_4
   :  (a + b) + (0 + c) = (a + 0) + (b + c)
-  := reflect2 (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
+  := rewrite (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
 
 Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
-  := reflect2 (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
+  := rewrite (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
 ```
 
 These functions allow us to automate many of the steps involved in proving algebraic theorems directly in Gallina, and represent an alternative to relying on tactics such as auto, omega, etc.
