@@ -358,4 +358,4 @@ Notation "{+}" := (Abelian_Group.op) : abelian_group_scope.
 
 Notation "{-}" := (Abelian_Group.op_neg _) : abelian_group_scope.
 
-Notation "- x" := (Abelian_Group.op_neg x) : abelian_group_scope.
+Notation "- x" := (Abelian_Group.op_neg _ x) : abelian_group_scope.
