@@ -142,30 +142,32 @@ Definition op_is_id := Monoid.is_id E {+}.
   Proves that every left identity must also
   be a right identity.
 *)
-Definition op_is_id_lr
-  :  forall x : E, op_is_id_l x -> op_is_id_r x
-  := fun x H y
-       => H y
-       || a = y @a by op_is_comm y x.
+Theorem op_is_id_lr
+  :  forall x : E, op_is_id_l x -> op_is_id_r x.
+Proof
+  fun x H y
+    => H y
+    || a = y @a by op_is_comm y x.
 
 (**
   Proves that every left identity is an
   identity.
 *)
-Definition op_is_id_lid
-  : forall x : E, op_is_id_l x -> op_is_id x
-  := fun x H
-       => conj H (op_is_id_lr x H).
+Theorem op_is_id_lid
+  : forall x : E, op_is_id_l x -> op_is_id x.
+Proof
+  fun x H
+    => conj H (op_is_id_lr x H).
 
 (** Proves that 0 is the right identity element. *)
-Definition op_id_r
-  :  op_is_id_r 0
-  := op_is_id_lr 0 op_id_l.
+Theorem op_id_r
+  :  op_is_id_r 0.
+Proof op_is_id_lr 0 op_id_l.
 
 (** Proves that 0 is the identity element. *)
-Definition op_id
-  :  op_is_id 0
-  := conj op_id_l op_id_r.
+Theorem op_id
+  :  op_is_id 0.
+Proof conj op_id_l op_id_r.
 
 (**
   Accepts two group elements, x and y, and
@@ -186,16 +188,17 @@ Definition op_is_inv_r := Monoid.is_inv_r E {+} 0 op_id.
 Definition op_is_inv := Monoid.is_inv E {+} 0 op_id.
 
 (** Proves that every element has a right inverse. *)
-Definition op_inv_r_ex
-  :  forall x : E, exists y : E, op_is_inv_r x y
-  := fun x
-       => ex_ind
-            (fun (y : E) (H : op_is_inv_l x y)
-              => ex_intro
-                   (op_is_inv_r x)
-                   y
-                   (H || a = 0 @a by op_is_comm x y))
-            (op_inv_l_ex x).
+Theorem op_inv_r_ex
+  :  forall x : E, exists y : E, op_is_inv_r x y.
+Proof
+  fun x
+    => ex_ind
+         (fun (y : E) (H : op_is_inv_l x y)
+           => ex_intro
+                (op_is_inv_r x)
+                y
+                (H || a = 0 @a by op_is_comm x y))
+         (op_inv_l_ex x).
 
 (**
   Represents the group structure formed by
@@ -207,92 +210,92 @@ Definition op_group := Group.group E 0 {+} op_is_assoc op_id_l op_id_r op_inv_l_
 Definition op_monoid := Group.op_monoid op_group.
 
 (** Proves that the left identity element is unique. *)
-Definition op_id_l_uniq
-  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0
-  := Group.op_id_l_uniq op_group.
+Theorem op_id_l_uniq
+  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0.
+Proof Group.op_id_l_uniq op_group.
 
 (** Proves that the right identity element is unique. *)
-Definition op_id_r_uniq
-  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0
-  := Group.op_id_r_uniq op_group.
+Theorem op_id_r_uniq
+  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0.
+Proof Group.op_id_r_uniq op_group.
 
 (** Proves that the identity element is unique. *)
-Definition op_id_uniq
-  :  forall x : E, Monoid.is_id E {+} x -> x = 0
-  := Group.op_id_uniq op_group.
+Theorem op_id_uniq
+  :  forall x : E, Monoid.is_id E {+} x -> x = 0.
+Proof Group.op_id_uniq op_group.
 
 (**
   Proves that for every group element, x,
   its left and right inverses are equal.
 *)
-Definition op_inv_l_r_eq
-  :  forall x y : E, op_is_inv_l x y -> forall z : E, op_is_inv_r x z -> y = z
-  := Group.op_inv_l_r_eq op_group.
+Theorem op_inv_l_r_eq
+  :  forall x y : E, op_is_inv_l x y -> forall z : E, op_is_inv_r x z -> y = z.
+Proof Group.op_inv_l_r_eq op_group.
 
 (**
   Proves that the inverse relation is
   symmetrical.
 *)
-Definition op_inv_sym
-  :  forall x y : E, op_is_inv x y <-> op_is_inv y x
-  := Group.op_inv_sym op_group.
+Theorem op_inv_sym
+  :  forall x y : E, op_is_inv x y <-> op_is_inv y x.
+Proof Group.op_inv_sym op_group.
 
 (**
   Proves that every group element has an
   inverse.
 *)
-Definition op_inv_ex
-  :  forall x : E, exists y : E, op_is_inv x y
-  := Group.op_inv_ex op_group.
+Theorem op_inv_ex
+  :  forall x : E, exists y : E, op_is_inv x y.
+Proof Group.op_inv_ex op_group.
 
 (** Proves the left introduction rule. *)
-Definition op_intro_l
-  :  forall x y z : E, x = y -> z + x = z + y
-  := Group.op_intro_l op_group.
+Theorem op_intro_l
+  :  forall x y z : E, x = y -> z + x = z + y.
+Proof Group.op_intro_l op_group.
 
 (** Proves the right introduction rule. *)
-Definition op_intro_r
-  :  forall x y z : E, x = y -> x + z = y + z
-  := Group.op_intro_r op_group.
+Theorem op_intro_r
+  :  forall x y z : E, x = y -> x + z = y + z.
+Proof Group.op_intro_r op_group.
 
 (** Proves the left cancellation rule. *)
-Definition op_cancel_l
-  :   forall x y z : E, z + x = z + y -> x = y
-  := Group.op_cancel_l op_group.
+Theorem op_cancel_l
+  :   forall x y z : E, z + x = z + y -> x = y.
+Proof Group.op_cancel_l op_group.
 
 (** Proves the right cancellation rule. *)
-Definition op_cancel_r
-  :   forall x y z : E, x + z = y + z -> x = y
-  := Group.op_cancel_r op_group.
+Theorem op_cancel_r
+  :   forall x y z : E, x + z = y + z -> x = y.
+Proof Group.op_cancel_r op_group.
 
 (**
   Proves that an element's left inverse
   is unique.
 *)
-Definition op_inv_l_uniq
-  :  forall x y z : E, op_is_inv_l x y -> op_is_inv_l x z -> z = y
-  := Group.op_inv_l_uniq op_group.
+Theorem op_inv_l_uniq
+  :  forall x y z : E, op_is_inv_l x y -> op_is_inv_l x z -> z = y.
+Proof Group.op_inv_l_uniq op_group.
 
 (**
   Proves that an element's right inverse
   is unique.
 *)
-Definition op_inv_r_uniq
-  :  forall x y z : E, op_is_inv_r x y -> op_is_inv_r x z -> z = y
-  := Group.op_inv_r_uniq op_group.
+Theorem op_inv_r_uniq
+  :  forall x y z : E, op_is_inv_r x y -> op_is_inv_r x z -> z = y.
+Proof Group.op_inv_r_uniq op_group.
 
 (** Proves that an element's inverse is unique. *)
-Definition op_inv_uniq
-  :  forall x y z : E, op_is_inv x y -> op_is_inv x z -> z = y
-  := Group.op_inv_uniq op_group.
+Theorem op_inv_uniq
+  :  forall x y z : E, op_is_inv x y -> op_is_inv x z -> z = y.
+Proof Group.op_inv_uniq op_group.
 
 (**
   Proves explicitly that every element has a
   unique inverse.
 *)
-Definition op_inv_uniq_ex
-  :  forall x : E, exists! y : E, op_is_inv x y
-  := Group.op_inv_uniq_ex op_group.
+Theorem op_inv_uniq_ex
+  :  forall x : E, exists! y : E, op_is_inv x y.
+Proof Group.op_inv_uniq_ex op_group.
 
 (** Represents strongly-specified negation. *)
 Definition op_neg_strong
@@ -314,35 +317,45 @@ Notation "- x" := (op_neg x) : abelian_group_scope.
   Asserts that the negation returns the inverse
   of its argument.
 *)
-Definition op_neg_def
-  :  forall x : E, op_is_inv x (- x)
-  := Group.op_neg_def op_group.
+Theorem op_neg_def
+  :  forall x : E, op_is_inv x (- x).
+Proof Group.op_neg_def op_group.
 
 (** Proves that negation is one-to-one *)
-Definition op_neg_inj
-  :  is_injective E E op_neg
-  := Group.op_neg_inj op_group.
+Theorem op_neg_inj
+  :  is_injective E E op_neg.
+Proof Group.op_neg_inj op_group.
 
 (** Proves the cancellation property for negation. *)
-Definition op_cancel_neg
-  :  forall x : E, op_neg (- x) = x
-  := Group.op_cancel_neg op_group.
+Theorem op_cancel_neg
+  :  forall x : E, op_neg (- x) = x.
+Proof Group.op_cancel_neg op_group.
 
 (** Proves that negation is onto *)
-Definition op_neg_onto
-  :  is_onto E E op_neg
-  := Group.op_neg_onto op_group.
+Theorem op_neg_onto
+  :  is_onto E E op_neg.
+Proof Group.op_neg_onto op_group.
 
 (** Proves that negation is surjective *)
-Definition op_neg_bijective
-  :  is_bijective E E op_neg
-  := Group.op_neg_bijective op_group.
+Theorem op_neg_bijective
+  :  is_bijective E E op_neg.
+Proof Group.op_neg_bijective op_group.
 
 (** Proves that neg x = y -> neg y = x *)
-Definition op_neg_rev
-  :  forall x y : E, - x = y -> - y = x
-  := Group.op_neg_rev op_group.
+Theorem op_neg_rev
+  :  forall x y : E, - x = y -> - y = x.
+Proof Group.op_neg_rev op_group.
 
 End Theorems.
 
 End Abelian_Group.
+
+Notation "0" := (Abelian_Group.E_0) : abelian_group_scope.
+
+Notation "x + y" := (Abelian_Group.op x y) (at level 50, left associativity) : abelian_group_scope.
+
+Notation "{+}" := (Abelian_Group.op) : abelian_group_scope.
+
+Notation "{-}" := (Abelian_Group.op_neg _) : abelian_group_scope.
+
+Notation "- x" := (Abelian_Group.op_neg x) : abelian_group_scope.
