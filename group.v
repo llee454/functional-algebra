@@ -175,6 +175,24 @@ Proof Monoid.op_intro_r op_monoid.
 Definition op_is_inv := Monoid.op_is_inv op_monoid.
 
 (**
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+*)
+Definition has_inv_l := Monoid.has_inv_l op_monoid.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+*)
+Definition has_inv_r := Monoid.has_inv_r op_monoid.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+*)
+Definition has_inv := Monoid.has_inv op_monoid.
+
+(**
   Proves that for every group element, x,
   its left and right inverses are equal.
 *)
@@ -268,6 +286,70 @@ Proof
                    y
                    (conj H (fun z H0 => eq_sym (op_inv_uniq x y z H H0))))
             (op_inv_ex x).
+
+(**
+  Proves that the identity element is its own
+  left inverse.
+*)
+Theorem op_inv_0_l
+  :  op_is_inv_l 0 0.
+Proof Monoid.op_inv_0_l op_monoid.
+
+(**
+  Proves that the identity element is its own
+  right inverse.
+*)
+Theorem op_inv_0_r
+  :  op_is_inv_r 0 0.
+Proof Monoid.op_inv_0_r op_monoid.
+
+(**
+  Proves that the identity element is its own
+  inverse.
+*)
+Theorem op_inv_0
+  :  op_is_inv 0 0.
+Proof Monoid.op_inv_0 op_monoid.
+
+(**
+  Proves that the identity element has a
+  left inverse.
+*)
+Theorem op_has_inv_l_0
+  :  has_inv_l 0.
+Proof Monoid.op_has_inv_l_0 op_monoid.
+
+(**
+  Proves that the identity element has a
+  right inverse.
+*)
+Theorem op_has_inv_r_0
+  :  has_inv_r 0.
+Proof Monoid.op_has_inv_r_0 op_monoid.
+
+(**
+  Proves that the identity element has an
+  inverse.
+*)
+Theorem op_has_inv_0
+  :  has_inv 0.
+Proof Monoid.op_has_inv_0 op_monoid.
+
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem op_inv_0_eq_0
+  :  forall x : E, op_is_inv x 0 -> x = 0.
+Proof Monoid.op_inv_0_eq_0 op_monoid.
+
+(**
+  Proves that 0 is the only element whose
+  inverse is 0.
+*)
+Theorem op_inv_0_uniq
+  :  unique (fun x => op_is_inv x 0) 0.
+Proof Monoid.op_inv_0_uniq op_monoid.
  
 (** Represents strongly-specified negation. *)
 Definition op_neg_strong
@@ -281,9 +363,11 @@ Definition op_neg
 
 Notation "{-}" := (op_neg) : group_scope.
 
+Notation "- x" := (op_neg x) : group_scope.
+
 (** Asserts that the negation returns the inverse of its argument *)
 Theorem op_neg_def
-  :  forall x : E, op_is_inv x ({-} x).
+  :  forall x : E, op_is_inv x (- x).
 Proof
   fun x
     => Monoid.op_neg_def op_monoid x (op_inv_ex x).
@@ -303,16 +387,16 @@ Proof
 
 (** Proves the cancellation property for negation. *)
 Theorem op_cancel_neg
-  :  forall x : E, {-} ({-} x) = x.
+  :  forall x : E, - (- x) = x.
 Proof
   fun x
-    => Monoid.op_cancel_neg_gen op_monoid x (op_inv_ex x) (op_inv_ex ({-} x)).
+    => Monoid.op_cancel_neg_gen op_monoid x (op_inv_ex x) (op_inv_ex (- x)).
 
 (** Proves that negation is surjective - onto *)
 Theorem op_neg_onto
   :  is_onto E E {-}.
 Proof
-  fun x => ex_intro (fun y => {-} y = x) ({-} x) (op_cancel_neg x).
+  fun x => ex_intro (fun y => - y = x) (- x) (op_cancel_neg x).
 
 (** Proves that negation is bijective. *)
 Theorem op_neg_bijective
@@ -322,46 +406,46 @@ Proof
 
 (** Proves that neg x = y -> neg y = x *)
 Theorem op_neg_rev
-  :  forall x y : E, {-} x = y -> {-} y = x.
+  :  forall x y : E, - x = y -> - y = x.
 Proof
   fun x y H
     => eq_sym
             (f_equal {-} H
-             || a = {-} y @a by <- op_cancel_neg x).
+             || a = - y @a by <- op_cancel_neg x).
 
 (**
   Proves that the left inverse of x + y is -y + -x.
 *)
 Theorem op_neg_distrib_inv_l
-  :  forall x y : E, op_is_inv_l (x + y) ({-} y + {-} x).
+  :  forall x y : E, op_is_inv_l (x + y) (- y + - x).
 Proof
   fun x y
-    => ((proj2 (op_neg_def ({-} y)))
-            || {-} y + a = 0                 @a by <- op_cancel_neg y
-            || {-} y + a = 0                 @a by op_id_l y
-            || {-} y + (a + y) = 0           @a by proj2 (op_neg_def ({-} x))
-            || {-} y + (({-} x + a) + y) = 0 @a by <- op_cancel_neg x
-            || {-} y + a = 0                 @a by op_is_assoc ({-} x) x y
-            || a = 0                         @a by <- op_is_assoc ({-} y) ({-} x) (x + y)).
+    => ((proj2 (op_neg_def (- y)))
+            || - y + a = 0                 @a by <- op_cancel_neg y
+            || - y + a = 0                 @a by op_id_l y
+            || - y + (a + y) = 0           @a by proj2 (op_neg_def (- x))
+            || - y + ((- x + a) + y) = 0 @a by <- op_cancel_neg x
+            || - y + a = 0                 @a by op_is_assoc (- x) x y
+            || a = 0                         @a by <- op_is_assoc (- y) (- x) (x + y)).
 
 (**
   Proves that the right inverse of x + y is -y + -x.
 *)
 Theorem op_neg_distrib_inv_r
-  :  forall x y : E, op_is_inv_r (x + y) ({-} y + {-} x).
+  :  forall x y : E, op_is_inv_r (x + y) (- y + - x).
 Proof
   fun x y
     => ((proj2 (op_neg_def x))
-            || x + a = 0           @a by op_id_l ({-} x)
-            || x + (a + {-} x) = 0 @a by proj2 (op_neg_def y)
-            || x + a = 0           @a by op_is_assoc y ({-} y) ({-} x)
-            || a = 0               @a by <- op_is_assoc x y ({-} y + {-} x)).
+            || x + a = 0           @a by op_id_l (- x)
+            || x + (a + - x) = 0 @a by proj2 (op_neg_def y)
+            || x + a = 0           @a by op_is_assoc y (- y) (- x)
+            || a = 0               @a by <- op_is_assoc x y (- y + - x)).
 
 (**
   Proves that the inverse of x + y is -y + -x.
 *)
 Theorem op_neg_distrib_inv
-  :  forall x y : E, op_is_inv (x + y) ({-} y + {-} x).
+  :  forall x y : E, op_is_inv (x + y) (- y + - x).
 Proof
   fun x y
     => conj
@@ -373,22 +457,22 @@ Proof
   -(x + y) = -y + -x.
 *)
 Theorem op_neg_distrib
-  :  forall x y : E, {-} (x + y) = {-} y + {-} x.
+  :  forall x y : E, - (x + y) = - y + - x.
 Proof
   fun x y
     => ex_ind
             (fun z (H : unique (op_is_inv (x + y)) z)
               => let H0
-                   :  z = {-} (x + y)
+                   :  z = - (x + y)
                    := (proj2 H) 
-                       ({-} (x + y))
+                       (- (x + y))
                        (op_neg_def (x + y)) in
                  let H1
-                   :  z = ({-} y + {-} x)
+                   :  z = (- y + - x)
                    := (proj2 H)
-                        ({-} y + {-} x)
+                        (- y + - x)
                         (op_neg_distrib_inv x y) in
-                 (H1 || a = {-} y + {-} x @a by <- H0))
+                 (H1 || a = - y + - x @a by <- H0))
             (op_inv_uniq_ex (x + y)).
 
 End Theorems.
@@ -402,3 +486,5 @@ Notation "x + y" := (Group.op x y) (at level 50, left associativity) : group_sco
 Notation "{+}" := (Group.op) : group_scope.
 
 Notation "{-}" := (Group.op_neg _) : group_scope.
+
+Notation "- x" := (Group.op_neg _ x) : group_scope.

@@ -399,6 +399,27 @@ Theorem op_has_inv_0
 Proof ex_intro (op_is_inv 0) 0 op_inv_0.
 
 (**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem op_inv_0_eq_0
+  :  forall x : M, op_is_inv x 0 -> x = 0.
+Proof
+  fun x H
+    => proj1 H
+       || a = 0 @a by <- op_id_l x.
+
+(**
+  Proves that 0 is the only element whose
+  inverse is 0.
+*)
+Theorem op_inv_0_uniq
+  :  unique (fun x => op_is_inv x 0) 0.
+Proof
+  conj op_inv_0
+    (fun x H => eq_sym (op_inv_0_eq_0 x H)).
+
+(**
   Every monoid has a subset of elements that
   possess inverses. This can be seen by noting
   that, by definition, every monoid has an

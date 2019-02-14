@@ -209,6 +209,24 @@ Definition op_group := Group.group E 0 {+} op_is_assoc op_id_l op_id_r op_inv_l_
 (** Represents the monoid formed by op over E. *)
 Definition op_monoid := Group.op_monoid op_group.
 
+(**
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+*)
+Definition has_inv_l := Group.has_inv_l op_group.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+*)
+Definition has_inv_r := Group.has_inv_r op_group.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+*)
+Definition has_inv := Group.has_inv op_group.
+
 (** Proves that the left identity element is unique. *)
 Theorem op_id_l_uniq
   :  forall x : E, Monoid.is_id_l E {+} x -> x = 0.
@@ -297,6 +315,70 @@ Theorem op_inv_uniq_ex
   :  forall x : E, exists! y : E, op_is_inv x y.
 Proof Group.op_inv_uniq_ex op_group.
 
+(**
+  Proves that the identity element is its own
+  left inverse.
+*)
+Theorem op_inv_0_l
+  :  op_is_inv_l 0 0.
+Proof Group.op_inv_0_l op_group.
+
+(**
+  Proves that the identity element is its own
+  right inverse.
+*)
+Theorem op_inv_0_r
+  :  op_is_inv_r 0 0.
+Proof Group.op_inv_0_r op_group.
+
+(**
+  Proves that the identity element is its own
+  inverse.
+*)
+Theorem op_inv_0
+  :  op_is_inv 0 0.
+Proof Group.op_inv_0 op_group.
+
+(**
+  Proves that the identity element has a
+  left inverse.
+*)
+Theorem op_has_inv_l_0
+  :  has_inv_l 0.
+Proof Group.op_has_inv_l_0 op_group.
+
+(**
+  Proves that the identity element has a
+  right inverse.
+*)
+Theorem op_has_inv_r_0
+  :  has_inv_r 0.
+Proof Group.op_has_inv_r_0 op_group.
+
+(**
+  Proves that the identity element has an
+  inverse.
+*)
+Theorem op_has_inv_0
+  :  has_inv 0.
+Proof Group.op_has_inv_0 op_group.
+
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem op_inv_0_eq_0
+  :  forall x : E, op_is_inv x 0 -> x = 0.
+Proof Group.op_inv_0_eq_0 op_group.
+
+(**
+  Proves that 0 is the only element whose
+  inverse is 0.
+*)
+Theorem op_inv_0_uniq
+  :  unique (fun x => op_is_inv x 0) 0.
+Proof Group.op_inv_0_uniq op_group.
+ 
 (** Represents strongly-specified negation. *)
 Definition op_neg_strong
   :  forall x : E, { y | op_is_inv x y }
@@ -345,6 +427,35 @@ Proof Group.op_neg_bijective op_group.
 Theorem op_neg_rev
   :  forall x y : E, - x = y -> - y = x.
 Proof Group.op_neg_rev op_group.
+
+(**
+  Proves that the left inverse of x + y is -y + -x.
+*)
+Theorem op_neg_distrib_inv_l
+  :  forall x y : E, op_is_inv_l (x + y) (- y + - x).
+Proof Group.op_neg_distrib_inv_l op_group.
+
+(**
+  Proves that the right inverse of x + y is -y + -x.
+*)
+Theorem op_neg_distrib_inv_r
+  :  forall x y : E, op_is_inv_r (x + y) (- y + - x).
+Proof Group.op_neg_distrib_inv_r op_group.
+
+(**
+  Proves that the inverse of x + y is -y + -x.
+*)
+Theorem op_neg_distrib_inv
+  :  forall x y : E, op_is_inv (x + y) (- y + - x).
+Proof Group.op_neg_distrib_inv op_group.
+
+(**
+  Proves that negation is distributive: i.e.
+  -(x + y) = -y + -x.
+*)
+Theorem op_neg_distrib
+  :  forall x y : E, - (x + y) = - y + - x.
+Proof Group.op_neg_distrib op_group.
 
 End Theorems.
 

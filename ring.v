@@ -261,6 +261,24 @@ Definition sum_is_inv_r
 Definition sum_is_inv
   := Abelian_Group.op_is_inv sum_abelian_group.
 
+(**
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+*)
+Definition sum_has_inv_l := Abelian_Group.has_inv_l sum_abelian_group.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+*)
+Definition sum_has_inv_r := Abelian_Group.has_inv_r sum_abelian_group.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+*)
+Definition sum_has_inv := Abelian_Group.has_inv sum_abelian_group.
+
 (** Asserts that every element has a right inverse. *)
 Definition sum_inv_r_ex
   :  forall x : E, exists y : E, sum_is_inv_r x y
@@ -354,47 +372,66 @@ Definition sum_inv_r_uniq
   :  forall x y z : E, sum_is_inv_r x y -> sum_is_inv_r x z -> z = y
   := Abelian_Group.op_inv_r_uniq sum_abelian_group.
 
-(** TODO: move the following theorems about 0 to monoid. *)
-
 (**
   Proves that 0 is its own left additive
   inverse.
 *)
-Definition sum_0_inv_l
-  :  sum_is_inv_l 0 0
-  := sum_id_l 0.
+Theorem sum_0_inv_l
+  :  sum_is_inv_l 0 0.
+Proof Abelian_Group.op_inv_0_l sum_abelian_group.
 
 (**
   Proves that 0 is its own right additive
   inverse.
 *)
-Definition sum_0_inv_r
-  :  sum_is_inv_r 0 0
-  := sum_id_r 0.
+Theorem sum_0_inv_r
+  :  sum_is_inv_r 0 0.
+Proof Abelian_Group.op_inv_0_r sum_abelian_group.
 
 (** Proves that 0 is it's own additive inverse. *)
-Definition sum_0_inv
-  :  sum_is_inv 0 0
-  := conj sum_0_inv_l sum_0_inv_r.
+Theorem sum_0_inv
+  :  sum_is_inv 0 0.
+Proof Abelian_Group.op_inv_0 sum_abelian_group.
 
 (**
-  Proves that if an element's, x, additive
-  inverse equals 0, x equals 0.
+  Proves that the identity element has a
+  left inverse.
 *)
-Definition sum_inv_0
-  :  forall x : E, sum_is_inv x 0 -> x = 0
-  := fun x H
-       => proj1 H
-          || a = 0 @a by <- sum_id_l x.
+Theorem sum_has_inv_l_0
+  :  sum_has_inv_l 0.
+Proof Abelian_Group.op_has_inv_l_0 sum_abelian_group.
+
+(**
+  Proves that the identity element has a
+  right inverse.
+*)
+Theorem sum_has_inv_r_0
+  :  sum_has_inv_r 0.
+Proof Abelian_Group.op_has_inv_r_0 sum_abelian_group.
+
+(**
+  Proves that the identity element has an
+  inverse.
+*)
+Theorem sum_has_inv_0
+  :  sum_has_inv 0.
+Proof Abelian_Group.op_has_inv_0 sum_abelian_group.
+
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem sum_inv_0_eq_0
+  :  forall x : E, sum_is_inv x 0 -> x = 0.
+Proof Abelian_Group.op_inv_0_eq_0 sum_abelian_group.
 
 (**
   Proves that 0 is the only element whose
   additive inverse is 0.
 *)
-Definition sum_inv_0_uniq
-  :  unique (fun x => sum_is_inv x 0) 0
-  := conj sum_0_inv
-       (fun x H => eq_sym (sum_inv_0 x H)).
+Theorem sum_inv_0_uniq
+  :  unique (fun x => sum_is_inv x 0) 0.
+Proof Abelian_Group.op_inv_0_uniq sum_abelian_group.
 
 (** Represents strongly-specified negation. *)
 Definition sum_neg_strong
@@ -442,6 +479,35 @@ Definition sum_neg_bijective
 Definition sum_neg_rev
   :  forall x y : E, - x = y -> - y = x
   := Abelian_Group.op_neg_rev sum_abelian_group.
+
+(**
+  Proves that the left inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv_l
+  :  forall x y : E, sum_is_inv_l (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv_l sum_abelian_group.
+
+(**
+  Proves that the right inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv_r
+  :  forall x y : E, sum_is_inv_r (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv_r sum_abelian_group.
+
+(**
+  Proves that the inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv
+  :  forall x y : E, sum_is_inv (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv sum_abelian_group.
+
+(**
+  Proves that negation is distributive: i.e.
+  -(x + y) = -y + -x.
+*)
+Theorem sum_neg_distrib
+  :  forall x y : E, - (x + y) = - y + - x.
+Proof Abelian_Group.op_neg_distrib sum_abelian_group.
 
 (**
   Accepts one element, x, and asserts
@@ -534,55 +600,83 @@ Definition prod_has_inv := Monoid.has_inv prod_monoid.
   Proves that the left and right inverses of
   an element must be equal.
 *)
-Definition prod_inv_l_r_eq := Monoid.op_inv_l_r_eq prod_monoid.
+Theorem prod_inv_l_r_eq
+  :  forall x y : E, prod_is_inv_l x y -> forall z : E, prod_is_inv_r x z -> y = z.
+Proof Monoid.op_inv_l_r_eq prod_monoid.
 
 (**
   Proves that the inverse relationship is
   symmetric.
 *)
-Definition prod_inv_sym := Monoid.op_inv_sym prod_monoid.
+Theorem prod_inv_sym
+  :  forall x y : E, prod_is_inv x y <-> prod_is_inv y x.
+Proof Monoid.op_inv_sym prod_monoid.
 
 (**
   Proves the left cancellation law for elements
   possessing a left inverse.
 *)
-Definition prod_cancel_l := Monoid.op_cancel_l prod_monoid.
+Theorem prod_cancel_l
+  :  forall x y z : E, prod_has_inv_l z -> z # x = z # y -> x = y.
+Proof Monoid.op_cancel_l prod_monoid.
 
 (**
   Proves the right cancellation law for
   elements possessing a right inverse.
 *)
-Definition prod_cancel_r := Monoid.op_cancel_r prod_monoid.
+Theorem prod_cancel_r 
+  :  forall x y z : E, prod_has_inv_r z -> x # z = y # z -> x = y.
+Proof Monoid.op_cancel_r prod_monoid.
 
 (**
   Proves that an element's left inverse
   is unique.
 *)
-Definition prod_inv_l_uniq := Monoid.op_inv_l_uniq prod_monoid.
+Theorem prod_inv_l_uniq
+  :  forall x : E, prod_has_inv_r x -> forall y z : E, prod_is_inv_l x y -> prod_is_inv_l x z -> z = y.
+Proof Monoid.op_inv_l_uniq prod_monoid.
 
 (**
   Proves that an element's right inverse
   is unique.
 *)
-Definition prod_inv_r_uniq := Monoid.op_inv_r_uniq prod_monoid.
+Theorem prod_inv_r_uniq
+  :  forall x : E, prod_has_inv_l x -> forall y z : E, prod_is_inv_r x y -> prod_is_inv_r x z -> z = y.
+Proof Monoid.op_inv_r_uniq prod_monoid.
 
-(** Proves that an element's inverse is unique. *)
-Definition prod_inv_uniq := Monoid.op_inv_uniq prod_monoid.
+(**
+  Proves that an element's inverse is unique.
 
-(** Proves that 1 is its own left multiplicative inverse. *)
-Definition recipr_1_l
-  :  prod_is_inv_l 1 1
-  := Monoid.op_inv_0_l prod_monoid.
+  Note: this theorem is defined as transparent to
+  allow a theorem in the field module to compile.
+*)
+Definition prod_inv_uniq
+  :  forall x y z : E, prod_is_inv x y -> prod_is_inv x z -> z = y
+  := Monoid.op_inv_uniq prod_monoid.
 
-(** Proves that 1 is its own right multiplicative inverse. *)
-Definition recipr_1_r
-  :  prod_is_inv_r 1 1
-  := Monoid.op_inv_0_r prod_monoid.
+(**
+  Proves that the identity element is its own
+  left inverse.
+*)
+Theorem prod_inv_1_l
+  :  prod_is_inv_l 1 1.
+Proof Monoid.op_inv_0_l prod_monoid.
 
-(** Proves that 1 is its own recriprical. *)
-Definition recipr_1
-  :  prod_is_inv 1 1
-  := Monoid.op_inv_0 prod_monoid.
+(**
+  Proves that the identity element is its own
+  right inverse.
+*)
+Theorem prod_inv_1_r
+  :  prod_is_inv_r 1 1.
+Proof Monoid.op_inv_0_l prod_monoid.
+
+(**
+  Proves that the identity element is its own
+  inverse.
+*)
+Theorem prod_inv_1
+  :  prod_is_inv 1 1.
+Proof Monoid.op_inv_0 prod_monoid.
 
 (** Proves that 1 has a left multiplicative inverse. *)
 Definition prod_has_inv_l_1
@@ -599,15 +693,46 @@ Definition prod_has_inv_1
   :  prod_has_inv 1
   := Monoid.op_has_inv_0 prod_monoid.
 
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem prod_inv_1_eq_1
+  :  forall x : E, prod_is_inv x 1 -> x = 1.
+Proof Monoid.op_inv_0_eq_0 prod_monoid.
+
+(**
+  Proves that 0 is the only element whose
+  inverse is 0.
+*)
+Theorem prod_inv_1_uniq
+  :  unique (fun x => prod_is_inv x 1) 1.
+Proof Monoid.op_inv_0_uniq prod_monoid.
+
+(** Proves that 1 is its own left multiplicative inverse. *)
+Theorem recipr_1_l
+  :  prod_is_inv_l 1 1.
+Proof Monoid.op_inv_0_l prod_monoid.
+
+(** Proves that 1 is its own right multiplicative inverse. *)
+Theorem recipr_1_r
+  :  prod_is_inv_r 1 1.
+Proof Monoid.op_inv_0_r prod_monoid.
+
+(** Proves that 1 is its own recriprical. *)
+Theorem recipr_1
+  :  prod_is_inv 1 1.
+Proof Monoid.op_inv_0 prod_monoid.
+
 (** TODO Reciprical functions (op_neg) from Monoid. *)
 
 (**
   Asserts that multiplication is
   distributive over addition.
 *)
-Definition prod_sum_distrib
-  :  is_distrib E prod sum
-  := conj prod_sum_distrib_l prod_sum_distrib_r.
+Theorem prod_sum_distrib
+  :  is_distrib E prod sum.
+Proof conj prod_sum_distrib_l prod_sum_distrib_r.
 
 (**
   Proves that 0 times every number equals 0.
@@ -617,9 +742,10 @@ Definition prod_sum_distrib
   0 x + 0 x = 0 x
         0 x = 0
 *)
-Definition prod_0_l
-  :  forall x : E, 0 # x = 0
-  := fun x
+Theorem prod_0_l
+  :  forall x : E, 0 # x = 0.
+Proof
+  fun x
     => let H
          : (0 # x) + (0 # x) = (0 # x) + 0
          := eq_refl (0 # x)
@@ -629,9 +755,10 @@ Definition prod_0_l
        in sum_cancel_l (0 # x) 0 (0 # x) H.
 
 (** Proves that 0 times every number equals 0. *)
-Definition prod_0_r
-  :  forall x : E, x # 0 = 0
-  := fun x
+Theorem prod_0_r
+  :  forall x : E, x # 0 = 0.
+Proof
+  fun x
     => let H
          :  (x # 0) + (x # 0) = 0 + (x # 0)
          := eq_refl (x # 0)
@@ -644,43 +771,52 @@ Definition prod_0_r
   Proves that 0 does not have a left
   multiplicative inverse.
 *)
-Definition prod_0_inv_l
-  :  ~ prod_has_inv_l 0
-  := ex_ind
-       (fun x (H : x # 0 = 1)
-         => distinct_0_1 (H || a = 1 @a by <- prod_0_r x)).
+Theorem prod_0_inv_l
+  :  ~ prod_has_inv_l 0.
+Proof
+  ex_ind
+    (fun x (H : x # 0 = 1)
+      => distinct_0_1 (H || a = 1 @a by <- prod_0_r x)).
 
 (**
   Proves that 0 does not have a right
   multiplicative inverse.
 *)
-Definition prod_0_inv_r
-  :  ~ prod_has_inv_r 0
-  := ex_ind
-       (fun x (H : 0 # x = 1)
-         => distinct_0_1 (H || a = 1 @a by <- prod_0_l x)).
+Theorem prod_0_inv_r
+  :  ~ prod_has_inv_r 0.
+Proof
+  ex_ind
+    (fun x (H : 0 # x = 1)
+      => distinct_0_1 (H || a = 1 @a by <- prod_0_l x)).
 
 (**
   Proves that 0 does not have a multiplicative
   inverse - I.E. 0 does not have a
   reciprocal.
 *)
-Definition prod_0_inv
-  :  ~ prod_has_inv 0
-  := ex_ind
-       (fun x H =>  prod_0_inv_l (ex_intro (fun x => prod_is_inv_l 0 x) x (proj1 H))).
+Theorem prod_0_inv
+  :  ~ prod_has_inv 0.
+Proof
+  ex_ind
+    (fun x H
+      => prod_0_inv_l
+           (ex_intro
+             (fun x
+                => prod_is_inv_l 0 x)
+             x (proj1 H))).
 
 (**
   Proves that multiplicative inverses, when
   they exist are always nonzero.
 *)
-Definition prod_inv_0
-  :  forall x y : E, prod_is_inv x y -> nonzero y
-  := fun x y H (H0 : y = 0)
-       => distinct_0_1
-            (proj1 H
-             || a # x = 1 @a by <- H0
-             || a = 1     @a by <- prod_0_l x).
+Theorem prod_inv_0
+  :  forall x y : E, prod_is_inv x y -> nonzero y.
+Proof
+  fun x y H (H0 : y = 0)
+    => distinct_0_1
+         (proj1 H
+          || a # x = 1 @a by <- H0
+          || a = 1     @a by <- prod_0_l x).
 
 (** Represents -1 and proves that it exists. *)
 Definition E_n1_strong
@@ -704,27 +840,27 @@ Definition E_n1 : E := proj1_sig E_n1_strong.
 Notation "{-1}" := E_n1 : ring_scope.
 
 (** Asserts that -1 is the additive inverse of 1. *)
-Definition E_n1_def
-  :  sum_is_inv 1 {-1}
-  := proj2_sig E_n1_strong.
+Theorem E_n1_def
+  :  sum_is_inv 1 {-1}.
+Proof proj2_sig E_n1_strong.
 
 (** Asserts that -1 is the left inverse of 1. *)
-Definition E_n1_inv_l
-  :  sum_is_inv_l 1 {-1}
-  := proj1 E_n1_def.
+Theorem E_n1_inv_l
+  :  sum_is_inv_l 1 {-1}.
+Proof proj1 E_n1_def.
 
 (** Asserts that -1 is the right inverse of 1. *)
-Definition E_n1_inv_r
-  :  sum_is_inv_r 1 {-1}
-  := proj2 E_n1_def.
+Theorem E_n1_inv_r
+  :  sum_is_inv_r 1 {-1}.
+Proof proj2 E_n1_def.
 
 (**
   Asserts that every additive inverse
   of 1 must be equal to -1.
 *)
-Definition E_n1_uniq
-  :  forall x : E, sum_is_inv 1 x -> x = {-1}
-  := fun x => sum_inv_uniq 1 {-1} x E_n1_def.
+Theorem E_n1_uniq
+  :  forall x : E, sum_is_inv 1 x -> x = {-1}.
+Proof fun x => sum_inv_uniq 1 {-1} x E_n1_def.
 
 (**
   Proves that -1 * x equals the multiplicative
@@ -736,13 +872,14 @@ Definition E_n1_uniq
   0 x = 0
   0 = 0
 *) 
-Definition prod_n1_x_inv_l
-  :  forall x : E, sum_is_inv_l x ({-1} # x)
-  := fun x
-       => prod_0_l x
-          || a # x = 0          @a by E_n1_inv_l
-          || a = 0              @a by <- prod_sum_distrib_r x {-1} 1
-          || ({-1} # x) + a = 0 @a by <- prod_id_l x.
+Theorem prod_n1_x_inv_l
+  :  forall x : E, sum_is_inv_l x ({-1} # x).
+Proof
+  fun x
+    => prod_0_l x
+       || a # x = 0          @a by E_n1_inv_l
+       || a = 0              @a by <- prod_sum_distrib_r x {-1} 1
+       || ({-1} # x) + a = 0 @a by <- prod_id_l x.
 
 (**
   Proves that x * -1 equals the multiplicative
@@ -750,96 +887,104 @@ Definition prod_n1_x_inv_l
 
   x -1 + x = 0
 *)
-Definition prod_x_n1_inv_l
-  :  forall x : E, sum_is_inv_l x (x # {-1})
-  := fun x
-       => prod_0_r x
-          || x # a = 0          @a by E_n1_inv_l
-          || a = 0              @a by <- prod_sum_distrib_l x {-1} 1
-          || (x # {-1}) + a = 0 @a by <- prod_id_r x.
+Theorem prod_x_n1_inv_l
+  :  forall x : E, sum_is_inv_l x (x # {-1}).
+Proof
+  fun x
+    => prod_0_r x
+       || x # a = 0          @a by E_n1_inv_l
+       || a = 0              @a by <- prod_sum_distrib_l x {-1} 1
+       || (x # {-1}) + a = 0 @a by <- prod_id_r x.
 
 (** Proves that x + -1 x = 0. *)
-Definition prod_n1_x_inv_r
-  :  forall x : E, sum_is_inv_r x ({-1} # x)
-  := fun x
-       => prod_0_l x
-          || a # x = 0          @a by E_n1_inv_r
-          || a = 0              @a by <- prod_sum_distrib_r x 1 {-1}
-          || a + ({-1} # x) = 0 @a by <- prod_id_l x.
+Theorem prod_n1_x_inv_r
+  :  forall x : E, sum_is_inv_r x ({-1} # x).
+Proof
+  fun x
+    => prod_0_l x
+       || a # x = 0          @a by E_n1_inv_r
+       || a = 0              @a by <- prod_sum_distrib_r x 1 {-1}
+       || a + ({-1} # x) = 0 @a by <- prod_id_l x.
 
 (** Proves that x + x -1 = 0. *)
-Definition prod_x_n1_inv_r
-  :  forall x : E, sum_is_inv_r x (x # {-1})
-  := fun x
-       => prod_0_r x
-          || x # a = 0          @a by E_n1_inv_r
-          || a = 0              @a by <- prod_sum_distrib_l x 1 {-1}
-          || a + (x # {-1}) = 0 @a by <- prod_id_r x.
+Theorem prod_x_n1_inv_r
+  :  forall x : E, sum_is_inv_r x (x # {-1}).
+Proof
+  fun x
+    => prod_0_r x
+       || x # a = 0          @a by E_n1_inv_r
+       || a = 0              @a by <- prod_sum_distrib_l x 1 {-1}
+       || a + (x # {-1}) = 0 @a by <- prod_id_r x.
 
 (** Proves that -1 x is the additive inverse of x. *)
-Definition prod_n1_x_inv
-  :  forall x : E, sum_is_inv x ({-1} # x)
-  := fun x => conj (prod_n1_x_inv_l x) (prod_n1_x_inv_r x).
+Theorem prod_n1_x_inv
+  :  forall x : E, sum_is_inv x ({-1} # x).
+Proof fun x => conj (prod_n1_x_inv_l x) (prod_n1_x_inv_r x).
 
 (** Proves that x -1 is the additive inverse of x. *)
-Definition prod_x_n1_inv
-  :  forall x : E, sum_is_inv x (x # {-1})
-  := fun x => conj (prod_x_n1_inv_l x) (prod_x_n1_inv_r x).
+Theorem prod_x_n1_inv
+  :  forall x : E, sum_is_inv x (x # {-1}).
+Proof fun x => conj (prod_x_n1_inv_l x) (prod_x_n1_inv_r x).
 
 (**
   Proves that multiplying by -1 is equivalent
   to negation.
 *)
-Definition prod_n1_neg
-  :  prod {-1} = {-}
-  := functional_extensionality
-       (prod {-1}) {-}
-       (fun x
-         => sum_inv_uniq x (- x) ({-1} # x)
-              (sum_neg_def x)
-              (prod_n1_x_inv x)).
+Theorem prod_n1_neg
+  :  prod {-1} = {-}.
+Proof
+  functional_extensionality
+    (prod {-1}) {-}
+    (fun x
+      => sum_inv_uniq x (- x) ({-1} # x)
+           (sum_neg_def x)
+           (prod_n1_x_inv x)).
 
 (**
   Accepts one element, x, and proves that
   x -1 equals the additive negation of x.
 *)
-Definition prod_x_n1_neg
-  :  forall x : E, x # {-1} = - x
-  := fun x
-       => sum_inv_uniq x (- x) (x # {-1})
-            (sum_neg_def x)
-            (prod_x_n1_inv x).
+Theorem prod_x_n1_neg
+  :  forall x : E, x # {-1} = - x.
+Proof
+  fun x
+    => sum_inv_uniq x (- x) (x # {-1})
+         (sum_neg_def x)
+         (prod_x_n1_inv x).
 
 (**
   Accepts one element, x, and proves that
   -1 x equals the additive negation of x.
 *)
-Definition prod_n1_x_neg
-  :  forall x : E, {-1} # x = - x
-  := fun x
-       => sum_inv_uniq x (- x) ({-1} # x)
-            (sum_neg_def x)
-            (prod_n1_x_inv x).
+Theorem prod_n1_x_neg
+  :  forall x : E, {-1} # x = - x.
+Proof
+  fun x
+    => sum_inv_uniq x (- x) ({-1} # x)
+         (sum_neg_def x)
+         (prod_n1_x_inv x).
 
 (** Proves that -1 x = x -1. *)
-Definition prod_n1_eq
-  :  forall x : E, {-1} # x = x # {-1}
-  := fun x
-       => sum_inv_uniq x (x # {-1}) ({-1} # x)
-            (prod_x_n1_inv x)
-            (prod_n1_x_inv x).
+Theorem prod_n1_eq
+  :  forall x : E, {-1} # x = x # {-1}.
+Proof
+  fun x
+    => sum_inv_uniq x (x # {-1}) ({-1} # x)
+         (prod_x_n1_inv x)
+         (prod_n1_x_inv x).
 
 (** Proves that the additive negation of 1 equals -1. *)
-Definition neg_1
-  :  {-} 1 = {-1}
-  := eq_refl ({-} 1)
-     || {-} 1 = a @a by prod_x_n1_neg 1
-     || {-} 1 = a @a by <- prod_id_l {-1}.
+Theorem neg_1
+  :  {-} 1 = {-1}.
+Proof
+  eq_refl ({-} 1)
+    || {-} 1 = a @a by prod_x_n1_neg 1
+    || {-} 1 = a @a by <- prod_id_l {-1}.
 
 (** Proves that the additive negation of -1 equals 1. *)
-Definition neg_n1
-  :  {-} {-1} = 1
-  := sum_neg_rev 1 {-1} neg_1.
+Theorem neg_n1
+  :  {-} {-1} = 1.
+Proof sum_neg_rev 1 {-1} neg_1.
 
 (**
   Proves that -1 * -1 = 1.
@@ -849,20 +994,37 @@ Definition neg_n1
   -1 * -1 = - -1
   -1 * -1 = 1 
 *)
-Definition prod_n1_n1
-  :  {-1} # {-1} = 1
-  := eq_refl ({-1} # {-1})
-     || {-1} # {-1} = a @a by <- prod_n1_x_neg {-1}
-     || {-1} # {-1} = a @a by <- neg_n1.
+Theorem prod_n1_n1
+  :  {-1} # {-1} = 1.
+Proof
+  eq_refl ({-1} # {-1})
+    || {-1} # {-1} = a @a by <- prod_n1_x_neg {-1}
+    || {-1} # {-1} = a @a by <- neg_n1.
 
 (**
   Proves that -1 is its own multiplicative
   inverse.
 *)
-Definition E_n1_inv
-  :  prod_is_inv {-1} {-1}
-  := conj prod_n1_n1 prod_n1_n1.
+Theorem E_n1_inv
+  :  prod_is_inv {-1} {-1}.
+Proof conj prod_n1_n1 prod_n1_n1.
 
 End Theorems.
 
 End Ring.
+
+Notation "0" := (Ring.E_0) : ring_scope.
+
+Notation "1" := (Ring.E_1) : ring_scope.
+
+Notation "x + y" := (Ring.sum x y) (at level 50, left associativity) : ring_scope.
+
+Notation "{+}" := (Ring.sum) : ring_scope.
+
+Notation "{-}" := (Ring.sum_neg _) : ring_scope.
+
+Notation "- x" := (Ring.sum_neg _ x) : ring_scope.
+
+Notation "x # y" := (Ring.prod x y) (at level 50, left associativity) : ring_scope.
+
+Notation "{#}" := (Ring.prod) : ring_scope.

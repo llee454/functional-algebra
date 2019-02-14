@@ -264,19 +264,40 @@ Definition sum_id
   Accepts two elements, x and y, and
   asserts that y is x's left inverse.
 *)
-Definition sum_is_inv_l := Monoid.is_inv_l E {+} 0 sum_id. 
+Definition sum_is_inv_l
+  := Ring.sum_is_inv_l ring.
 
 (**
   Accepts two elements, x and y, and
   asserts that y is x's right inverse.
 *)
-Definition sum_is_inv_r := Monoid.is_inv_r E {+} 0 sum_id.
+Definition sum_is_inv_r
+  := Ring.sum_is_inv_r ring.
 
 (**
   Accepts two elements, x and y, and
   asserts that y is x's inverse.
 *)
-Definition sum_is_inv := Monoid.is_inv E {+} 0 sum_id.
+Definition sum_is_inv
+  := Ring.sum_is_inv ring.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has a left inverse.
+*)
+Definition sum_has_inv_l := Ring.sum_has_inv_l ring.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has a right inverse.
+*)
+Definition sum_has_inv_r := Ring.sum_has_inv_r ring.
+
+(**
+  Accepts one argument, x, and asserts that
+  x has an inverse.
+*)
+Definition sum_has_inv := Ring.sum_has_inv ring.
 
 (** Asserts that every element has a right inverse. *)
 Definition sum_inv_r_ex
@@ -389,6 +410,46 @@ Definition sum_0_inv
   :  sum_is_inv 0 0
   := Ring.sum_0_inv ring.
 
+(**
+  Proves that the identity element has a
+  left inverse.
+*)
+Theorem sum_has_inv_l_0
+  :  sum_has_inv_l 0.
+Proof Abelian_Group.op_has_inv_l_0 sum_abelian_group.
+
+(**
+  Proves that the identity element has a
+  right inverse.
+*)
+Theorem sum_has_inv_r_0
+  :  sum_has_inv_r 0.
+Proof Abelian_Group.op_has_inv_r_0 sum_abelian_group.
+
+(**
+  Proves that the identity element has an
+  inverse.
+*)
+Theorem sum_has_inv_0
+  :  sum_has_inv 0.
+Proof Abelian_Group.op_has_inv_0 sum_abelian_group.
+
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem sum_inv_0_eq_0
+  :  forall x : E, sum_is_inv x 0 -> x = 0.
+Proof Abelian_Group.op_inv_0_eq_0 sum_abelian_group.
+
+(**
+  Proves that 0 is the only element whose
+  additive inverse is 0.
+*)
+Theorem sum_inv_0_uniq
+  :  unique (fun x => sum_is_inv x 0) 0.
+Proof Abelian_Group.op_inv_0_uniq sum_abelian_group.
+
 (** Represents strongly-specified negation. *)
 Definition sum_neg_strong
   :  forall x : E, { y | sum_is_inv x y }
@@ -430,6 +491,40 @@ Definition sum_neg_onto
 Definition sum_neg_bijective
   :  is_bijective E E sum_neg
   := Ring.sum_neg_bijective ring.
+
+(** Proves that neg x = y -> neg y = x *)
+Definition sum_neg_rev
+  :  forall x y : E, - x = y -> - y = x
+  := Abelian_Group.op_neg_rev sum_abelian_group.
+
+(**
+  Proves that the left inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv_l
+  :  forall x y : E, sum_is_inv_l (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv_l sum_abelian_group.
+
+(**
+  Proves that the right inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv_r
+  :  forall x y : E, sum_is_inv_r (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv_r sum_abelian_group.
+
+(**
+  Proves that the inverse of x + y is -y + -x.
+*)
+Theorem sum_neg_distrib_inv
+  :  forall x y : E, sum_is_inv (x + y) (- y + - x).
+Proof Abelian_Group.op_neg_distrib_inv sum_abelian_group.
+
+(**
+  Proves that negation is distributive: i.e.
+  -(x + y) = -y + -x.
+*)
+Theorem sum_neg_distrib
+  :  forall x y : E, - (x + y) = - y + - x.
+Proof Abelian_Group.op_neg_distrib sum_abelian_group.
 
 (** Proves that 0's negation is 0. *)
 Definition sum_0_neg
@@ -539,78 +634,132 @@ Definition prod_is_inv_lr
   Proves that the left and right inverses of
   an element must be equal.
 *)
-Definition prod_inv_l_r_eq := Ring.prod_inv_l_r_eq ring.
+Theorem prod_inv_l_r_eq
+  :  forall x y : E, prod_is_inv_l x y -> forall z : E, prod_is_inv_r x z -> y = z.
+Proof Ring.prod_inv_l_r_eq ring.
 
 (**
   Proves that the inverse relationship is
   symmetric.
 *)
-Definition prod_inv_sym := Ring.prod_inv_sym ring.
+Theorem prod_inv_sym
+  :  forall x y : E, prod_is_inv x y <-> prod_is_inv y x.
+Proof Ring.prod_inv_sym ring.
 
 (**
   Proves the left cancellation law for elements
   possessing a left inverse.
 *)
-Definition prod_cancel_l := Ring.prod_cancel_l ring.
+Theorem prod_cancel_l
+  :  forall x y z : E, prod_has_inv_l z -> z # x = z # y -> x = y.
+Proof Ring.prod_cancel_l ring.
 
 (**
   Proves the right cancellation law for
   elements possessing a right inverse.
 *)
-Definition prod_cancel_r := Ring.prod_cancel_r ring.
+Theorem prod_cancel_r
+  :  forall x y z : E, prod_has_inv_r z -> x # z = y # z -> x = y.
+Proof Ring.prod_cancel_r ring.
 
 (**
   Proves that an element's left inverse
   is unique.
 *)
-Definition prod_inv_l_uniq := Ring.prod_inv_l_uniq ring.
+Theorem prod_inv_l_uniq
+  :  forall x : E, prod_has_inv_r x -> forall y z : E, prod_is_inv_l x y -> prod_is_inv_l x z -> z = y.
+Proof Ring.prod_inv_l_uniq ring.
 
 (**
   Proves that an element's right inverse
   is unique.
 *)
-Definition prod_inv_r_uniq := Ring.prod_inv_r_uniq ring.
+Theorem prod_inv_r_uniq
+  :  forall x : E, prod_has_inv_l x -> forall y z : E, prod_is_inv_r x y -> prod_is_inv_r x z -> z = y.
+Proof Ring.prod_inv_r_uniq ring.
 
 (** Proves that an element's inverse is unique. *)
-Definition prod_inv_uniq := Ring.prod_inv_uniq ring.
+Definition prod_inv_uniq
+  :  forall x y z : E, prod_is_inv x y -> prod_is_inv x z -> z = y
+  := Ring.prod_inv_uniq ring.
 
-(** Proves that 1 is its own left multiplicative inverse. *)
-Definition recipr_1_l
-  :  prod_is_inv_l 1 1
-  := Ring.recipr_1_l ring.
+(**
+  Proves that the identity element is its own
+  left inverse.
+*)
+Theorem prod_inv_1_l
+  :  prod_is_inv_l 1 1.
+Proof Ring.prod_inv_1_l ring.
 
-(** Proves that 1 is its own right multiplicative inverse. *)
-Definition recipr_1_r
-  :  prod_is_inv_r 1 1
-  := Ring.recipr_1_r ring.
+(**
+  Proves that the identity element is its own
+  right inverse.
+*)
+Theorem prod_inv_1_r
+  :  prod_is_inv_r 1 1.
+Proof Ring.prod_inv_1_l ring.
 
-(** Proves that 1 is its own recriprical. *)
-Definition recipr_1
-  :  prod_is_inv 1 1
-  := Ring.recipr_1 ring.
+(**
+  Proves that the identity element is its own
+  inverse.
+*)
+Theorem prod_inv_1
+  :  prod_is_inv 1 1.
+Proof Ring.prod_inv_1 ring.
 
 (** Proves that 1 has a left multiplicative inverse. *)
-Definition prod_has_inv_l_1
-  :  prod_has_inv_l 1
-  := Ring.prod_has_inv_l_1 ring.
+Theorem prod_has_inv_l_1
+  :  prod_has_inv_l 1.
+Proof Ring.prod_has_inv_l_1 ring.
 
 (** Proves that 1 has a right multiplicative inverse. *)
-Definition prod_has_inv_r_1
-  :  prod_has_inv_r 1
-  := Ring.prod_has_inv_r_1 ring.
+Theorem prod_has_inv_r_1
+  :  prod_has_inv_r 1.
+Proof Ring.prod_has_inv_r_1 ring.
 
 (** Proves that 1 has a reciprical *)
-Definition prod_has_inv_1
-  :  prod_has_inv 1
-  := Ring.prod_has_inv_1 ring.
+Theorem prod_has_inv_1
+  :  prod_has_inv 1.
+Proof Ring.prod_has_inv_1 ring.
+
+(**
+  Proves that if an element's, x, inverse
+  equals 0, x equals 0.
+*)
+Theorem prod_inv_1_eq_1
+  :  forall x : E, prod_is_inv x 1 -> x = 1.
+Proof Ring.prod_inv_1_eq_1 ring.
+
+(**
+  Proves that 0 is the only element whose
+  inverse is 0.
+*)
+Theorem prod_inv_1_uniq
+  :  unique (fun x => prod_is_inv x 1) 1.
+Proof Ring.prod_inv_1_uniq ring.
+
+(** Proves that 1 is its own left multiplicative inverse. *)
+Theorem recipr_1_l
+  :  prod_is_inv_l 1 1.
+Proof Ring.recipr_1_l ring.
+
+(** Proves that 1 is its own right multiplicative inverse. *)
+Theorem recipr_1_r
+  :  prod_is_inv_r 1 1.
+Proof Ring.recipr_1_r ring.
+
+(** Proves that 1 is its own recriprical. *)
+Theorem recipr_1
+  :  prod_is_inv 1 1.
+Proof Ring.recipr_1 ring.
 
 (**
   Asserts that multiplication is
   distributive over addition.
 *)
-Definition prod_sum_distrib
-  :  Ring.is_distrib E {#} {+}
-  := Ring.prod_sum_distrib ring.
+Theorem prod_sum_distrib
+  :  Ring.is_distrib E {#} {+}.
+Proof Ring.prod_sum_distrib ring.
 
 (**
   Proves that 0 times every number equals 0.
