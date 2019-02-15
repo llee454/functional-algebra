@@ -509,6 +509,35 @@ Theorem sum_neg_distrib
   :  forall x y : E, - (x + y) = - y + - x.
 Proof Abelian_Group.op_neg_distrib sum_abelian_group.
 
+(** Proves that 0's negation is 0. *)
+Theorem sum_0_neg
+  :  - 0 = 0.
+Proof
+  proj2 (sum_neg_def 0)
+  || a = 0 @a by <- sum_id_l (- 0).
+
+(**
+  Proves that if an element's, x, negation
+  equals 0, x must equal 0.
+*)
+Theorem sum_neg_0
+  :  forall x : E, - x = 0 -> x = 0.
+Proof
+  fun x H
+    => proj2 (sum_neg_def x)
+      || x + a = 0 @a by <- H
+      || a = 0     @a by <- sum_id_r x.
+
+(**
+  Prove that 0 is the only element whose additive
+  inverse (negation) equals 0.
+*)
+Theorem sum_neg_0_uniq
+  :  unique (fun x => - x = 0) 0.
+Proof
+  conj sum_0_neg 
+    (fun x H => eq_sym (sum_neg_0 x H)).
+
 (**
   Accepts one element, x, and asserts
   that x is the left identity element.

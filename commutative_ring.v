@@ -419,7 +419,7 @@ Proof Ring.sum_0_inv ring.
 *)
 Theorem sum_has_inv_l_0
   :  sum_has_inv_l 0.
-Proof Abelian_Group.op_has_inv_l_0 sum_abelian_group.
+Proof Ring.sum_has_inv_l_0 ring.
 
 (**
   Proves that the identity element has a
@@ -427,7 +427,7 @@ Proof Abelian_Group.op_has_inv_l_0 sum_abelian_group.
 *)
 Theorem sum_has_inv_r_0
   :  sum_has_inv_r 0.
-Proof Abelian_Group.op_has_inv_r_0 sum_abelian_group.
+Proof Ring.sum_has_inv_r_0 ring.
 
 (**
   Proves that the identity element has an
@@ -435,7 +435,7 @@ Proof Abelian_Group.op_has_inv_r_0 sum_abelian_group.
 *)
 Theorem sum_has_inv_0
   :  sum_has_inv 0.
-Proof Abelian_Group.op_has_inv_0 sum_abelian_group.
+Proof Ring.sum_has_inv_0 ring.
 
 (**
   Proves that if an element's, x, inverse
@@ -443,7 +443,7 @@ Proof Abelian_Group.op_has_inv_0 sum_abelian_group.
 *)
 Theorem sum_inv_0_eq_0
   :  forall x : E, sum_is_inv x 0 -> x = 0.
-Proof Abelian_Group.op_inv_0_eq_0 sum_abelian_group.
+Proof Ring.sum_inv_0_eq_0 ring.
 
 (**
   Proves that 0 is the only element whose
@@ -451,7 +451,7 @@ Proof Abelian_Group.op_inv_0_eq_0 sum_abelian_group.
 *)
 Theorem sum_inv_0_uniq
   :  unique (fun x => sum_is_inv x 0) 0.
-Proof Abelian_Group.op_inv_0_uniq sum_abelian_group.
+Proof Ring.sum_inv_0_uniq ring.
 
 (** Represents strongly-specified negation. *)
 Definition sum_neg_strong
@@ -498,28 +498,28 @@ Proof Ring.sum_neg_bijective ring.
 (** Proves that neg x = y -> neg y = x *)
 Theorem sum_neg_rev
   :  forall x y : E, - x = y -> - y = x.
-Proof Abelian_Group.op_neg_rev sum_abelian_group.
+Proof Ring.sum_neg_rev ring.
 
 (**
   Proves that the left inverse of x + y is -y + -x.
 *)
 Theorem sum_neg_distrib_inv_l
   :  forall x y : E, sum_is_inv_l (x + y) (- y + - x).
-Proof Abelian_Group.op_neg_distrib_inv_l sum_abelian_group.
+Proof Ring.sum_neg_distrib_inv_l ring.
 
 (**
   Proves that the right inverse of x + y is -y + -x.
 *)
 Theorem sum_neg_distrib_inv_r
   :  forall x y : E, sum_is_inv_r (x + y) (- y + - x).
-Proof Abelian_Group.op_neg_distrib_inv_r sum_abelian_group.
+Proof Ring.sum_neg_distrib_inv_r ring.
 
 (**
   Proves that the inverse of x + y is -y + -x.
 *)
 Theorem sum_neg_distrib_inv
   :  forall x y : E, sum_is_inv (x + y) (- y + - x).
-Proof Abelian_Group.op_neg_distrib_inv sum_abelian_group.
+Proof Ring.sum_neg_distrib_inv ring.
 
 (**
   Proves that negation is distributive: i.e.
@@ -527,14 +527,12 @@ Proof Abelian_Group.op_neg_distrib_inv sum_abelian_group.
 *)
 Theorem sum_neg_distrib
   :  forall x y : E, - (x + y) = - y + - x.
-Proof Abelian_Group.op_neg_distrib sum_abelian_group.
+Proof Ring.sum_neg_distrib ring.
 
 (** Proves that 0's negation is 0. *)
 Theorem sum_0_neg
   :  - 0 = 0.
-Proof
-  proj2 (sum_neg_def 0)
-  || a = 0 @a by <- sum_id_l (- 0).
+Proof Ring.sum_0_neg ring.
 
 (**
   Proves that if an element's, x, negation
@@ -542,11 +540,7 @@ Proof
 *)
 Theorem sum_neg_0
   :  forall x : E, - x = 0 -> x = 0.
-Proof
-  fun x H
-    => proj2 (sum_neg_def x)
-      || x + a = 0 @a by <- H
-      || a = 0     @a by <- sum_id_r x.
+Proof Ring.sum_neg_0 ring.
 
 (**
   Prove that 0 is the only element whose additive
@@ -554,9 +548,7 @@ Proof
 *)
 Theorem sum_neg_0_uniq
   :  unique (fun x => - x = 0) 0.
-Proof
-  conj sum_0_neg 
-    (fun x H => eq_sym (sum_neg_0 x H)).
+Proof Ring.sum_neg_0_uniq ring.
 
 (**
   Accepts one element, x, and asserts
@@ -967,3 +959,19 @@ Proof Ring.E_n1_inv ring.
 End Theorems.
 
 End Commutative_Ring.
+
+Notation "0" := (Commutative_Ring.E_0) : commutative_ring_scope.
+
+Notation "1" := (Commutative_Ring.E_1) : commutative_ring_scope.
+
+Notation "x + y" := (Commutative_Ring.sum x y) (at level 50, left associativity) : commutative_ring_scope.
+
+Notation "{+}" := (Commutative_Ring.sum) : commutative_ring_scope.
+
+Notation "{-}" := (Commutative_Ring.sum_neg _) : commutative_ring_scope.
+
+Notation "- x" := (Commutative_Ring.sum_neg _ x) : commutative_ring_scope.
+
+Notation "x # y" := (Commutative_Ring.prod x y) (at level 50, left associativity) : commutative_ring_scope.
+
+Notation "{#}" := (Commutative_Ring.prod) : commutative_ring_scope.
