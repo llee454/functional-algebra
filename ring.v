@@ -231,14 +231,14 @@ Definition sum_monoid
   := Abelian_Group.op_monoid sum_abelian_group.
 
 (** Proves that 0 is the right identity element. *)
-Definition sum_id_r
-  :  sum_is_id_r 0
-  := Abelian_Group.op_id_r sum_abelian_group.
+Theorem sum_id_r
+  :  sum_is_id_r 0.
+Proof Abelian_Group.op_id_r sum_abelian_group.
 
 (** Proves that 0 is the identity element. *)
-Definition sum_id
-  :  sum_is_id 0
-  := Abelian_Group.op_id sum_abelian_group.
+Theorem sum_id
+  :  sum_is_id 0.
+Proof Abelian_Group.op_id sum_abelian_group.
 
 (**
   Accepts two elements, x and y, and
@@ -280,97 +280,97 @@ Definition sum_has_inv_r := Abelian_Group.has_inv_r sum_abelian_group.
 Definition sum_has_inv := Abelian_Group.has_inv sum_abelian_group.
 
 (** Asserts that every element has a right inverse. *)
-Definition sum_inv_r_ex
-  :  forall x : E, exists y : E, sum_is_inv_r x y
-  := Abelian_Group.op_inv_r_ex sum_abelian_group.
+Theorem sum_inv_r_ex
+  :  forall x : E, exists y : E, sum_is_inv_r x y.
+Proof Abelian_Group.op_inv_r_ex sum_abelian_group.
 
 (** Proves that the left identity element is unique. *)
-Definition sum_id_l_uniq
-  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0
-  := Abelian_Group.op_id_l_uniq sum_abelian_group.
+Theorem sum_id_l_uniq
+  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0.
+Proof Abelian_Group.op_id_l_uniq sum_abelian_group.
 
 (** Proves that the right identity element is unique. *)
-Definition sum_id_r_uniq
-  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0
-  := Abelian_Group.op_id_r_uniq sum_abelian_group.
+Theorem sum_id_r_uniq
+  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0.
+Proof Abelian_Group.op_id_r_uniq sum_abelian_group.
 
 (** Proves that the identity element is unique. *)
-Definition sum_id_uniq
-  :  forall x : E, Monoid.is_id E {+} x -> x = 0
-  := Abelian_Group.op_id_uniq sum_abelian_group.
+Theorem sum_id_uniq
+  :  forall x : E, Monoid.is_id E {+} x -> x = 0.
+Proof Abelian_Group.op_id_uniq sum_abelian_group.
 
 (**
   Proves that for every group element, x,
   its left and right inverses are equal.
 *)
-Definition sum_inv_l_r_eq
-  :  forall x y : E, sum_is_inv_l x y -> forall z : E, sum_is_inv_r x z -> y = z
-  := Abelian_Group.op_inv_l_r_eq sum_abelian_group.
+Theorem sum_inv_l_r_eq
+  :  forall x y : E, sum_is_inv_l x y -> forall z : E, sum_is_inv_r x z -> y = z.
+Proof Abelian_Group.op_inv_l_r_eq sum_abelian_group.
 
 (**
   Proves that the inverse relation is
   symmetrical.
 *)
-Definition sum_inv_sym
-  :  forall x y : E, sum_is_inv x y <-> sum_is_inv y x
-  := Abelian_Group.op_inv_sym sum_abelian_group.
+Theorem sum_inv_sym
+  :  forall x y : E, sum_is_inv x y <-> sum_is_inv y x.
+Proof Abelian_Group.op_inv_sym sum_abelian_group.
 
 (** Proves that an element's inverse is unique. *)
-Definition sum_inv_uniq
-  :  forall x y z :  E, sum_is_inv x y -> sum_is_inv x z -> z = y
-  := Abelian_Group.op_inv_uniq sum_abelian_group.
+Theorem sum_inv_uniq
+  :  forall x y z :  E, sum_is_inv x y -> sum_is_inv x z -> z = y.
+Proof Abelian_Group.op_inv_uniq sum_abelian_group.
 
 (**
   Proves that every group element has an
   inverse.
 *)
-Definition sum_inv_ex
-  :  forall x : E, exists y : E, sum_is_inv x y
-  := Abelian_Group.op_inv_ex sum_abelian_group.
+Theorem sum_inv_ex
+  :  forall x : E, exists y : E, sum_is_inv x y.
+Proof Abelian_Group.op_inv_ex sum_abelian_group.
 
 (**
   Proves explicitly that every element has a
   unique inverse.
 *)
-Definition sum_inv_uniq_ex
-  :  forall x : E, exists! y : E, sum_is_inv x y
-  := Abelian_Group.op_inv_uniq_ex sum_abelian_group.
+Theorem sum_inv_uniq_ex
+  :  forall x : E, exists! y : E, sum_is_inv x y.
+Proof Abelian_Group.op_inv_uniq_ex sum_abelian_group.
 
 (** Proves the left introduction rule. *)
-Definition sum_intro_l
-  :  forall x y z : E, x = y -> z + x = z + y
-  := Abelian_Group.op_intro_l sum_abelian_group.
+Theorem sum_intro_l
+  :  forall x y z : E, x = y -> z + x = z + y.
+Proof Abelian_Group.op_intro_l sum_abelian_group.
 
 (** Proves the right introduction rule. *)
-Definition sum_intro_r
-  :  forall x y z : E, x = y -> x + z = y + z
-  := Abelian_Group.op_intro_r sum_abelian_group.
+Theorem sum_intro_r
+  :  forall x y z : E, x = y -> x + z = y + z.
+Proof Abelian_Group.op_intro_r sum_abelian_group.
 
 (** Proves the left cancellation rule. *)
-Definition sum_cancel_l
-  :   forall x y z : E, z + x = z + y -> x = y
-  := Abelian_Group.op_cancel_l sum_abelian_group.
+Theorem sum_cancel_l
+  :   forall x y z : E, z + x = z + y -> x = y.
+Proof Abelian_Group.op_cancel_l sum_abelian_group.
 
 (** Proves the right cancellation rule. *)
-Definition sum_cancel_r
-  :   forall x y z : E, x + z = y + z -> x = y
-  := Abelian_Group.op_cancel_r sum_abelian_group.
+Theorem sum_cancel_r
+  :   forall x y z : E, x + z = y + z -> x = y.
+Proof Abelian_Group.op_cancel_r sum_abelian_group.
 
 (**
   Proves that an element's left inverse
   is unique.
 *)
-Definition sum_inv_l_uniq
-  :  forall x y z : E, sum_is_inv_l x y -> sum_is_inv_l x z -> z = y
-  := Abelian_Group.op_inv_l_uniq sum_abelian_group.
+Theorem sum_inv_l_uniq
+  :  forall x y z : E, sum_is_inv_l x y -> sum_is_inv_l x z -> z = y.
+Proof Abelian_Group.op_inv_l_uniq sum_abelian_group.
 
 (**
   Proves that an element's right inverse
   is unique.
 *)
-Definition sum_inv_r_uniq
-  :  forall x y z : E, sum_is_inv_r x y -> sum_is_inv_r x z -> z = y
-  := Abelian_Group.op_inv_r_uniq sum_abelian_group.
+Theorem sum_inv_r_uniq
+  :  forall x y z : E, sum_is_inv_r x y -> sum_is_inv_r x z -> z = y.
+Proof Abelian_Group.op_inv_r_uniq sum_abelian_group.
 
 (**
   Proves that 0 is its own left additive
@@ -461,24 +461,24 @@ Definition sum_neg_inj
   := Abelian_Group.op_neg_inj sum_abelian_group.
 
 (** Proves the cancellation property for negation. *)
-Definition sum_cancel_neg
-  :  forall x : E, - (- x) = x
-  := Abelian_Group.op_cancel_neg sum_abelian_group.
+Theorem sum_cancel_neg
+  :  forall x : E, - (- x) = x.
+Proof Abelian_Group.op_cancel_neg sum_abelian_group.
 
 (** Proves that negation is onto *)
-Definition sum_neg_onto
-  :  is_onto E E {-}
-  := Abelian_Group.op_neg_onto sum_abelian_group.
+Theorem sum_neg_onto
+  :  is_onto E E {-}.
+Proof Abelian_Group.op_neg_onto sum_abelian_group.
 
 (** Proves that negation is surjective *)
-Definition sum_neg_bijective
-  :  is_bijective E E {-}
-  := Abelian_Group.op_neg_bijective sum_abelian_group.
+Theorem sum_neg_bijective
+  :  is_bijective E E {-}.
+Proof Abelian_Group.op_neg_bijective sum_abelian_group.
 
 (** Proves that neg x = y -> neg y = x *)
-Definition sum_neg_rev
-  :  forall x y : E, - x = y -> - y = x
-  := Abelian_Group.op_neg_rev sum_abelian_group.
+Theorem sum_neg_rev
+  :  forall x y : E, - x = y -> - y = x.
+Proof Abelian_Group.op_neg_rev sum_abelian_group.
 
 (**
   Proves that the left inverse of x + y is -y + -x.
@@ -531,34 +531,34 @@ Definition prod_is_id := Monoid.is_id E prod.
 Definition prod_monoid := Monoid.monoid E 1 {#} prod_is_assoc prod_id_l prod_id_r.
 
 (** Proves that 1 is the identity element. *)
-Definition prod_id
-  :  prod_is_id 1
-  := Monoid.op_id prod_monoid.
+Theorem prod_id
+  :  prod_is_id 1.
+Proof Monoid.op_id prod_monoid.
 
 (** Proves that the left identity element is unique. *)
-Definition prod_id_l_uniq
-  :  forall x : E, (Monoid.is_id_l E prod x) -> x = 1
-  := Monoid.op_id_l_uniq prod_monoid.
+Theorem prod_id_l_uniq
+  :  forall x : E, (Monoid.is_id_l E prod x) -> x = 1.
+Proof Monoid.op_id_l_uniq prod_monoid.
 
 (** Proves that the right identity element is unique. *)
-Definition prod_id_r_uniq
-  :  forall x : E, (Monoid.is_id_r E prod x) -> x = 1
-  := Monoid.op_id_r_uniq prod_monoid.
+Theorem prod_id_r_uniq
+  :  forall x : E, (Monoid.is_id_r E prod x) -> x = 1.
+Proof Monoid.op_id_r_uniq prod_monoid.
 
 (** Proves that the identity element is unique. *)
-Definition prod_id_uniq
-  :  forall x : E, (Monoid.is_id E prod x) -> x = 1
-  := Monoid.op_id_uniq prod_monoid.
+Theorem prod_id_uniq
+  :  forall x : E, (Monoid.is_id E prod x) -> x = 1.
+Proof Monoid.op_id_uniq prod_monoid.
 
 (** Proves the left introduction rule. *)
-Definition prod_intro_l
-  :  forall x y z : E, x = y -> z # x = z # y
-  := Monoid.op_intro_l prod_monoid.
+Theorem prod_intro_l
+  :  forall x y z : E, x = y -> z # x = z # y.
+Proof Monoid.op_intro_l prod_monoid.
 
 (** Proves the right introduction rule. *)
-Definition prod_intro_r
-  :  forall x y z : E, x = y -> x # z = y # z
-  := Monoid.op_intro_r prod_monoid.
+Theorem prod_intro_r
+  :  forall x y z : E, x = y -> x # z = y # z.
+Proof Monoid.op_intro_r prod_monoid.
 
 (**
   Accepts two elements, x and y, and
@@ -679,19 +679,19 @@ Theorem prod_inv_1
 Proof Monoid.op_inv_0 prod_monoid.
 
 (** Proves that 1 has a left multiplicative inverse. *)
-Definition prod_has_inv_l_1
-  :  prod_has_inv_l 1
-  := Monoid.op_has_inv_l_0 prod_monoid.
+Theorem prod_has_inv_l_1
+  :  prod_has_inv_l 1.
+Proof Monoid.op_has_inv_l_0 prod_monoid.
 
 (** Proves that 1 has a right multiplicative inverse. *)
-Definition prod_has_inv_r_1
-  :  prod_has_inv_r 1
-  := Monoid.op_has_inv_r_0 prod_monoid.
+Theorem prod_has_inv_r_1
+  :  prod_has_inv_r 1.
+Proof Monoid.op_has_inv_r_0 prod_monoid.
 
 (** Proves that 1 has a reciprical *)
-Definition prod_has_inv_1
-  :  prod_has_inv 1
-  := Monoid.op_has_inv_0 prod_monoid.
+Theorem prod_has_inv_1
+  :  prod_has_inv 1.
+Proof Monoid.op_has_inv_0 prod_monoid.
 
 (**
   Proves that if an element's, x, inverse
