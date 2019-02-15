@@ -186,25 +186,27 @@ Definition prod_is_id_r := Monoid.is_id_r E {#}.
 Definition prod_is_id := Monoid.is_id E {#}.
 
 (** Proves that 1 is the right identity element. *)
-Definition prod_id_r
-  :  prod_is_id_r 1
-  := fun x : E
-       => eq_ind_r
-            (fun a => a = x)
-            (prod_id_l x)
-            (prod_is_comm x 1).
+Theorem prod_id_r
+  :  prod_is_id_r 1.
+Proof
+  fun x : E
+    => eq_ind_r
+         (fun a => a = x)
+         (prod_id_l x)
+         (prod_is_comm x 1).
  
 (**
   Proves that multiplication is right distributive
   over addition.
 *)
-Definition prod_sum_distrib_r
-  :  Ring.is_distrib_r E {#} {+}
-  := fun x y z : E
-       =>  prod_sum_distrib_l x y z
-       || x # (y + z) = a + (x # z) @a by <- prod_is_comm x y
-       || x # (y + z) = (y # x) + a @a by <- prod_is_comm x z
-       || a = (y # x) + (z # x)     @a by <- prod_is_comm x (y + z).
+Theorem prod_sum_distrib_r
+  :  Ring.is_distrib_r E {#} {+}.
+Proof
+  fun x y z : E
+    =>  prod_sum_distrib_l x y z
+        || x # (y + z) = a + (x # z) @a by <- prod_is_comm x y
+        || x # (y + z) = (y # x) + a @a by <- prod_is_comm x z
+        || a = (y # x) + (z # x)     @a by <- prod_is_comm x (y + z).
 
 (**
   Represents the non-commutative ring formed
@@ -237,10 +239,11 @@ Definition sum_monoid := Ring.sum_monoid ring.
 Definition prod_monoid := Ring.prod_monoid ring.
 
 (** Proves that 1 <> 0. *)
-Definition distinct_1_0
-  :  E_1 (c := r) <> E_0 (c := r)
-  := fun H : E_1 = E_0
-       => distinct_0_1 (eq_sym H).  
+Theorem distinct_1_0
+  :  E_1 (c := r) <> E_0 (c := r).
+Proof
+  fun H : E_1 = E_0
+    => distinct_0_1 (eq_sym H).  
 
 (**
   A predicate that accepts one element, x,
@@ -251,14 +254,14 @@ Definition nonzero
   := Ring.nonzero ring.
 
 (** Proves that 0 is the right identity element. *)
-Definition sum_id_r
-  :  sum_is_id_r 0
-  := Ring.sum_id_r ring.
+Theorem sum_id_r
+  :  sum_is_id_r 0.
+Proof Ring.sum_id_r ring.
 
 (** Proves that 0 is the identity element. *)
-Definition sum_id
-  :  sum_is_id 0
-  := Ring.sum_id ring.
+Theorem sum_id
+  :  sum_is_id 0.
+Proof Ring.sum_id ring.
 
 (**
   Accepts two elements, x and y, and
@@ -300,115 +303,115 @@ Definition sum_has_inv_r := Ring.sum_has_inv_r ring.
 Definition sum_has_inv := Ring.sum_has_inv ring.
 
 (** Asserts that every element has a right inverse. *)
-Definition sum_inv_r_ex
-  :  forall x : E, exists y : E, sum_is_inv_r x y
-  := Ring.sum_inv_r_ex ring.
+Theorem sum_inv_r_ex
+  :  forall x : E, exists y : E, sum_is_inv_r x y.
+Proof Ring.sum_inv_r_ex ring.
 
 (** Proves that the left identity element is unique. *)
-Definition sum_id_l_uniq
-  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0
-  := Ring.sum_id_l_uniq ring.
+Theorem sum_id_l_uniq
+  :  forall x : E, Monoid.is_id_l E {+} x -> x = 0.
+Proof Ring.sum_id_l_uniq ring.
 
 (** Proves that the right identity element is unique. *)
-Definition sum_id_r_uniq
-  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0
-  := Ring.sum_id_r_uniq ring.
+Theorem sum_id_r_uniq
+  :  forall x : E, Monoid.is_id_r E {+} x -> x = 0.
+Proof Ring.sum_id_r_uniq ring.
 
 (** Proves that the identity element is unique. *)
-Definition sum_id_uniq
-  :  forall x : E, Monoid.is_id E {+} x -> x = 0
-  := Ring.sum_id_uniq ring.
+Theorem sum_id_uniq
+  :  forall x : E, Monoid.is_id E {+} x -> x = 0.
+Proof Ring.sum_id_uniq ring.
 
 (**
   Proves that for every group element, x,
   its left and right inverses are equal.
 *)
-Definition sum_inv_l_r_eq
-  :  forall x y : E, sum_is_inv_l x y -> forall z : E, sum_is_inv_r x z -> y = z
-  := Ring.sum_inv_l_r_eq ring.
+Theorem sum_inv_l_r_eq
+  :  forall x y : E, sum_is_inv_l x y -> forall z : E, sum_is_inv_r x z -> y = z.
+Proof Ring.sum_inv_l_r_eq ring.
 
 (**
   Proves that the inverse relation is
   symmetrical.
 *)
-Definition sum_inv_sym
-  :  forall x y : E, sum_is_inv x y <-> sum_is_inv y x
-  := Ring.sum_inv_sym ring.
+Theorem sum_inv_sym
+  :  forall x y : E, sum_is_inv x y <-> sum_is_inv y x.
+Proof Ring.sum_inv_sym ring.
 
 (** Proves that an element's inverse is unique. *)
-Definition sum_inv_uniq
-  :  forall x y z :  E, sum_is_inv x y -> sum_is_inv x z -> z = y
-  := Ring.sum_inv_uniq ring.
+Theorem sum_inv_uniq
+  :  forall x y z :  E, sum_is_inv x y -> sum_is_inv x z -> z = y.
+Proof Ring.sum_inv_uniq ring.
 
 (** Proves that every element has an inverse. *)
-Definition sum_inv_ex
-  :  forall x : E, exists y : E, sum_is_inv x y
-  := Ring.sum_inv_ex ring.
+Theorem sum_inv_ex
+  :  forall x : E, exists y : E, sum_is_inv x y.
+Proof Ring.sum_inv_ex ring.
 
 (**
   Proves explicitly that every element has a
   unique inverse.
 *)
-Definition sum_inv_uniq_ex
-  :  forall x : E, exists! y : E, sum_is_inv x y
-  := Ring.sum_inv_uniq_ex ring.
+Theorem sum_inv_uniq_ex
+  :  forall x : E, exists! y : E, sum_is_inv x y.
+Proof Ring.sum_inv_uniq_ex ring.
 
 (** Proves the left introduction rule. *)
-Definition sum_intro_l
-  :  forall x y z : E, x = y -> z + x = z + y
-  := Ring.sum_intro_l ring.
+Theorem sum_intro_l
+  :  forall x y z : E, x = y -> z + x = z + y.
+Proof Ring.sum_intro_l ring.
 
 (** Proves the right introduction rule. *)
-Definition sum_intro_r
-  :  forall x y z : E, x = y -> x + z = y + z
-  := Ring.sum_intro_r ring.
+Theorem sum_intro_r
+  :  forall x y z : E, x = y -> x + z = y + z.
+Proof Ring.sum_intro_r ring.
 
 (** Proves the left cancellation rule. *)
-Definition sum_cancel_l
-  :   forall x y z : E, z + x = z + y -> x = y
-  := Ring.sum_cancel_l ring.
+Theorem sum_cancel_l
+  :   forall x y z : E, z + x = z + y -> x = y.
+Proof Ring.sum_cancel_l ring.
 
 (** Proves the right cancellation rule. *)
-Definition sum_cancel_r
-  :   forall x y z : E, x + z = y + z -> x = y
-  := Ring.sum_cancel_r ring.
+Theorem sum_cancel_r
+  :   forall x y z : E, x + z = y + z -> x = y.
+Proof Ring.sum_cancel_r ring.
 
 (**
   Proves that an element's left inverse
   is unique.
 *)
-Definition sum_inv_l_uniq
-  :  forall x y z : E, sum_is_inv_l x y -> sum_is_inv_l x z -> z = y
-  := Ring.sum_inv_l_uniq ring.
+Theorem sum_inv_l_uniq
+  :  forall x y z : E, sum_is_inv_l x y -> sum_is_inv_l x z -> z = y.
+Proof Ring.sum_inv_l_uniq ring.
 
 (**
   Proves that an element's right inverse
   is unique.
 *)
-Definition sum_inv_r_uniq
-  :  forall x y z : E, sum_is_inv_r x y -> sum_is_inv_r x z -> z = y
-  := Ring.sum_inv_r_uniq ring.
+Theorem sum_inv_r_uniq
+  :  forall x y z : E, sum_is_inv_r x y -> sum_is_inv_r x z -> z = y.
+Proof Ring.sum_inv_r_uniq ring.
 
 (**
   Proves that 0 is its own left additive
   inverse.
 *)
-Definition sum_0_inv_l
-  :  sum_is_inv_l 0 0
-  := Ring.sum_0_inv_l ring.
+Theorem sum_0_inv_l
+  :  sum_is_inv_l 0 0.
+Proof Ring.sum_0_inv_l ring.
 
 (**
   Proves that 0 is its own right additive
   inverse.
 *)
-Definition sum_0_inv_r
-  :  sum_is_inv_r 0 0
-  := Ring.sum_0_inv_r ring.
+Theorem sum_0_inv_r
+  :  sum_is_inv_r 0 0.
+Proof Ring.sum_0_inv_r ring.
 
 (** Proves that 0 is it's own additive inverse. *)
-Definition sum_0_inv
-  :  sum_is_inv 0 0
-  := Ring.sum_0_inv ring.
+Theorem sum_0_inv
+  :  sum_is_inv 0 0.
+Proof Ring.sum_0_inv ring.
 
 (**
   Proves that the identity element has a
@@ -473,29 +476,29 @@ Definition sum_neg_def
   := Ring.sum_neg_def ring.
 
 (** Proves that negation is one-to-one *)
-Definition sum_neg_inj
-  :  is_injective E E sum_neg
-  := Ring.sum_neg_inj ring.
+Theorem sum_neg_inj
+  :  is_injective E E sum_neg.
+Proof Ring.sum_neg_inj ring.
 
 (** Proves the cancellation property for negation. *)
-Definition sum_cancel_neg
-  :  forall x : E, sum_neg (- x) = x
-  := Ring.sum_cancel_neg ring.
+Theorem sum_cancel_neg
+  :  forall x : E, sum_neg (- x) = x.
+Proof Ring.sum_cancel_neg ring.
 
 (** Proves that negation is onto *)
-Definition sum_neg_onto
-  :  is_onto E E sum_neg
-  := Ring.sum_neg_onto ring.
+Theorem sum_neg_onto
+  :  is_onto E E sum_neg.
+Proof Ring.sum_neg_onto ring.
 
 (** Proves that negation is surjective *)
-Definition sum_neg_bijective
-  :  is_bijective E E sum_neg
-  := Ring.sum_neg_bijective ring.
+Theorem sum_neg_bijective
+  :  is_bijective E E sum_neg.
+Proof Ring.sum_neg_bijective ring.
 
 (** Proves that neg x = y -> neg y = x *)
-Definition sum_neg_rev
-  :  forall x y : E, - x = y -> - y = x
-  := Abelian_Group.op_neg_rev sum_abelian_group.
+Theorem sum_neg_rev
+  :  forall x y : E, - x = y -> - y = x.
+Proof Abelian_Group.op_neg_rev sum_abelian_group.
 
 (**
   Proves that the left inverse of x + y is -y + -x.
@@ -527,63 +530,66 @@ Theorem sum_neg_distrib
 Proof Abelian_Group.op_neg_distrib sum_abelian_group.
 
 (** Proves that 0's negation is 0. *)
-Definition sum_0_neg
-  :  - 0 = 0
-  := proj2 (sum_neg_def 0)
-     || a = 0 @a by <- sum_id_l (- 0).
+Theorem sum_0_neg
+  :  - 0 = 0.
+Proof
+  proj2 (sum_neg_def 0)
+  || a = 0 @a by <- sum_id_l (- 0).
 
 (**
   Proves that if an element's, x, negation
   equals 0, x must equal 0.
 *)
-Definition sum_neg_0
-  :  forall x : E, - x = 0 -> x = 0
-  := fun x H
-       => proj2 (sum_neg_def x)
-         || x + a = 0 @a by <- H
-         || a = 0     @a by <- sum_id_r x.
+Theorem sum_neg_0
+  :  forall x : E, - x = 0 -> x = 0.
+Proof
+  fun x H
+    => proj2 (sum_neg_def x)
+      || x + a = 0 @a by <- H
+      || a = 0     @a by <- sum_id_r x.
 
 (**
   Prove that 0 is the only element whose additive
   inverse (negation) equals 0.
 *)
-Definition sum_neg_0_uniq
-  :  unique (fun x => - x = 0) 0
-  := conj sum_0_neg 
-       (fun x H => eq_sym (sum_neg_0 x H)).
+Theorem sum_neg_0_uniq
+  :  unique (fun x => - x = 0) 0.
+Proof
+  conj sum_0_neg 
+    (fun x H => eq_sym (sum_neg_0 x H)).
 
 (**
   Accepts one element, x, and asserts
   that x is the identity element.
 *)
-Definition prod_id
-  :  prod_is_id 1
-  := Ring.prod_id ring.
+Theorem prod_id
+  :  prod_is_id 1.
+Proof Ring.prod_id ring.
 
 (** Proves that the left identity element is unique. *)
-Definition prod_id_l_uniq
-  :  forall x : E, (Monoid.is_id_l E {#} x) -> x = 1
-  := Ring.prod_id_l_uniq ring.
+Theorem prod_id_l_uniq
+  :  forall x : E, (Monoid.is_id_l E {#} x) -> x = 1.
+Proof Ring.prod_id_l_uniq ring.
 
 (** Proves that the right identity element is unique. *)
-Definition prod_id_r_uniq
-  :  forall x : E, (Monoid.is_id_r E {#} x) -> x = 1
-  := Ring.prod_id_r_uniq ring.
+Theorem prod_id_r_uniq
+  :  forall x : E, (Monoid.is_id_r E {#} x) -> x = 1.
+Proof Ring.prod_id_r_uniq ring.
 
 (** Proves that the identity element is unique. *)
-Definition prod_id_uniq
-  :  forall x : E, (Monoid.is_id E {#} x) -> x = 1
-  := Ring.prod_id_uniq ring.
+Theorem prod_id_uniq
+  :  forall x : E, (Monoid.is_id E {#} x) -> x = 1.
+Proof Ring.prod_id_uniq ring.
 
 (** Proves the left introduction rule. *)
-Definition prod_intro_l
-  :  forall x y z : E, x = y -> z # x = z # y
-  := Ring.prod_intro_l ring.
+Theorem prod_intro_l
+  :  forall x y z : E, x = y -> z # x = z # y.
+Proof Ring.prod_intro_l ring.
 
 (** Proves the right introduction rule. *)
-Definition prod_intro_r
-  :  forall x y z : E, x = y -> x # z = y # z
-  := Ring.prod_intro_r ring.
+Theorem prod_intro_r
+  :  forall x y z : E, x = y -> x # z = y # z.
+Proof Ring.prod_intro_r ring.
 
 (**
   Accepts two elements, x and y, and
@@ -625,10 +631,11 @@ Definition prod_has_inv := Ring.prod_has_inv ring.
   Proves that every left inverse must also
   be a right inverse.
 *)
-Definition prod_is_inv_lr 
-  :  forall x y : E, prod_is_inv_l x y -> prod_is_inv_r x y
-  := fun x y H
-       => H || a = 1 @a by prod_is_comm x y.
+Theorem prod_is_inv_lr 
+  :  forall x y : E, prod_is_inv_l x y -> prod_is_inv_r x y.
+Proof
+  fun x y H
+    => H || a = 1 @a by prod_is_comm x y.
 
 (**
   Proves that the left and right inverses of
@@ -678,7 +685,12 @@ Theorem prod_inv_r_uniq
   :  forall x : E, prod_has_inv_l x -> forall y z : E, prod_is_inv_r x y -> prod_is_inv_r x z -> z = y.
 Proof Ring.prod_inv_r_uniq ring.
 
-(** Proves that an element's inverse is unique. *)
+(**
+  Proves that an element's inverse is unique.
+
+  Note: the field module depends on this proof
+  being transparent.
+*)
 Definition prod_inv_uniq
   :  forall x y z : E, prod_is_inv x y -> prod_is_inv x z -> z = y
   := Ring.prod_inv_uniq ring.
@@ -769,41 +781,41 @@ Proof Ring.prod_sum_distrib ring.
   0 x + 0 x = 0 x
         0 x = 0
 *)
-Definition prod_0_l
-  :  forall x : E, 0 # x = 0
-  := Ring.prod_0_l ring.
+Theorem prod_0_l
+  :  forall x : E, 0 # x = 0.
+Proof Ring.prod_0_l ring.
 
 (** Proves that 0 times every number equals 0. *)
-Definition prod_0_r
-  :  forall x : E, x # 0 = 0
-  := Ring.prod_0_r ring.
+Theorem prod_0_r
+  :  forall x : E, x # 0 = 0.
+Proof Ring.prod_0_r ring.
 
 (** Proves that 0 does not have a left multiplicative inverse. *)
-Definition prod_0_inv_l
-  :  ~ prod_has_inv_l 0
-  := Ring.prod_0_inv_l ring.
+Theorem prod_0_inv_l
+  :  ~ prod_has_inv_l 0.
+Proof Ring.prod_0_inv_l ring.
 
 (** Proves that 0 does not have a right multiplicative inverse. *)
-Definition prod_0_inv_r
-  :  ~ prod_has_inv_r 0
-  := Ring.prod_0_inv_r ring.
+Theorem prod_0_inv_r
+  :  ~ prod_has_inv_r 0.
+Proof Ring.prod_0_inv_r ring.
 
 (**
   Proves that 0 does not have a multiplicative
   inverse - I.E. 0 does not have a
   reciprocal.
 *)
-Definition prod_0_inv
-  :  ~ prod_has_inv 0
-  := Ring.prod_0_inv ring.
+Theorem prod_0_inv
+  :  ~ prod_has_inv 0.
+Proof Ring.prod_0_inv ring.
 
 (**
   Proves that multiplicative inverses, when
   they exist are always nonzero.
 *)
-Definition prod_inv_0
-  :  forall x y : E, prod_is_inv x y -> nonzero y
-  := Ring.prod_inv_0 ring.
+Theorem prod_inv_0
+  :  forall x y : E, prod_is_inv x y -> nonzero y.
+Proof Ring.prod_inv_0 ring.
 
 (** Represents -1 and proves that it exists. *)
 Definition E_n1_strong
@@ -832,22 +844,22 @@ Definition E_n1_def
   := Ring.E_n1_def ring.
       
 (** Asserts that -1 is the left inverse of 1. *)
-Definition E_n1_inv_l
-  :  sum_is_inv_l 1 {-1}
-  := Ring.E_n1_inv_l ring.
+Theorem E_n1_inv_l
+  :  sum_is_inv_l 1 {-1}.
+Proof Ring.E_n1_inv_l ring.
 
 (** Asserts that -1 is the right inverse of 1. *)
-Definition E_n1_inv_r
-  :  sum_is_inv_r 1 {-1}
-  := Ring.E_n1_inv_r ring.
+Theorem E_n1_inv_r
+  :  sum_is_inv_r 1 {-1}.
+Proof Ring.E_n1_inv_r ring.
 
 (**
   Asserts that every additive inverse
   of 1 must be equal to -1.
 *)
-Definition E_n1_uniq
-  :  forall x : E, sum_is_inv 1 x -> x = {-1}
-  := Ring.E_n1_uniq ring.
+Theorem E_n1_uniq
+  :  forall x : E, sum_is_inv 1 x -> x = {-1}.
+Proof Ring.E_n1_uniq ring.
 
 (**
   Proves that -1 * x equals the multiplicative
@@ -859,9 +871,9 @@ Definition E_n1_uniq
   0 x = 0
   0 = 0
 *) 
-Definition prod_n1_x_inv_l
-  :  forall x : E, sum_is_inv_l x ({-1} # x)
-  := Ring.prod_n1_x_inv_l ring.
+Theorem prod_n1_x_inv_l
+  :  forall x : E, sum_is_inv_l x ({-1} # x).
+Proof Ring.prod_n1_x_inv_l ring.
 
 (**
   Proves that x * -1 equals the multiplicative
@@ -869,68 +881,68 @@ Definition prod_n1_x_inv_l
 
   x -1 + x = 0
 *)
-Definition prod_x_n1_inv_l
-  :  forall x : E, sum_is_inv_l x (x # {-1})
-  := Ring.prod_x_n1_inv_l ring.
+Theorem prod_x_n1_inv_l
+  :  forall x : E, sum_is_inv_l x (x # {-1}).
+Proof Ring.prod_x_n1_inv_l ring.
 
 (** Proves that x + -1 x = 0. *)
-Definition prod_n1_x_inv_r
-  :  forall x : E, sum_is_inv_r x ({-1} # x)
-  := Ring.prod_n1_x_inv_r ring.
+Theorem prod_n1_x_inv_r
+  :  forall x : E, sum_is_inv_r x ({-1} # x).
+Proof Ring.prod_n1_x_inv_r ring.
 
 (** Proves that x + x -1 = 0. *)
-Definition prod_x_n1_inv_r
-  :  forall x : E, sum_is_inv_r x (x # {-1})
-  := Ring.prod_x_n1_inv_r ring.
+Theorem prod_x_n1_inv_r
+  :  forall x : E, sum_is_inv_r x (x # {-1}).
+Proof Ring.prod_x_n1_inv_r ring.
 
 (** Proves that -1 x is the additive inverse of x. *)
-Definition prod_n1_x_inv
-  :  forall x : E, sum_is_inv x ({-1} # x)
-  := Ring.prod_n1_x_inv ring.
+Theorem prod_n1_x_inv
+  :  forall x : E, sum_is_inv x ({-1} # x).
+Proof Ring.prod_n1_x_inv ring.
 
 (** Proves that x -1 is the additive inverse of x. *)
-Definition prod_x_n1_inv
-  :  forall x : E, sum_is_inv x (x # {-1})
-  := Ring.prod_x_n1_inv ring.
+Theorem prod_x_n1_inv
+  :  forall x : E, sum_is_inv x (x # {-1}).
+Proof Ring.prod_x_n1_inv ring.
 
 (**
   Proves that multiplying by -1 is equivalent
   to negation.
 *)
-Definition prod_n1_neg
-  :  {#} {-1} = sum_neg
-  := Ring.prod_n1_neg ring.
+Theorem prod_n1_neg
+  :  {#} {-1} = sum_neg.
+Proof Ring.prod_n1_neg ring.
 
 (**
   Accepts one element, x, and proves that
   x -1 equals the additive negation of x.
 *)
-Definition prod_x_n1_neg
-  :  forall x : E, x # {-1} = - x
-  := Ring.prod_x_n1_neg ring.
+Theorem prod_x_n1_neg
+  :  forall x : E, x # {-1} = - x.
+Proof Ring.prod_x_n1_neg ring.
 
 (**
   Accepts one element, x, and proves that
   -1 x equals the additive negation of x.
 *)
-Definition prod_n1_x_neg
-  :  forall x : E, {-1} # x = - x
-  := Ring.prod_n1_x_neg ring.
+Theorem prod_n1_x_neg
+  :  forall x : E, {-1} # x = - x.
+Proof Ring.prod_n1_x_neg ring.
 
 (** Proves that -1 x = x -1. *)
-Definition prod_n1_eq
-  :  forall x : E, {-1} # x = x # {-1} 
-  := Ring.prod_n1_eq ring.
+Theorem prod_n1_eq
+  :  forall x : E, {-1} # x = x # {-1} .
+Proof Ring.prod_n1_eq ring.
 
 (** Proves that the additive negation of 1 equals -1. *)
-Definition neg_1
-  :  {-} 1 = {-1}
-  := Ring.neg_1 ring.
+Theorem neg_1
+  :  {-} 1 = {-1}.
+Proof Ring.neg_1 ring.
 
 (** Proves that the additive negation of -1 equals 1. *)
-Definition neg_n1
-  :  sum_neg {-1} = 1
-  := Ring.neg_n1 ring.
+Theorem neg_n1
+  :  sum_neg {-1} = 1.
+Proof Ring.neg_n1 ring.
 
 (**
   Proves that -1 * -1 = 1.
@@ -940,17 +952,17 @@ Definition neg_n1
   -1 * -1 = sum_neg -1
   -1 * -1 = 1 
 *)
-Definition prod_n1_n1
-  :  {-1} # {-1} = 1
-  := Ring.prod_n1_n1 ring.
+Theorem prod_n1_n1
+  :  {-1} # {-1} = 1.
+Proof Ring.prod_n1_n1 ring.
 
 (**
   Proves that -1 is its own multiplicative
   inverse.
 *)
-Definition E_n1_inv
-  :  prod_is_inv {-1} {-1}
-  := Ring.E_n1_inv ring.
+Theorem E_n1_inv
+  :  prod_is_inv {-1} {-1}.
+Proof Ring.E_n1_inv ring.
 
 End Theorems.
 
