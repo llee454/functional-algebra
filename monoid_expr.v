@@ -28,104 +28,17 @@ Require Import ProofIrrelevance.
 Require Import Bool.
 Require Import List.
 Import ListNotations.
+Require Import binary_tree.
+Import Binary_Tree.
 Require Import monoid.
 Import Monoid.
 
-Module MonoidExpr.
+Module Monoid_Expr.
 
 Open Scope monoid_scope.
 
 (**
-  I. This section defines binary trees.
-*)
-Section binary_trees.
-
-(** Represents the values stored in binary trees. *)
-Variable Term : Set.
-
-(**
-  Represents binary trees.
-
-  Binary trees can be used to represent
-  many different types of algebraic
-  expressions. Importantly, when flattened,
-  they are isomorphic with lists. Flattening,
-  projecting onto lists, sorting, and folding
-  may be used normalize ("simplify") algebraic
-  expressions.
-*)
-Inductive BTree : Set
-  := leaf : Term -> BTree
-  |  node : BTree -> BTree -> BTree.
-
-(**
-  Accepts a binary tree and returns true iff
-  the tree is a node term.
-*)
-Definition BTree_is_node
-  :  BTree -> bool
-  := BTree_rec
-       (fun _ => bool)
-       (fun _ => false)
-       (fun _ _ _ _ => true).
-
-(**
-  Accepts a binary tree and returns true iff
-  the tree is a leaf term.
-*)
-Definition BTree_is_leaf
-  :  BTree -> bool
-  := BTree_rec
-       (fun _ => bool)
-       (fun _ => true)
-       (fun _ _ _ _ => false).
-
-(**
-  Accepts a binary tree and returns true
-  iff the tree is right associative.
-
-  Note: right associative trees are isomorphic
-  to lists.
-*)
-Definition BTree_is_rassoc
-  :  BTree -> bool
-  := BTree_rec
-       (fun _ => bool)
-       (fun _ => true)
-       (fun t _ _ f
-         => BTree_is_leaf t && f).
-
-(**
-  Proves that the right subtree in a right
-  associative binary tree is also right
-  associative.
-*)
-Theorem BTree_rassoc_thm
-  :  forall t u : BTree, BTree_is_rassoc (node t u) = true -> BTree_is_rassoc u = true.
-Proof
-  fun t u H
-    => proj2 (
-            andb_prop 
-              (BTree_is_leaf t)
-              (BTree_is_rassoc u)
-              H).
-
-End binary_trees.
-
-Arguments leaf {Term} x.
-
-Arguments node {Term} t u.
-
-Arguments BTree_is_leaf {Term} t.
-
-Arguments BTree_is_node {Term} t.
-
-Arguments BTree_is_rassoc {Term} t.
-
-Arguments BTree_rassoc_thm {Term} t u H.
-
-(**
-  II. Defines term maps which allow us to
+  I. Defines term maps which allow us to
     interpret abstract terms as monoid values.
 *)
 
@@ -172,7 +85,7 @@ Arguments term_map_is_zero {t} x.
 Arguments term_map_is_zero_thm {t} t0 H.
 
 (**
-  III. Defines functions for evaluating and
+  II. Defines functions for evaluating and
     transforming binary trees using term maps.
 *) 
 
@@ -551,17 +464,17 @@ Arguments term_const {m} x.
 Ltac encode m x 
   := lazymatch x with
        | (0)
-         => exact (MonoidExpr.leaf (MonoidExpr.term_0 (m:=m)))
+         => exact (leaf (Monoid_Expr.term_0 (m:=m)))
        | ({+} ?X ?Y)
          => exact
-              (MonoidExpr.node
+              (node
                 (ltac:(encode m X))
                 (ltac:(encode m Y)))
        | (?X)
-         => exact (MonoidExpr.leaf (MonoidExpr.term_const X))
+         => exact (leaf (Monoid_Expr.term_const X))
      end.
 
-End MonoidExpr.
+End Monoid_Expr.
 
 (**
   Defines a notation that can be used to prove
@@ -574,28 +487,28 @@ End MonoidExpr.
   expressions are equivalent.
 *)
 Notation "'reflect' x 'as' t ==> y 'as' u 'using' m"
-  := (let r := MonoidExpr.reduce m t in
-      let s := MonoidExpr.reduce m u in
+  := (let r := Monoid_Expr.reduce m t in
+      let s := Monoid_Expr.reduce m u in
       let v := proj1_sig r in
       let w := proj1_sig s in
       let H
-        :  MonoidExpr.list_eval m v = MonoidExpr.list_eval m w
-        := eq_refl (MonoidExpr.list_eval m v) : MonoidExpr.list_eval m v = MonoidExpr.list_eval m w in
+        :  Monoid_Expr.list_eval m v = Monoid_Expr.list_eval m w
+        := eq_refl (Monoid_Expr.list_eval m v) : Monoid_Expr.list_eval m v = Monoid_Expr.list_eval m w in
       let H0
-        :  MonoidExpr.BTree_eval m t = MonoidExpr.list_eval m v
+        :  Monoid_Expr.BTree_eval m t = Monoid_Expr.list_eval m v
         := proj2_sig r in
       let H1
-        :  MonoidExpr.BTree_eval m u = MonoidExpr.list_eval m w
+        :  Monoid_Expr.BTree_eval m u = Monoid_Expr.list_eval m w
         := proj2_sig s in
       let H2
-        :  MonoidExpr.BTree_eval m t = x
-        := eq_refl (MonoidExpr.BTree_eval m t) : MonoidExpr.BTree_eval m t = x in
+        :  Monoid_Expr.BTree_eval m t = x
+        := eq_refl (Monoid_Expr.BTree_eval m t) : Monoid_Expr.BTree_eval m t = x in
       let H3
-        :  MonoidExpr.BTree_eval m u = y
-        := eq_refl (MonoidExpr.BTree_eval m u) : MonoidExpr.BTree_eval m u = y in
+        :  Monoid_Expr.BTree_eval m u = y
+        := eq_refl (Monoid_Expr.BTree_eval m u) : Monoid_Expr.BTree_eval m u = y in
       H
-      || a = MonoidExpr.list_eval m w @a by H0
-      || a = MonoidExpr.list_eval m w @a by H2
+      || a = Monoid_Expr.list_eval m w @a by H0
+      || a = Monoid_Expr.list_eval m w @a by H2
       || x = a @a by H1
       || x = a @a by H3
       : x = y)
@@ -608,9 +521,9 @@ Notation "'reflect' x 'as' t ==> y 'as' u 'using' m"
 *)
 Notation "'rewrite' A ==> B 'using' C"
   := (reflect A
-       as (ltac:(MonoidExpr.encode (MonoidExpr.term_map_m C) A))
+       as (ltac:(Monoid_Expr.encode (Monoid_Expr.term_map_m C) A))
       ==> B
-       as (ltac:(MonoidExpr.encode (MonoidExpr.term_map_m C) B)) using C
+       as (ltac:(Monoid_Expr.encode (Monoid_Expr.term_map_m C) B)) using C
       : A = B)
      (at level 40, left associativity).
 
@@ -620,7 +533,7 @@ Variable m : Monoid.
 
 Variables a b c d : E m.
 
-Let map := MonoidExpr.MTerm_map m.
+Let map := Monoid_Expr.MTerm_map m.
 
 Let reflect_test_0
   :  (a + 0) = (0 + a)
