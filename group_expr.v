@@ -35,6 +35,9 @@ Require Import Bool.
 Require Import List.
 Import ListNotations.
 Import Group.
+Require Import Wf.
+Require Import Wf_nat.
+Import Inverse_Image.
 
 Module GroupExpr.
 
@@ -407,6 +410,81 @@ End push_neg_to_leaves.
   [[... x, -x, ...]].
 *)
 Section cancel_negations.
+
+Open Scope nat_scope.
+
+(** *)
+Variable group : Group.
+
+(** *)
+Let term : Set := monoid_group_term group.
+
+(** *)
+Let term_map : Monoid_Expr.Term_map := monoid_term_map group.
+
+(**
+*)
+Let eval : list term -> E group := Monoid_Expr.list_eval term_map.
+
+(** TODO: Define function that iterates over a list in pairs. *)
+
+(** *)
+Parameter num_neg_pairs : list term -> nat.
+
+(** *)
+Let has_neg_pairs (xs : list term) : Prop
+  := 0 < num_neg_pairs xs.
+
+(** *)
+Parameter has_neg_pairs_dec
+  : forall xs : list term,
+      {0 = num_neg_pairs xs} + {has_neg_pairs xs}.
+
+(** *)
+Parameter elim_neg_pair
+  : forall xs : list term,
+      has_neg_pairs xs ->
+      {ys : list term |
+         eval xs = eval ys /\
+         length xs = (length ys) + 2}.
+
+(** *)
+Axiom lm0 : forall n m : nat, n = m + 2 -> m < n.
+
+(**
+*)
+Definition elim_neg_pairs (xs : list term)
+  :  {ys : list term |
+        eval xs = eval ys /\
+        0 = num_neg_pairs ys}
+  := Fix_F
+       (fun ys
+          => {zs : list term |
+                eval ys = eval zs /\
+                0 = num_neg_pairs zs})
+       (fun ys
+          (F : forall zs, length zs < length ys ->
+               {us | eval zs = eval us /\ 0 = num_neg_pairs us})
+          => match has_neg_pairs_dec ys with
+               | left H (* : 0 = num_neg_pairs ys *)
+                 => exist _ ys
+                      (conj
+                        (eq_refl (eval ys))
+                        H)
+              | right H (* : 0 < num_neg_pairs ys *)
+                => let (zs, H0) := elim_neg_pair ys H in
+                   let (us, H1)
+                     := F zs
+                          (lm0 (length ys) (length zs) (proj2 H0)) in
+                   exist _ us
+                     (conj
+                       ((proj1 H1)
+                        || a = eval us @a by (proj1 H0))
+                       (proj2 H1))
+              end)
+       ((wf_inverse_image (list term) nat lt (@length term) lt_wf) xs).
+
+Close Scope nat_scope.
 
 End cancel_negations.
 
