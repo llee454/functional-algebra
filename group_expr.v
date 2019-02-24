@@ -417,6 +417,9 @@ Open Scope nat_scope.
 Variable group : Group.
 
 (** *)
+Let monoid := op_monoid group.
+
+(** *)
 Let term : Set := monoid_group_term group.
 
 (** *)
@@ -424,12 +427,37 @@ Let term_map : Monoid_Expr.Term_map := monoid_term_map group.
 
 (**
 *)
+(* Let term_eval : term -> E group := @Monoid_Expr.term_map_eval term_map. *)
+(* Let term_eval : term -> E group := @monoid_group_term_map_eval group. *)
+Let term_eval : term -> Monoid.E monoid := @Monoid_Expr.term_map_eval term_map.
+
+(**
+*)
 Let eval : list term -> E group := Monoid_Expr.list_eval term_map.
 
 (** TODO: Define function that iterates over a list in pairs. *)
 
-(** *)
-Parameter num_neg_pairs : list term -> nat.
+Parameter are_invsb : term -> term -> bool.
+
+(**
+  Accepts a list of terms [xs] and counts the number of
+  negation/inverse pairs in [xs].
+
+  Note: an inverse pair is a sequence of terms of the form [x, -x]
+  or [-x, x].
+*)
+Let num_neg_pairs
+  :  list term -> nat
+  := list_rec
+       (fun _ => nat) 0
+       (fun x0
+         => list_rec
+              (fun _ => nat -> nat)
+              (fun _ => 0)
+              (fun x1 xs _ F
+                 => (if are_invsb x0 x1
+                       then 1
+                       else 0) + F)).
 
 (** *)
 Let has_neg_pairs (xs : list term) : Prop
@@ -440,13 +468,80 @@ Parameter has_neg_pairs_dec
   : forall xs : list term,
       {0 = num_neg_pairs xs} + {has_neg_pairs xs}.
 
+(**
+  Proves that inverse pairs can be removed from the head of a list
+  of terms without changing the value of the represented expression.
+*)
+Parameter remove_neg_pair_eq
+  :  forall (x0 x1 : term) (xs : list term),
+       are_invsb x0 x1 = true ->
+       eval (x0 :: x1 :: xs) = eval xs.
+
 (** *)
-Parameter elim_neg_pair
+Definition elim_neg_pair
   : forall xs : list term,
       has_neg_pairs xs ->
       {ys : list term |
          eval xs = eval ys /\
-         length xs = (length ys) + 2}.
+         length xs = 2 + length ys}
+  := list_rec
+       (fun xs
+          => has_neg_pairs xs -> 
+             {ys : list term |
+                eval xs = eval ys /\
+                length xs = 2 + length ys})
+       (fun H : 0 < 0
+         => False_rec _ (PeanoNat.Nat.nlt_0_r 0 H))
+       (fun x0
+          => list_rec
+               (fun xs
+                  => (has_neg_pairs xs -> _) ->
+                     has_neg_pairs (x0 :: xs) ->
+                     {ys : list term |
+                        eval (x0 :: xs) = eval ys /\
+                        length (x0 :: xs) = 2 + length ys})
+               (fun _ (H0 : 0 < 0)
+                  => False_rec _ (PeanoNat.Nat.nlt_0_r 0 H0))
+               (fun x1 xs _
+                  (F : has_neg_pairs (x1 :: xs) ->
+                       {ys : list term |
+                          eval (x1 :: xs) = eval ys /\
+                          length (x1 :: xs) = 2 + length ys})
+                  => sumbool_rec
+                       (fun _
+                         => has_neg_pairs (x0 :: x1 :: xs) ->
+                            {ys : list term |
+                               eval (x0 :: x1 :: xs) = eval ys /\
+                               length (x0 :: x1 :: xs) = 2 + length ys})
+                       (fun (H1 : are_invsb x0 x1 = true) _
+                          => exist
+                               (fun ys
+                                  => eval (x0 :: x1 :: xs) = eval ys /\
+                                     length (x0 :: x1 :: xs) = 2 + length ys)
+                               xs
+                               (conj
+                                 (remove_neg_pair_eq x0 x1 xs H1)
+                                 (eq_refl (2 + length xs))))
+                       (fun (H1 : are_invsb x0 x1 = false)
+                            (H2 : 0 < num_neg_pairs (x0 :: x1 :: xs))
+                          => let (ys, H3)
+                               := F
+                                    ((H2
+                                     || 0 < (if (a : bool) then 1 else 0) + num_neg_pairs (x1 :: xs)
+                                        @a by <- H1
+                                     || 0 < a
+                                        @a by PeanoNat.Nat.add_0_l (num_neg_pairs (x1 :: xs)))
+                                     : has_neg_pairs (x1 :: xs)) in
+                             exist _
+                               (x0 :: ys)
+                               (conj
+                                 (eq_refl (eval (x0 :: x1 :: xs))
+                                  || _ = Monoid.op (term_eval (x0)) a
+                                     @a by <- proj1 H3)
+                                 (f_equal S
+                                   (proj2 H3 : length (x1 :: xs) = 2 + length ys))))
+                       (bool_dec0 (are_invsb x0 x1))
+)).
 
 (** *)
 Axiom lm0 : forall n m : nat, n = m + 2 -> m < n.
