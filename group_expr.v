@@ -411,10 +411,38 @@ End push_neg_to_leaves.
 *)
 Section cancel_negations.
 
-Open Scope nat_scope.
-
 (** *)
 Variable group : Group.
+
+(**
+  Accepts two group values and returns true iff they are equal.
+
+  Note: in general, we cannot define an effective procedure for
+  determining when two arbitrary group expessions are equivalent.
+*)
+Parameter eq_dec : forall x y : E group, {x = y} + {x <> y}.
+
+(** Accepts two group values and returns true iff they are equal. *)
+Let eqb (x y : E group) : bool
+  := if eq_dec x y
+       then true
+       else false.
+
+(** *)
+Lemma eqb_correct
+  :  forall x y : E group, eqb x y = true -> x = y.
+Proof
+  fun x y
+    => sumbool_ind
+         (fun H : {x = y} + {x <> y}
+            => (if H then true else false) = true -> x = y)
+         (fun (H : x = y) _
+            => H)
+         (fun _ (H0 : false = true)
+            => False_ind _ (diff_false_true H0))
+         (eq_dec x y).
+
+Arguments eqb_correct {x} {y} H.
 
 (** *)
 Let monoid := op_monoid group.
@@ -437,7 +465,82 @@ Let eval : list term -> E group := Monoid_Expr.list_eval term_map.
 
 (** TODO: Define function that iterates over a list in pairs. *)
 
-Parameter are_invsb : term -> term -> bool.
+(**
+  Accepts two terms [x] and [y] and returns true iff they are
+  inverses of each other - i.e. they have the form [x] [-x] or
+  vice versa.
+*)
+Let are_invsb
+  :  term -> term -> bool
+  := monoid_group_term_rec
+       group
+       (fun _ => term -> bool)
+       (fun _ => false)
+       (fun x : E group
+         => monoid_group_term_rec
+              group
+              (fun _ => bool)
+              false
+              (fun _ => false)
+              (eqb x))
+       (fun x : E group
+         => monoid_group_term_rec
+              group
+              (fun _ => bool)
+              false
+              (eqb x)
+              (fun _ => false)).
+
+(**
+  Accepts two terms, [x] and [y], and proves that if [x] and [y]
+  are inverse pairs, then they cancel.
+*)
+Lemma are_invsb_inv
+  :  forall x y : term, are_invsb x y = true -> (term_eval x) + (term_eval y) = 0.
+Proof
+  monoid_group_term_ind
+    group
+    (fun x
+       => forall y : term, are_invsb x y = true -> (term_eval x) + (term_eval y) = 0)
+    (fun y (H : false = true)
+       => False_ind _
+            (diff_false_true H))
+    (fun x : E group
+      => monoid_group_term_rect
+           group
+           (fun y
+              => are_invsb (monoid_group_term_const x) y = true ->
+                 (term_eval (monoid_group_term_const x)) + (term_eval y) = 0)
+           (fun H : false = true
+             => False_ind _
+                  (diff_false_true H))
+           (fun _ (H : false = true)
+             => False_ind _
+                  (diff_false_true H))
+           (fun y (H : eqb x y = true)
+             => proj2 (@op_neg_def group x)
+                || x + (- a) = 0
+                   @a by <- eqb_correct H))
+    (fun x : E group
+      => monoid_group_term_rect
+           group
+           (fun y
+              => are_invsb (monoid_group_term_neg x) y = true ->
+                 (- (term_eval (monoid_group_term_const x))) + (term_eval y) = 0)
+           (fun H : false = true
+             => False_ind _
+                  (diff_false_true H))
+           (fun y (H : eqb x y = true)
+             => proj1 (@op_neg_def group x)
+                || (- x) + a = E_0
+                   @a by <- eqb_correct H)
+           (fun _ (H : false = true)
+             => False_ind _
+                  (diff_false_true H))).
+
+Arguments are_invsb_inv {x} {y} H.
+
+Open Scope nat_scope.
 
 (**
   Accepts a list of terms [xs] and counts the number of
@@ -459,25 +562,41 @@ Let num_neg_pairs
                        then 1
                        else 0) + F)).
 
-(** *)
+(**
+  Accepts a list of terms, [xs], and is true iff [xs] contains
+  one or more inverse pairs.
+*)
 Let has_neg_pairs (xs : list term) : Prop
   := 0 < num_neg_pairs xs.
 
-(** *)
-Parameter has_neg_pairs_dec
-  : forall xs : list term,
-      {0 = num_neg_pairs xs} + {has_neg_pairs xs}.
+(** Proves that [has_neg_pairs] is decideable. *)
+Definition has_neg_pairs_dec (xs : list term)
+  :  {has_neg_pairs xs} + {0 = num_neg_pairs xs}
+  := Compare_dec.le_lt_eq_dec 0 (num_neg_pairs xs)
+       (PeanoNat.Nat.le_0_l (num_neg_pairs xs)).
 
 (**
   Proves that inverse pairs can be removed from the head of a list
   of terms without changing the value of the represented expression.
 *)
-Parameter remove_neg_pair_eq
-  :  forall (x0 x1 : term) (xs : list term),
-       are_invsb x0 x1 = true ->
-       eval (x0 :: x1 :: xs) = eval xs.
+Definition remove_neg_pair_eq (x0 x1 : term) (xs : list term) (H : are_invsb x0 x1 = true)
+  :  eval (x0 :: x1 :: xs) = eval xs
+  := op_is_assoc 
+       (term_eval x0)
+       (term_eval x1)
+       (eval xs)
+     || eval (x0 :: x1 :: xs) = op a (eval xs)
+        @a by <- are_invsb_inv H
+     || eval (x0 :: x1 :: xs) = a
+        @a by <- op_id_l (eval xs).
 
-(** *)
+(**
+  Accepts a list of terms [xs] that represents a group expression
+  containing an inverse pair and removes the first inverse pair
+  contained in [xs].
+
+  Note, the result is a shorter equivalent term list.
+*)
 Definition elim_neg_pair
   : forall xs : list term,
       has_neg_pairs xs ->
@@ -540,13 +659,17 @@ Definition elim_neg_pair
                                      @a by <- proj1 H3)
                                  (f_equal S
                                    (proj2 H3 : length (x1 :: xs) = 2 + length ys))))
-                       (bool_dec0 (are_invsb x0 x1))
-)).
+                       (bool_dec0 (are_invsb x0 x1)))).
 
 (** *)
-Axiom lm0 : forall n m : nat, n = m + 2 -> m < n.
+Axiom lm0 : forall n m : nat, n = 2 + m -> m < n.
 
 (**
+  Accepts a list of terms that represent a group expression and
+  eliminates all of the inverse pairs within the expression.
+
+  Note: an inverse pair is an pair of terms of the form, [x] and
+  [-x], or vice versa.
 *)
 Definition elim_neg_pairs (xs : list term)
   :  {ys : list term |
@@ -561,21 +684,21 @@ Definition elim_neg_pairs (xs : list term)
           (F : forall zs, length zs < length ys ->
                {us | eval zs = eval us /\ 0 = num_neg_pairs us})
           => match has_neg_pairs_dec ys with
-               | left H (* : 0 = num_neg_pairs ys *)
+               | left H (* : 0 < num_neg_pairs ys *)
+                 => let (zs, H0) := elim_neg_pair ys H in
+                    let (us, H1)
+                      := F zs
+                           (lm0 (length ys) (length zs) (proj2 H0)) in
+                    exist _ us
+                      (conj
+                        ((proj1 H1)
+                         || a = eval us @a by (proj1 H0))
+                        (proj2 H1))
+               | right H (* : 0 = num_neg_pairs ys *)
                  => exist _ ys
                       (conj
                         (eq_refl (eval ys))
                         H)
-              | right H (* : 0 < num_neg_pairs ys *)
-                => let (zs, H0) := elim_neg_pair ys H in
-                   let (us, H1)
-                     := F zs
-                          (lm0 (length ys) (length zs) (proj2 H0)) in
-                   exist _ us
-                     (conj
-                       ((proj1 H1)
-                        || a = eval us @a by (proj1 H0))
-                       (proj2 H1))
               end)
        ((wf_inverse_image (list term) nat lt (@length term) lt_wf) xs).
 
