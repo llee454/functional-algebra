@@ -662,7 +662,12 @@ Definition elim_neg_pair
                        (bool_dec0 (are_invsb x0 x1)))).
 
 (** *)
-Axiom lm0 : forall n m : nat, n = 2 + m -> m < n.
+Local Lemma lm0 : forall n m : nat, n = 2 + m -> m < n.
+Proof 
+  fun n m H
+    => PeanoNat.Nat.lt_lt_succ_r m (S m)
+         (Lt.le_lt_n_Sm m m (le_n m))
+       || m < a @a by H.
 
 (**
   Accepts a list of terms that represent a group expression and
@@ -760,10 +765,13 @@ Definition reduce
        group_syntax_tree_eval t = Monoid_Expr.list_eval monoid_term_map xs}
   := let (u, H)   := push_negation group_term_map t in
      let (xs, H0) := Monoid_Expr.reduce monoid_term_map u in
+     let (ys, H1) := elim_neg_pairs group xs in
      exist
        (fun ys => group_syntax_tree_eval t = Monoid_Expr.list_eval monoid_term_map ys)
-       xs
-       (H || group_syntax_tree_eval t = a @a by <- H0).
+       ys
+       (H
+        || group_syntax_tree_eval t = a @a by <- H0
+        || group_syntax_tree_eval t = a @a by <- proj1 H1).
 
 End reduce.
 
