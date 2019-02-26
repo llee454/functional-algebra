@@ -1,6 +1,7 @@
 -R . functional_algebra
 ./base.v
 ./binary_tree.v
+./simplify.v
 ./abelian_group.v
 ./commutative_ring.v
 ./ring.v

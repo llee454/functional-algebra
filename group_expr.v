@@ -31,6 +31,7 @@ Import Binary_Tree.
 Require Import monoid.
 Require Import monoid_expr.
 Require Import group.
+Require Import simplify.
 Require Import Bool.
 Require Import List.
 Import ListNotations.
@@ -778,3 +779,69 @@ End reduce.
 Close Scope group_scope.
 
 End GroupExpr.
+
+Module Type GroupExprMapType.
+
+Parameter term_map : GroupExpr.Group_term_map.
+
+End GroupExprMapType.
+
+Module ExampleGroupExprMap : GroupExprMapType.
+
+Variable group : Group.
+
+Let monoid
+  :  Monoid.Monoid
+  := op_monoid group.
+
+Let monoid_term_map
+  :  Monoid_Expr.Term_map
+  := Monoid_Expr.MTerm_map monoid.
+
+Definition term_map
+  :  GroupExpr.Group_term_map
+  := GroupExpr.group_term_map group
+       (Monoid_Expr.term_map_term monoid_term_map) 
+       (@Monoid_Expr.term_map_eval monoid_term_map)
+       (@Monoid_Expr.term_map_is_zero monoid_term_map)
+       (@Monoid_Expr.term_map_is_zero_thm monoid_term_map).
+
+End ExampleGroupExprMap.
+
+Module GroupExprSemantics (GroupExprMap : GroupExprMapType) : SemanticsType.
+
+Let group
+  :  Group
+  := GroupExpr.group_term_map_group GroupExprMap.term_map.
+
+Definition E
+  :  Set
+  := E group.
+
+Definition syntax_tree
+  :  Set
+  := GroupExpr.Syntax_tree
+       (GroupExpr.group_term_map_term GroupExprMap.term_map).
+
+Definition syntax_tree_eval
+  :  syntax_tree -> E
+  := GroupExpr.syntax_tree_eval GroupExprMap.term_map.
+
+Definition term
+  :  Set
+  := GroupExpr.monoid_group_term group.
+
+Definition list_eval
+  :  list term -> E
+  := Monoid_Expr.list_eval (GroupExpr.monoid_term_map group).
+
+Definition reduce 
+  :  forall t : syntax_tree,
+       {xs : list term | syntax_tree_eval t = list_eval xs}
+  := GroupExpr.reduce GroupExprMap.term_map.
+
+End GroupExprSemantics.
+
+Module ExampleGroupExprSemantics : SemanticsType := GroupExprSemantics (ExampleGroupExprMap).
+
+Module GroupExprSimplifier := Simplifier (ExampleGroupExprSemantics).
