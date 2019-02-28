@@ -12,3 +12,4 @@
 ./monoid_expr.v
 ./monoid_group.v
 ./group_expr.v
+./int_group.v
