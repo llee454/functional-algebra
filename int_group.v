@@ -63,6 +63,7 @@ Definition term_map
        (@Monoid_Expr.term_map_is_zero monoid_term_map)
        (@Monoid_Expr.term_map_is_zero_thm monoid_term_map).
 
+(* TODO: this is now called equal *)
 Definition eq_dec
   :  forall x y : E int_group, {x = y} + {x <> y}
   := Z.eq_dec.
@@ -75,36 +76,6 @@ Module IntGroupExprSimplifier := Simplifier (IntGroupExprSemantics).
 
 Import IntGroupExprSimplifier.
 
-(*
-  Accepts two arguments: [m], a monoid; and [x], a group expression;
-  and returns a Syntax_tree that represents [x].
-
-  Note: this function uses the [Monoid_Expr.Term] type to represent
-  syntax tree terms. [m] is the monoid associated with the group that
-  [x] belongs to.
-
-  Note: This Ltac expression is an example of lightweight ltac. The
-  idea behind this style is to use Gallina functions to generate
-  proofs through reflection and then to use Ltac only as syntactic
-  sugar to generate abstract terms.
-*)
-Ltac encode m x 
-  := lazymatch x with
-       | (0)
-         => exact (GroupExpr.leaf (Monoid_Expr.term_0 (m:=m)))
-       | ({+} ?X ?Y)
-         => exact
-              (GroupExpr.node_op
-                (ltac:(encode m X))
-                (ltac:(encode m Y)))
-       | ({-} ?X)
-         => exact
-              (GroupExpr.node_neg
-                (ltac:(encode m X)))
-       | (?X)
-         => exact (GroupExpr.leaf (Monoid_Expr.term_const (m:=m) X))
-     end.
-
 Open Scope simplify_scope.
 
 (**
@@ -114,9 +85,9 @@ Open Scope simplify_scope.
 *)
 Notation "'rewrite' A ==> B 'using' C"
   := (reflect A
-       as (ltac:(encode (op_monoid (GroupExpr.group_term_map_group C)) A))
+       as (ltac:(GroupExpr.encode (op_monoid (GroupExpr.group_term_map_group C)) A))
       ==> B
-       as (ltac:(encode (op_monoid (GroupExpr.group_term_map_group C)) B))
+       as (ltac:(GroupExpr.encode (op_monoid (GroupExpr.group_term_map_group C)) B))
       : A = B)
      (at level 40, left associativity)
   : group_expr_scope.

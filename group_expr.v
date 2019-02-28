@@ -394,14 +394,27 @@ Definition push_negation
                || {-} (group_syntax_tree_eval t) = a
                   @a by <- H0))
        (fun t
-         => exist
-              (fun u
-                => group_syntax_tree_eval (leaf t) = monoid_syntax_tree_eval u)
-              (Binary_Tree.leaf
-                (monoid_group_term_const
-                  (group_term_map_eval group_term_map t)))
-              (eq_refl
-                (group_term_map_eval group_term_map t))).
+         => sumbool_rec
+              (fun _ => _)
+              (fun H : group_term_map_is_zero group_term_map t = true
+                 => let u
+                      :  monoid_syntax_tree
+                      := Binary_Tree.leaf monoid_group_term_0 in
+                    exist
+                      (fun u
+                        => group_syntax_tree_eval (leaf t) = monoid_syntax_tree_eval u)
+                      u
+                      (group_term_map_is_zero_thm group_term_map t H))
+              (fun _
+                 => exist
+                      (fun u
+                        => group_syntax_tree_eval (leaf t) = monoid_syntax_tree_eval u)
+                      (Binary_Tree.leaf
+                        (monoid_group_term_const
+                          (group_term_map_eval group_term_map t)))
+                      (eq_refl
+                        (group_term_map_eval group_term_map t)))
+              (bool_dec0 (group_term_map_is_zero group_term_map t))).
 
 End push_neg_to_leaves.
 
@@ -416,32 +429,31 @@ Section cancel_negations.
 Variable group : Group.
 
 (**
-  Accepts two group values and returns true iff they are equal.
-
-  Note: in general, we cannot define an effective procedure for
-  determining when two arbitrary group expessions are equivalent.
+  Accepts two group elements, [x] and [y], and may provide a proof
+  that [x] equals [y]. If we do not know that [x] equals [y],
+  we return [None].
 *)
-Parameter eq_dec : forall x y : E group, {x = y} + {x <> y}.
+Variable equal : forall x y : E group, option (x = y).
 
 (** Accepts two group values and returns true iff they are equal. *)
-Let eqb (x y : E group) : bool
-  := if eq_dec x y
+Definition eqb (x y : E group) : bool
+  := if equal x y
        then true
        else false.
 
-(** *)
+(** Proves that the eqb predicate is correct. *)
 Lemma eqb_correct
   :  forall x y : E group, eqb x y = true -> x = y.
 Proof
   fun x y
-    => sumbool_ind
-         (fun H : {x = y} + {x <> y}
+    => option_ind
+         (fun H : option (x = y)
             => (if H then true else false) = true -> x = y)
          (fun (H : x = y) _
             => H)
-         (fun _ (H0 : false = true)
+         (fun (H0 : false = true)
             => False_ind _ (diff_false_true H0))
-         (eq_dec x y).
+         (equal x y).
 
 Arguments eqb_correct {x} {y} H.
 
@@ -463,8 +475,6 @@ Let term_eval : term -> Monoid.E monoid := @Monoid_Expr.term_map_eval term_map.
 (**
 *)
 Let eval : list term -> E group := Monoid_Expr.list_eval term_map.
-
-(** TODO: Define function that iterates over a list in pairs. *)
 
 (**
   Accepts two terms [x] and [y] and returns true iff they are
@@ -550,7 +560,7 @@ Open Scope nat_scope.
   Note: an inverse pair is a sequence of terms of the form [x, -x]
   or [-x, x].
 *)
-Let num_neg_pairs
+Definition num_neg_pairs
   :  list term -> nat
   := list_rec
        (fun _ => nat) 0
@@ -567,7 +577,7 @@ Let num_neg_pairs
   Accepts a list of terms, [xs], and is true iff [xs] contains
   one or more inverse pairs.
 *)
-Let has_neg_pairs (xs : list term) : Prop
+Definition has_neg_pairs (xs : list term) : Prop
   := 0 < num_neg_pairs xs.
 
 (** Proves that [has_neg_pairs] is decideable. *)
@@ -575,6 +585,18 @@ Definition has_neg_pairs_dec (xs : list term)
   :  {has_neg_pairs xs} + {0 = num_neg_pairs xs}
   := Compare_dec.le_lt_eq_dec 0 (num_neg_pairs xs)
        (PeanoNat.Nat.le_0_l (num_neg_pairs xs)).
+
+(** Proves that the empty list does not contain any inverse pairs. *)
+Lemma num_neg_pairs_nil
+  :  0 = num_neg_pairs [].
+Proof
+  sumbool_ind
+    (fun _ => 0 = num_neg_pairs [])
+    (fun H : 0 < 0
+       => False_ind _ (PeanoNat.Nat.nlt_0_r 0 H))
+    (fun H : 0 = num_neg_pairs []
+       => H)
+    (has_neg_pairs_dec []).
 
 (**
   Proves that inverse pairs can be removed from the head of a list
@@ -662,7 +684,7 @@ Definition elim_neg_pair
                                    (proj2 H3 : length (x1 :: xs) = 2 + length ys))))
                        (bool_dec0 (are_invsb x0 x1)))).
 
-(** *)
+(** Proves a minor lemma for [elim_neg_pairs]. *)
 Local Lemma lm0 : forall n m : nat, n = 2 + m -> m < n.
 Proof 
   fun n m H
@@ -706,7 +728,8 @@ Definition elim_neg_pairs (xs : list term)
                         (eq_refl (eval ys))
                         H)
               end)
-       ((wf_inverse_image (list term) nat lt (@length term) lt_wf) xs).
+       ((well_founded_ltof (list term) (@length term) xs)).
+       (* ((wf_inverse_image (list term) nat lt (@length term) lt_wf) xs). *)
 
 Close Scope nat_scope.
 
@@ -732,6 +755,13 @@ Variable group_term_map : Group_term_map.
   given syntax trees.
 *)
 Let group : Group := group_term_map_group group_term_map.
+
+(**
+  Accepts two group elements, [x] and [y], and may provide a proof
+  that [x] equals [y]. If we do not know that [x] equals [y],
+  we return [None].
+*)
+Variable equal : forall x y : E group, option (x = y).
 
 (** Represents the terms that will be stored in the monoid tree below. *)
 Let group_term : Set := group_term_map_term group_term_map.
@@ -766,7 +796,7 @@ Definition reduce
        group_syntax_tree_eval t = Monoid_Expr.list_eval monoid_term_map xs}
   := let (u, H)   := push_negation group_term_map t in
      let (xs, H0) := Monoid_Expr.reduce monoid_term_map u in
-     let (ys, H1) := elim_neg_pairs group xs in
+     let (ys, H1) := elim_neg_pairs group equal xs in
      exist
        (fun ys => group_syntax_tree_eval t = Monoid_Expr.list_eval monoid_term_map ys)
        ys
@@ -776,6 +806,52 @@ Definition reduce
 
 End reduce.
 
+(*
+  Accepts two arguments: [m], a monoid; and [x], a group expression;
+  and returns a Syntax_tree that represents [x].
+
+  Note: this function uses the [Monoid_Expr.Term] type to represent
+  syntax tree terms. [m] is the monoid associated with the group that
+  [x] belongs to.
+
+  Note: This Ltac expression is an example of lightweight ltac. The
+  idea behind this style is to use Gallina functions to generate
+  proofs through reflection and then to use Ltac only as syntactic
+  sugar to generate abstract terms.
+*)
+Ltac encode m x 
+  := lazymatch x with
+       | (0)
+         => exact (GroupExpr.leaf (Monoid_Expr.term_0 (m:=m)))
+       | ({+} ?X ?Y)
+         => exact
+              (GroupExpr.node_op
+                (ltac:(encode m X))
+                (ltac:(encode m Y)))
+       | ({-} ?X)
+         => exact
+              (GroupExpr.node_neg
+                (ltac:(encode m X)))
+       | (?X)
+         => exact (GroupExpr.leaf (Monoid_Expr.term_const (m:=m) X))
+     end.
+
+(**
+  Defines a notation that can be used to prove
+  that two monoid expressions, A and B, are
+  equal given the term map C.
+*)
+(* TODO: this requires reflect to be defined which is provided in the simplifier. *)
+(*
+Notation "'rewrite' A ==> B 'using' C"
+  := (reflect A
+       as (ltac:(encode (op_monoid (group_term_map_group C)) A))
+      ==> B
+       as (ltac:(encode (op_monoid (group_term_map_group C)) B))
+      : A = B)
+     (at level 40, left associativity)
+  : group_expr_scope.
+*)
 Close Scope group_scope.
 
 End GroupExpr.
@@ -784,31 +860,22 @@ Module Type GroupExprMapType.
 
 Parameter term_map : GroupExpr.Group_term_map.
 
+Let group
+  :  Group
+  := GroupExpr.group_term_map_group term_map.
+
+Variable equal : forall x y : E group, option (x = y).
+
 End GroupExprMapType.
 
-Module ExampleGroupExprMap : GroupExprMapType.
+(**
+  This functor defines the reduce function for group expressions.
 
-Variable group : Group.
-
-Let monoid
-  :  Monoid.Monoid
-  := op_monoid group.
-
-Let monoid_term_map
-  :  Monoid_Expr.Term_map
-  := Monoid_Expr.MTerm_map monoid.
-
-Definition term_map
-  :  GroupExpr.Group_term_map
-  := GroupExpr.group_term_map group
-       (Monoid_Expr.term_map_term monoid_term_map) 
-       (@Monoid_Expr.term_map_eval monoid_term_map)
-       (@Monoid_Expr.term_map_is_zero monoid_term_map)
-       (@Monoid_Expr.term_map_is_zero_thm monoid_term_map).
-
-End ExampleGroupExprMap.
-
-Module GroupExprSemantics (GroupExprMap : GroupExprMapType) : SemanticsType.
+  It accepts a group expression map, which specifies the group whose
+  values will be reduced and the partial equality predicate that
+  the reduce function will use to identify equal terms.
+*)
+Module GroupExprSemantics (GroupExprMap : GroupExprMapType) <: SemanticsType.
 
 Let group
   :  Group
@@ -838,10 +905,143 @@ Definition list_eval
 Definition reduce 
   :  forall t : syntax_tree,
        {xs : list term | syntax_tree_eval t = list_eval xs}
-  := GroupExpr.reduce GroupExprMap.term_map.
+  := GroupExpr.reduce GroupExprMap.term_map GroupExprMap.equal.
 
 End GroupExprSemantics.
 
-Module ExampleGroupExprSemantics : SemanticsType := GroupExprSemantics (ExampleGroupExprMap).
+Module unittest.
 
-Module GroupExprSimplifier := Simplifier (ExampleGroupExprSemantics).
+(* Defines the set of elements that comprise the example group. *)
+Local Inductive element : Set := e | a | b | c.
+
+(* Declares the operation over the example group. *)
+Local Parameter f : element -> element -> element.
+
+(* Asserts the axioms needed to define our set as a group. *)
+Local Axiom f_is_assoc : Monoid.is_assoc element f.
+Local Axiom f_id_l : Monoid.is_id_l element f e.
+Local Axiom f_id_r : Monoid.is_id_r element f e. 
+Local Axiom f_inv_l_ex : forall x : element, exists y : element, Monoid.is_inv_l element f e (conj f_id_l f_id_r) x y.
+Local Axiom f_inv_r_ex : forall x : element, exists y : element, Monoid.is_inv_r element f e (conj f_id_l f_id_r) x y.
+
+(* Defines an example group over the given elements and operation. *)
+Local Example g : Group := group
+  element e f
+  f_is_assoc  
+  f_id_l
+  f_id_r
+  f_inv_l_ex
+  f_inv_r_ex.
+
+(* Defines a partial equality predicate. *)
+Definition fequal (x y : element) : option (x = y)
+  := match x with
+       | e
+         => match y with
+              | e => Some (eq_refl e)
+              | _ => None
+              end
+       | a
+         => match y with
+              | a => Some (eq_refl a)
+              | _ => None
+              end
+       | b
+         => match y with
+              | b => Some (eq_refl b)
+              | _ => None
+              end
+       | c
+         => match y with
+              | c => Some (eq_refl c)
+              | _ => None
+              end
+       end.
+
+Module ExampleGroupExprMap <: GroupExprMapType.
+
+Definition group : Group := g.
+
+Let monoid
+  :  Monoid.Monoid
+  := op_monoid g.
+
+Let monoid_term_map
+  :  Monoid_Expr.Term_map
+  := Monoid_Expr.MTerm_map monoid.
+
+Definition term_map
+  :  GroupExpr.Group_term_map
+  := GroupExpr.group_term_map g
+       (Monoid_Expr.term_map_term monoid_term_map) 
+       (@Monoid_Expr.term_map_eval monoid_term_map)
+       (@Monoid_Expr.term_map_is_zero monoid_term_map)
+       (@Monoid_Expr.term_map_is_zero_thm monoid_term_map).
+
+Definition equal := fequal.
+
+End ExampleGroupExprMap.
+
+Module ExampleGroupExprSemantics <: SemanticsType := GroupExprSemantics (ExampleGroupExprMap).
+
+Module ExampleGroupExprSimplifier := Simplifier (ExampleGroupExprSemantics).
+
+Import ExampleGroupExprSimplifier.
+
+Open Scope simplify_scope.
+
+(**
+  Defines a notation that can be used to prove
+  that two monoid expressions, A and B, are
+  equal given the term map C.
+*)
+Notation "'rewrite' A ==> B 'using' C"
+  := (reflect A
+       as (ltac:(GroupExpr.encode (op_monoid (GroupExpr.group_term_map_group C)) A))
+      ==> B
+       as (ltac:(GroupExpr.encode (op_monoid (GroupExpr.group_term_map_group C)) B))
+      : A = B)
+     (at level 40, left associativity)
+  : group_expr_scope.
+
+Close Scope simplify_scope.
+
+Let term_map
+  :  GroupExpr.Group_term_map 
+  := ExampleGroupExprMap.term_map.
+
+Let group
+  :  Group
+  := GroupExpr.group_term_map_group term_map.
+
+Let monoid
+  :  Monoid.Monoid
+  := op_monoid group.
+
+Let E := E group.
+
+Open Scope group_expr_scope.
+
+(* Examples *)
+(*
+Compute (
+  proj1_sig
+    (GroupExpr.reduce (ExampleGroupExprMap.term_map) (ExampleGroupExprMap.equal)
+      (ltac:(GroupExpr.encode monoid (((a : E) + (b : E)) + - ((a : E) + (b : E))))))).
+*)
+
+Let rewrite_test_1
+  :  - (a : E) + (a : E) + (b : E) = (b : E)
+  := rewrite (- (a : E) + (a : E) + (b : E)) ==> (b : E) using term_map.
+
+Let rewrite_test_2
+  :  - (a : E) + (a : E) = (0 : E)
+  := rewrite (- (a : E) + (a : E)) ==> (0 : E) using term_map.
+
+Let rewrite_test_3
+  :  ((a : E) + (b : E)) + 0 + - ((a : E) + (b : E)) = (0 : E)
+  := rewrite (((a : E) + (b : E)) + 0 + - ((a : E) + (b : E))) ==> (0 : E) using term_map.
+
+Close Scope group_expr_scope.
+
+End unittest.

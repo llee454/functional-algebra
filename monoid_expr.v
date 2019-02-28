@@ -533,30 +533,30 @@ Variable m : Monoid.
 
 Variables a b c d : E m.
 
-Let map := Monoid_Expr.MTerm_map m.
+Let term_map := Monoid_Expr.MTerm_map m.
 
 Let reflect_test_0
   :  (a + 0) = (0 + a)
-  := rewrite (a + 0) ==> (0 + a) using map.
+  := rewrite (a + 0) ==> (0 + a) using term_map.
 
 Let reflect_test_1
   :  (a + 0) + (0 + b) = a + b
-  := rewrite ((a + 0) + (0 + b)) ==> (a + b) using map.
+  := rewrite ((a + 0) + (0 + b)) ==> (a + b) using term_map.
 
 Let reflect_test_2
   :  (0 + a) + b = (a + b)
-  := rewrite ((0 + a) + b) ==> (a + b) using map.
+  := rewrite ((0 + a) + b) ==> (a + b) using term_map.
 
 Let reflect_test_3
   :  (a + b) + (c + d) = a + ((b + c) + d)
-  := rewrite (a + b) + (c + d) ==> a + ((b + c) + d) using map.
+  := rewrite (a + b) + (c + d) ==> a + ((b + c) + d) using term_map.
 
 Let reflect_test_4
   :  (a + b) + (0 + c) = (a + 0) + (b + c)
-  := rewrite (a + b) + (0 + c) ==> (a + 0) + (b + c) using map.
+  := rewrite (a + b) + (0 + c) ==> (a + 0) + (b + c) using term_map.
 
 Let reflect_test_5
   :  (((a + b) + c) + 0) = (((0 + a) + b) + c)
-  := rewrite (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using map.
+  := rewrite (((a + b) + c) + 0) ==> (((0 + a) + b) + c) using term_map.
 
 End Unittests.

@@ -47,6 +47,14 @@ Parameter reduce
 
 End SemanticsType.
 
+(**
+  To use the [reflect] notation, apply this functor and then import
+  the resulting module. For example:
+
+    Module ExampleSimplifier := Simplifier (ExampleSemantics).
+    Import ExampleSimplifier.
+    Print Visibility.
+*)
 Module Simplifier (Semantics : SemanticsType).
 
 (**
@@ -85,6 +93,6 @@ Notation "'reflect' x 'as' t ==> y 'as' u"
       || x = a @a by H1
       || x = a @a by H3
       : x = y)
-      (at level 40, left associativity).
+      (at level 40, left associativity) : simplify_scope.
 
 End Simplifier.
